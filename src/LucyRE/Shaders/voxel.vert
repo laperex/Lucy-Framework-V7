@@ -40,14 +40,19 @@ vec3 normal_array[6] = {
 };
 
 void main() {
+	vec2 v_uv = vec2(
+		(v_data & (0xf << 12 + 4 * 1)) >> 12 + 4 * 1,
+		(v_data & (0xf << 12 + 4 * 0)) >> 12 + 4 * 0
+	);
+
 	vec3 v_pos = vec3(
-		(v_data & (0x7f << 11 + 7 * 0)) >> 11 + 7 * 0,	//	0xfe000000	25
-		(v_data & (0x7f << 11 + 7 * 1)) >> 11 + 7 * 1,	//	0x01fc0000	18
-		(v_data & (0x7f << 11 + 7 * 2)) >> 11 + 7 * 2	//	0x0003f800	11
+		(v_data & (0xf << 12 + 4 * 4)) >> 12 + 4 * 4,
+		(v_data & (0xf << 12 + 4 * 3)) >> 12 + 4 * 3,
+		(v_data & (0xf << 12 + 4 * 2)) >> 12 + 4 * 2
 	);
 
 	normal = normal_array[(v_data & (0x3 << 8)) >> 8];
-	uv = uv_array[gl_VertexID % 6];
+	uv = uv_array[gl_VertexID % 6] * v_uv;
 	uvw = vec3(uv, v_data & 0xff);
 
 	frag_pos = vec3(model * vec4(v_pos + offset, 1.0));

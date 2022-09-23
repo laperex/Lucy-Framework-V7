@@ -31,40 +31,55 @@ namespace lpv {
 		VoxelFace_COUNT
 	};
 
-	#define LPV_VERTEX_POSITION_X(vertex) ((vertex.pos_norm_tex & (0x7f << 11 + 7 * 0)) >> 11 + 7 * 0)
-	#define LPV_VERTEX_POSITION_Y(vertex) ((vertex.pos_norm_tex & (0x7f << 11 + 7 * 1)) >> 11 + 7 * 1)
-	#define LPV_VERTEX_POSITION_Z(vertex) ((vertex.pos_norm_tex & (0x7f << 11 + 7 * 2)) >> 11 + 7 * 2)
+	#define LPV_VERTEX_POSITION_X(vertex) ((vertex.pos_norm_tex & (0xf << 12 + 4 * 4)) >> 12 + 4 * 4)
+	#define LPV_VERTEX_POSITION_Y(vertex) ((vertex.pos_norm_tex & (0xf << 12 + 4 * 3)) >> 12 + 4 * 3)
+	#define LPV_VERTEX_POSITION_Z(vertex) ((vertex.pos_norm_tex & (0xf << 12 + 4 * 2)) >> 12 + 4 * 2)
+	#define LPV_VERTEX_UV_U(vertex) ((vertex.pos_norm_tex & (0xf << 12 + 4 * 1)) >> 12 + 4 * 1)
+	#define LPV_VERTEX_UV_V(vertex) ((vertex.pos_norm_tex & (0xf << 12 + 4 * 0)) >> 12 + 4 * 0)
 	#define LPV_VERTEX_NORMAL(vertex) ((vertex.pos_norm_tex & (0x3 << 8)) >> 8)
-	#define LPV_VERTEX_TEX_ID(vertex) (vertex.pos_norm_tex & 0xff)
+	#define LPV_VERTEX_TEX_ID(vertex) (vertex.pos_norm_tex & 0x1ff)
 
 	struct Vertex {
 		uint32_t pos_norm_tex = 0;
 
 		Vertex() {}
-		Vertex(const uint8_t posx, const uint8_t posy, const uint8_t posz, const uint8_t norm, const uint8_t uvwt) {
-			pos_norm_tex = uvwt;
+		Vertex(const uint8_t posx, const uint8_t posy, const uint8_t posz, const uint8_t norm, const int uvwt) {
+			pos_norm_tex = uvwt & 0x1ff;
 
-			pos_norm_tex |= (norm << 8);
-			pos_norm_tex |= (posz << 8 + 3 + 7 * 0);
-			pos_norm_tex |= (posy << 8 + 3 + 7 * 1);
-			pos_norm_tex |= (posx << 8 + 3 + 7 * 2);
+			pos_norm_tex |= ((norm & 0x3) << 9);
+			pos_norm_tex |= ((1 & 0xf) << 12 + 4 * 0);
+			pos_norm_tex |= ((1 & 0xf) << 12 + 4 * 1);
+			pos_norm_tex |= ((posz & 0xf) << 12 + 4 * 2);
+			pos_norm_tex |= ((posy & 0xf) << 12 + 4 * 3);
+			pos_norm_tex |= ((posx & 0xf) << 12 + 4 * 4);
 		}
 
-		void SetPositionX(const uint8_t posx) {
-			pos_norm_tex = (pos_norm_tex & ~(0x7f << 8 + 3 + 7 * 2)) | (posx << 8 + 3 + 7 * 2);
+		Vertex(const uint8_t posx, const uint8_t posy, const uint8_t posz, const uint8_t u, const uint8_t v, const uint8_t norm, const int uvwt) {
+			pos_norm_tex = uvwt & 0x1ff;
+
+			pos_norm_tex |= ((norm & 0x3) << 9);
+			pos_norm_tex |= ((v & 0xf) << 12 + 4 * 0);
+			pos_norm_tex |= ((u & 0xf) << 12 + 4 * 1);
+			pos_norm_tex |= ((posz & 0xf) << 12 + 4 * 2);
+			pos_norm_tex |= ((posy & 0xf) << 12 + 4 * 3);
+			pos_norm_tex |= ((posx & 0xf) << 12 + 4 * 4);
 		}
-		void SetPositionY(const uint8_t posy) {
-			pos_norm_tex = (pos_norm_tex & ~(0x7f << 8 + 3 + 7 * 1)) | (posy << 8 + 3 + 7 * 1);
-		}
-		void SetPositionZ(const uint8_t posz) {
-			pos_norm_tex = (pos_norm_tex & ~(0x7f << 8 + 3 + 7 * 0)) | (posz << 8 + 3 + 7 * 0);
-		}
-		void SetNormal(const uint8_t norm) {
-			pos_norm_tex = (pos_norm_tex & ~(0x3 << 8)) | (norm << 8);
-		}
-		void SetTexID(const uint8_t tex) {
-			pos_norm_tex = (pos_norm_tex & ~0xff) | tex;
-		}
+
+		// void SetPositionX(const uint8_t posx) {
+		// 	pos_norm_tex = (pos_norm_tex & ~(0x7f << 8 + 3 + 7 * 2)) | (posx << 8 + 3 + 7 * 2);
+		// }
+		// void SetPositionY(const uint8_t posy) {
+		// 	pos_norm_tex = (pos_norm_tex & ~(0x7f << 8 + 3 + 7 * 1)) | (posy << 8 + 3 + 7 * 1);
+		// }
+		// void SetPositionZ(const uint8_t posz) {
+		// 	pos_norm_tex = (pos_norm_tex & ~(0x7f << 8 + 3 + 7 * 0)) | (posz << 8 + 3 + 7 * 0);
+		// }
+		// void SetNormal(const uint8_t norm) {
+		// 	pos_norm_tex = (pos_norm_tex & ~(0x3 << 8)) | (norm << 8);
+		// }
+		// void SetTexID(const uint8_t tex) {
+		// 	pos_norm_tex = (pos_norm_tex & ~0xff) | tex;
+		// }
 
 		static lgl::VertexArray* VertexArray() {
 			return GetVertexArray(false);
