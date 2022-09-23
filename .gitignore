@@ -1,0 +1,6 @@
+/.vscode
+/.vs
+/build
+/out
+temp
+imgui.ini
