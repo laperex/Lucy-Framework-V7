@@ -1,6 +1,6 @@
 #version 450 core
 
-layout (location = 0) in uvec2 v_data;
+layout (location = 0) in uint v_data;
 
 layout (std140, binding = 0) uniform ProjectionMatrix {
     mat4 model;
@@ -13,6 +13,7 @@ uniform vec3 offset;
 
 out vec3 normal;
 out vec3 uvw;
+out vec2 uv;
 
 out vec3 frag_pos;
 out vec3 view_pos;
@@ -20,39 +21,34 @@ out vec3 view_pos;
 flat out int vertexid;
 flat out int instanceid;
 
+vec2 uv_array[6] = {
+	{ 1, 1 },
+	{ 1, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 1 },
+	{ 1, 1 },
+};
+
+vec3 normal_array[6] = {
+	{  0,  0, -1 },	// BACK
+	{  0,  0,  1 },	// FRONT
+	{  0, -1,  0 },	// BOTTOM
+	{  0,  1,  0 },	// TOP
+	{ -1,  0,  0 },	// LEFT
+	{  1,  0,  0 },	// RIGHT
+};
+
 void main() {
 	vec3 v_pos = vec3(
-		(v_data.x & 0xff000000) >> 24,
-		(v_data.x & 0x00ff0000) >> 16,
-		(v_data.x & 0x0000ff00) >> 8
+		(v_data & (0x7f << 11 + 7 * 0)) >> 11 + 7 * 0,	//	0xfe000000	25
+		(v_data & (0x7f << 11 + 7 * 1)) >> 11 + 7 * 1,	//	0x01fc0000	18
+		(v_data & (0x7f << 11 + 7 * 2)) >> 11 + 7 * 2	//	0x0003f800	11
 	);
 
-	uvw = vec3(
-		(v_data.y & 0xff000000) >> 24,
-		(v_data.y & 0x00ff0000) >> 16,
-		(v_data.y & 0x0000ff00) >> 8
-	);
-
-	switch (v_data.x & 0x000000ff) {
-		case 0:
-			normal = vec3(0,  0, -1);
-			break;
-		case 1:
-			normal = vec3(0,  0,  1);
-			break;
-		case 2:
-			normal = vec3(0, -1,  0);
-			break;
-		case 3:
-			normal = vec3(0,  1,  0);
-			break;
-		case 4:
-			normal = vec3(1,  0,  0);
-			break;
-		case 5:
-			normal = vec3(1,  0,  0);
-			break;
-	}
+	normal = normal_array[(v_data & (0x3 << 8)) >> 8];
+	uv = uv_array[gl_VertexID % 6];
+	uvw = vec3(uv, v_data & 0xff);
 
 	frag_pos = vec3(model * vec4(v_pos + offset, 1.0));
 	gl_Position = projection * view * vec4(frag_pos, 1.0);
