@@ -45,6 +45,9 @@ void lucy::Mainloop() {
 		const auto& start_time = std::chrono::high_resolution_clock::now();
 
 		Events::Update();
+		
+		camera.width = window.size.x;
+		camera.height = window.size.y;
 		camera.Update(dt);
 
 		glEnable(GL_DEPTH_TEST);

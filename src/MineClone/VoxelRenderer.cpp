@@ -2,6 +2,10 @@
 #include "VoxelVertex.h"
 #include <LucyRE/LucyRE.h>
 
+void lpv::DrawVoxel(uint8_t posx, uint8_t posy, uint8_t posz, VoxelFace face, int tex) {
+	
+}
+
 void lpv::VoxelVertexTest() {
 	lre::SetModel(glm::mat4(1.0f));
 
@@ -12,6 +16,13 @@ void lpv::VoxelVertexTest() {
 		{ 1, 1, 0, 2, 0 },
 		{ 1, 0, 0, 2, 0 },
 		{ 0, 0, 0, 2, 0 },
+
+		{ 0, 0, 1, 2, 0 },
+		{ 0, 1, 1, 2, 0 },
+		{ 1, 1, 1, 2, 0 },
+		{ 1, 1, 1, 2, 0 },
+		{ 1, 0, 1, 2, 0 },
+		{ 0, 0, 1, 2, 0 },
 	};
 
 	static lgl::VertexArray* vertexarray = Vertex::VertexArray();
@@ -53,5 +64,5 @@ void lpv::VoxelVertexTest() {
 	vertexarray->Bind();
 	vertexarray->BindVertexBuffer(vertexbuffer, vertexarray->stride);
 
-	lgl::Draw(lgl::TRIANGLE, 0, 6);
+	lgl::Draw(lgl::TRIANGLE, 0, 6 * 2);
 }
