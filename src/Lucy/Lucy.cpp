@@ -50,9 +50,9 @@ void lucy::Mainloop() {
 		camera.height = window.size.y;
 		camera.Update(dt);
 
-		glEnable(GL_DEPTH_TEST);
 		lgl::Viewport(0, 0, window.size.x, window.size.y);
 		lgl::Clear(0, 0, 0, 1, lgl::COLOR_BUFFER_BIT | lgl::DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
 
 		if (window.enable_framebuffer) {
 			if (window.framebuffer != nullptr) {

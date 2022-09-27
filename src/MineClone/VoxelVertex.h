@@ -21,8 +21,8 @@
 
 namespace lpv {
 	enum VoxelFace {
-		BACK,
 		FRONT,
+		BACK,
 		BOTTOM,
 		TOP,
 		LEFT,
@@ -43,7 +43,7 @@ namespace lpv {
 		uint32_t pos_norm_tex = 0;
 
 		Vertex() {}
-		Vertex(const uint8_t posx, const uint8_t posy, const uint8_t posz, const uint8_t norm, const int uvwt) {
+		Vertex(const uint8_t posx, const uint8_t posy, const uint8_t posz, const uint8_t norm, const uint32_t uvwt) {
 			pos_norm_tex = uvwt & 0x1ff;
 
 			pos_norm_tex |= ((norm & 0x3) << 9);
@@ -54,7 +54,7 @@ namespace lpv {
 			pos_norm_tex |= ((posx & 0xf) << 12 + 4 * 4);
 		}
 
-		Vertex(const uint8_t posx, const uint8_t posy, const uint8_t posz, const uint8_t u, const uint8_t v, const uint8_t norm, const int uvwt) {
+		Vertex(const uint8_t posx, const uint8_t posy, const uint8_t posz, const uint8_t u, const uint8_t v, const uint8_t norm, const uint32_t uvwt) {
 			pos_norm_tex = uvwt & 0x1ff;
 
 			pos_norm_tex |= ((norm & 0x3) << 9);

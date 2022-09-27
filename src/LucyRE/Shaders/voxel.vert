@@ -40,15 +40,15 @@ vec3 normal_array[6] = {
 };
 
 void main() {
-	vec2 v_uv = vec2(
-		(v_data & (0xf << 12 + 4 * 1)) >> 12 + 4 * 1,
-		(v_data & (0xf << 12 + 4 * 0)) >> 12 + 4 * 0
-	);
-
 	vec3 v_pos = vec3(
 		(v_data & (0xf << 12 + 4 * 4)) >> 12 + 4 * 4,
 		(v_data & (0xf << 12 + 4 * 3)) >> 12 + 4 * 3,
 		(v_data & (0xf << 12 + 4 * 2)) >> 12 + 4 * 2
+	);
+
+	vec2 v_uv = vec2(
+		(v_data & (0xf << 12 + 4 * 1)) >> 12 + 4 * 1,
+		(v_data & (0xf << 12 + 4 * 0)) >> 12 + 4 * 0
 	);
 
 	normal = normal_array[(v_data & (0x3 << 8)) >> 8];

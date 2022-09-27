@@ -14,7 +14,22 @@ lucy::Window::~Window() {
 void lucy::Window::InitSDLWindow() {
 	assert(this->sdl_window == nullptr);
 
-	this->sdl_window = SDL_CreateWindow(this->title.c_str(), this->pos.x, this->pos.y, this->size.x, this->size.y, this->flags);
+	int off_x = 0;
+	int off_y = 0;
+
+	// int displays = SDL_GetNumVideoDisplays();
+	// assert(displays > 1);
+
+	// std::vector<SDL_Rect> displayBounds;
+	// for(int i = 0; i < displays; i++) {
+	// 	displayBounds.push_back(SDL_Rect());
+	// 	SDL_GetDisplayBounds(i, &displayBounds.back());
+	// }
+
+	// off_x = displayBounds[1].x;
+	// off_y = displayBounds[1].y;
+
+	this->sdl_window = SDL_CreateWindow(this->title.c_str(), this->pos.x + off_x, this->pos.y + off_y, this->size.x, this->size.y, this->flags);
 
 	assert(this->sdl_window);
 
