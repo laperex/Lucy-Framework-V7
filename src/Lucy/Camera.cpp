@@ -14,7 +14,8 @@ glm::vec3 delta;
 glm::vec3 initpos;
 
 lucy::Camera::Camera() {
-	position = { 0, 0, 500 };
+	// position = { 0, 0, 500 };
+	position = { 0, 0, 750 };
 	c_near = 10;
 	c_far = 3000;
 }

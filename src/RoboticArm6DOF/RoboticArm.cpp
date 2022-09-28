@@ -4,12 +4,18 @@
 #include "Light.h"
 #include "Material.h"
 #include <Lucy/imgui_lucy_impl.h>
-#include "Panels/Lighting.h"
-#include "Panels/ArmControl.h"
+#include "Panels/Panel.h"
 #include "Controller.h"
 
 static auto& registry = Registry::Instance();
 static std::vector<glm::vec3> grid;
+
+// TODO//: ROBOTIC ARM MODEL CONTROL
+// TODO: Add Gizmo
+// TODO//: Add Grid
+// TODO: Add Animator
+// TODO: Smooth Movement
+// TODO: Serial Comms
 
 void lra::InitializeArm() {
 	auto& camera = registry.store<lucy::Camera>();
@@ -18,10 +24,12 @@ void lra::InitializeArm() {
 
 	camera.position = { 0, 0, 750 };
 
-	for (int z = 0; z < 1000; z += 10) {
-		for (int x = 0; x < 1000; x += 10) {
-			grid.push_back({ 1000/2 - x, 0, 1000/2 - z });
-		}
+	for (int i = -500; i <= 500; i += 10) {
+		grid.push_back({ -500, 0, i });
+		grid.push_back({ +500, 0, i });
+
+		grid.push_back({ i, 0, -500 });
+		grid.push_back({ i, 0, +500 });
 	}
 }
 
@@ -33,7 +41,7 @@ void lra::RuntimeUpdateArm() {
 	lre::SetProjection(camera.projection);
 
 	lre::SetModel(glm::mat4(1.0f));
-	lre::RenderLine(grid, { 1, 1, 1, 1 });
+	lre::RenderLine(grid, { 1, 1, 1, 0.1 });
 
 	RenderLRA(controller.target_joint_angles);
 }

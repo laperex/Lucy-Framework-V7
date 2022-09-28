@@ -1,8 +1,8 @@
+#include "Panel.h"
 #include <Lucy/Lucy.h>
 #include <Lucy/imgui_lucy_impl.h>
 #include <RoboticArm6DOF/Light.h>
 #include <RoboticArm6DOF/Material.h>
-#include "Lighting.h"
 
 static auto& registry = Registry::Instance();
 

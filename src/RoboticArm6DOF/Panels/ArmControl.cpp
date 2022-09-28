@@ -1,4 +1,4 @@
-#include "ArmControl.h"
+#include "Panel.h"
 #include <Lucy/Lucy.h>
 #include <Lucy/imgui_lucy_impl.h>
 #include <RoboticArm6DOF/Light.h>
