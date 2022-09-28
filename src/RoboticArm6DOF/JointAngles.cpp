@@ -1,17 +1,22 @@
 #include "JointAngles.h"
 #include <assert.h>
 
-arm::JointAngles::JointAngles(float base, float elbow, float arm, float wrist, float gripper_control, float gripper_rotate) {
-	this->base = base;
-	this->elbow = elbow;
-	this->arm = arm;
-	this->wrist = wrist;
-	this->gripper_control = gripper_control;
-	this->gripper_rotate = gripper_rotate;
+lra::JointAngles::JointAngles(float angle) {
+	for (int i = 0; i < LRA_MAX_JOINT; i++)
+		operator[](i) = angle;
 }
 
-float& arm::JointAngles::operator[](int idx) {
-	assert(idx >= 0 && idx <= 5);
+lra::JointAngles::JointAngles(float base, float arm, float elbow, float wrist, float gripper_control, float gripper_rotate) {
+	this->base = base;
+	this->arm = arm;
+	this->elbow = elbow;
+	this->wrist = wrist;
+	this->gripper_rotate = gripper_rotate;
+	this->gripper_control = gripper_control;
+}
+
+float& lra::JointAngles::operator[](int idx) {
+	assert(idx >= 0 && idx < LRA_MAX_JOINT);
 
 	switch (idx) {
 		case 0:
@@ -27,10 +32,10 @@ float& arm::JointAngles::operator[](int idx) {
 			return wrist;
 			break;
 		case 4:
-			return gripper_control;
+			return gripper_rotate;
 			break;
 		case 5:
-			return gripper_rotate;
+			return gripper_control;
 			break;
 	}
 }

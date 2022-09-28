@@ -1,6 +1,6 @@
 #pragma once
 
-namespace arm {
+namespace lra {
 	void InitializeArm();
 	void RuntimeUpdateArm();
 	void EditorUpdateArm();

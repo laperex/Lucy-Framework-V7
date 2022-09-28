@@ -1,6 +1,8 @@
 #pragma once
 
-namespace arm {
+#define LRA_MAX_JOINT (6)
+
+namespace lra {
 	struct JointAngles {
 		float base = 0;
 		float arm = 0;
@@ -10,7 +12,8 @@ namespace arm {
 		float gripper_control = 0;
 		
 		JointAngles() {}
-		JointAngles(float base, float lower_elbow, float upper_elbow, float wrist, float gripper_rotation, float gripper);
+		JointAngles(float angle);
+		JointAngles(float base, float arm, float elbow, float wrist, float gripper_rotation, float gripper);
 		float& operator[](int idx);
 	};
 }

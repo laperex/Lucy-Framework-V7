@@ -9,12 +9,12 @@ int main(int argcount, char** args) {
 	// lucy::AddSystem(lucy::INTITIALIZATION, lpv::InitializeGame);
 	// lucy::AddSystem(lucy::RUNTIME, lpv::RuntimeGame);
 
-	lucy::AddSystem(lucy::INTITIALIZATION, arm::InitializeArm);
-	lucy::AddSystem(lucy::EDITOR, arm::EditorUpdateArm);
-	lucy::AddSystem(lucy::RUNTIME, arm::RuntimeUpdateArm);
-	
 	// lucy::AddSystem(lucy::INTITIALIZATION, lpv::InitializeGame);
 	// lucy::AddSystem(lucy::RUNTIME, lpv::RuntimeGame);
+
+	lucy::AddSystem(lucy::INTITIALIZATION, lra::InitializeArm);
+	lucy::AddSystem(lucy::EDITOR, lra::EditorUpdateArm);
+	lucy::AddSystem(lucy::RUNTIME, lra::RuntimeUpdateArm);
 
 	lucy::AddSystem(lucy::INTITIALIZATION, Editor::Initialize);
 	lucy::AddSystem(lucy::RUNTIME, Editor::Update);
