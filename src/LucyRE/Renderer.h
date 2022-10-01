@@ -57,14 +57,19 @@ namespace lre {
 	void RenderFrameBufferToScreen(lgl::FrameBuffer* framebuffer, const glm::vec2& size);
 
 	UTIL_UUID InsertMesh(std::string name, const util::TYPE_MESH_GPU& mesh, UTIL_UUID id = UTIL_GENERATE_UUID);
+	UTIL_UUID InsertMesh(std::string name, lgl::VertexArray* vertexarray, void* vertices, int stride, int vertexcount, void* indices = nullptr, int indexcount = 0, lgl::Type type = lgl::UNSIGNED_INT, UTIL_UUID id = UTIL_GENERATE_UUID);
+	template <typename T>
+	UTIL_UUID InsertMesh(std::string name, T* vertices, int vertexcount, void* indices = nullptr, int indexcount = 0, lgl::Type type = lgl::UNSIGNED_INT, UTIL_UUID id = UTIL_GENERATE_UUID) {
+		return InsertMesh(name, T::VertexArray(), (void*)vertices, sizeof(T), vertexcount, indices, indexcount, type, id);
+	}
+
+	void RenderMesh(UTIL_UUID id, lgl::Shader* shader);
+	void RenderMesh(UTIL_UUID id, lgl::Shader* shader, int picking_data);
 
 	void Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, lgl::IndexBuffer* indexbuffer, int indexcount);
 	void Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, lgl::IndexBuffer* indexbuffer, int indexcount, int picking_data);
 	void Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, int vertexcount);
 	void Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, int vertexcount, int picking_data);
-
-	void RenderMesh(UTIL_UUID id, lgl::Shader* shader);
-	void RenderMesh(UTIL_UUID id, lgl::Shader* shader, int picking_data);
 
 	template <typename T>
 	void RenderLine(lgl::Primitive primitive, lgl::VertexArray* vertexarray, const T* vertices, int vertexcount) {
@@ -96,7 +101,7 @@ namespace lre {
 	void RenderLine(const std::vector<glm::vec3>& vertices, const glm::vec4& color);
 	void RenderLine(const std::vector<Vertex::P1C1>& vertices);
 	void RenderLine(const glm::vec3& v0, const glm::vec3& v1, const glm::vec4& color);
-	void FlushLine();
+	void RenderFlushLine();
 
 	void RenderLineStrip(const std::vector<Vertex::P1>& vertices, const glm::vec4& color);
 	void RenderLineStrip(const std::vector<Vertex::P1C1>& vertices);

@@ -2,4 +2,3 @@
 
 #include "Renderer.h"
 #include "Vertex.h"
-#include "Light.h"

@@ -4,9 +4,9 @@
 #include <glm/glm.hpp>
 
 struct Material {
-	glm::vec3 ambient = { 1.0, 0.5, 0.31 };
-	glm::vec3 diffuse = { 1.0, 0.5, 0.31 };
-	glm::vec3 specular = { 0.5, 0.5, 0.5 };
+	glm::vec3 ambient = { 1, 1, 1 };
+	glm::vec3 diffuse = { 1, 1, 1 };
+	glm::vec3 specular = { 0.508273, 0.508273, 0.508273 };
 	float shininess = 32;
 
 	Material() {}

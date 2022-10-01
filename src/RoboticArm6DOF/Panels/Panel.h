@@ -1,6 +1,7 @@
 #pragma once
 
 namespace lra::panel {
-	void ArmControl();
+	void Controller();
 	void Lighting();
+	void Kinematics();
 }

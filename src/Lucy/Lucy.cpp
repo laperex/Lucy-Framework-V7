@@ -63,7 +63,7 @@ void lucy::Mainloop() {
 			}
 
 			if (window.framebuffer == nullptr) {
-				window.framebuffer = new lgl::FrameBuffer(window.size.x, window.size.y, false);
+				window.framebuffer = new lgl::FrameBuffer(window.size.x, window.size.y, true);
 			}
 		}
 

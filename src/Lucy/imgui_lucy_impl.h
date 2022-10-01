@@ -1,7 +1,5 @@
 #pragma once
 
-// #define USE_IMGUI_API
-
 #include <vector>
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
@@ -27,6 +25,11 @@ namespace ImGui {
 			ImGui::EndCombo();
 		}
 	}
+
+	bool SliderDragFloat(const char* label, float* v, float speed, float min, float max, bool& is_slider);
+	bool SliderDragFloat(const char* label, float* v, float speed, float min, float max);
+	bool SliderDragFloat2(const char* label, float* v, float speed, float min, float max, bool& is_slider);
+	bool SliderDragFloat3(const char* label, float* v, float speed, float min, float max, bool& is_slider);
 }
 
 void embraceTheDarkness();

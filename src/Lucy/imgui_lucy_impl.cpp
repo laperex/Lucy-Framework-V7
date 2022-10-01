@@ -1,4 +1,5 @@
 #include "imgui_lucy_impl.h"
+#include <map>
 
 void ImGui::SanitisedInputText(const char* label, std::string& text) {
 	std::string temp = text;
@@ -82,6 +83,40 @@ bool ImGui::in_expections(std::string value, const std::vector<std::string>& exc
 
 	return false;
 }
+
+bool ImGui::SliderDragFloat(const char* label, float* v, float speed, float min, float max, bool& is_slider) {
+	auto id = "##" + std::string(label);
+
+	ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5);
+
+	bool val;
+	if (is_slider)
+		val = ImGui::SliderFloat(id.c_str(), v, min, max);
+	else
+		val = ImGui::DragFloat(id.c_str(), v, speed, min, max);
+
+	ImGui::SameLine();
+
+	if (ImGui::Button((" " + id).c_str()))
+		is_slider = !is_slider;
+
+	ImGui::SameLine();
+
+	ImGui::Text(label);
+
+	return val;
+}
+
+bool ImGui::SliderDragFloat(const char* label, float* v, float speed, float min, float max) {
+	static std::map<const char*, bool> slider_state_map;
+
+	if (slider_state_map.find(label) == slider_state_map.end()) {
+		slider_state_map[label] = false;
+	}
+
+	return SliderDragFloat(label, v, speed, min, max, slider_state_map[label]);
+}
+
 void embraceTheDarkness() {
 	ImVec4* colors = ImGui::GetStyle().Colors;
 	colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);

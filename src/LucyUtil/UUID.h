@@ -7,5 +7,5 @@
 #include <stduuid/uuid.h>
 
 #define UTIL_UUID uint64_t
-#define UTIL_NULL_UUID (UTIL_UUID)0
-#define UTIL_GENERATE_UUID *(UTIL_UUID*)uuids::uuid_system_generator{}().as_bytes().data()
+#define UTIL_NULL_UUID ((UTIL_UUID)0)
+#define UTIL_GENERATE_UUID (*(UTIL_UUID*)uuids::uuid_system_generator{}().as_bytes().data())

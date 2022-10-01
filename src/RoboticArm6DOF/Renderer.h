@@ -1,6 +1,7 @@
 #pragma once
 
 #include "JointAngles.h"
+#include <glm/glm.hpp>
 
 namespace lra {
 	void IntializeRenderer();
@@ -12,4 +13,7 @@ namespace lra {
 	// void RenderGripper(float gripper_angle);
 
 	void RenderLRA(JointAngles jont_angles);
+	void RenderCube(glm::vec3 pos, glm::vec3 scale, int val);
+
+	glm::vec4 PickingData(const glm::vec2& coord);
 }

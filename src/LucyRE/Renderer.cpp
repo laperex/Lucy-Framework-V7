@@ -173,6 +173,33 @@ UTIL_UUID lre::InsertMesh(std::string name, const util::TYPE_MESH_GPU& mesh, UTI
 	return id;
 }
 
+UTIL_UUID lre::InsertMesh(std::string name, lgl::VertexArray* vertexarray, void* vertices, int stride, int vertexcount, void* indices, int indexcount, lgl::Type type, UTIL_UUID id) {
+	assert(vertexarray != nullptr);
+	assert(vertices != nullptr && vertexcount > 0);
+
+	lgl::VertexBuffer* vertexbuffer = nullptr;
+	lgl::IndexBuffer* indexbuffer = nullptr;
+
+	if (vertexbuffer == nullptr) {
+		vertexbuffer = new lgl::VertexBuffer();
+		vertexbuffer->Bind();
+		vertexbuffer->Allocate(vertexcount * stride);
+		vertexbuffer->AddDataDynamic(vertices, vertexcount * stride);
+	}
+
+	if (indices != nullptr) {
+		assert(indexcount > 0);
+		assert(type == lgl::UNSIGNED_INT);
+
+		indexbuffer = new lgl::IndexBuffer();
+		indexbuffer->Bind();
+		indexbuffer->Allocate(indexcount * sizeof(uint32_t));
+		indexbuffer->AddData(indices, indexcount * sizeof(uint32_t));
+	}
+
+	return lre::InsertMesh("Cube", { vertexarray, vertexbuffer, vertexcount, indexbuffer, indexcount }, id);
+}
+
 void lre::Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, lgl::IndexBuffer* indexbuffer, int indexcount) {
 	assert(indexbuffer != nullptr && vertexarray != nullptr);
 	if (indexcount == 0) return;
@@ -262,7 +289,7 @@ void lre::RenderLine(const std::vector<Vertex::P1C1>& vertices) {
 
 static std::vector<lre::Vertex::P1C1> line_vertices;
 
-void lre::FlushLine() {
+void lre::RenderFlushLine() {
 	RenderLine(line_vertices);
 	line_vertices.clear();
 }
