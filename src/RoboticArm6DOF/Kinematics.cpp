@@ -1,5 +1,6 @@
 #include "Kinematics.h"
 #include <array>
+#include <iostream>
 
 #define TO_DEGREE (180/3.14159265359)
 #define TO_RADIAN (3.14159265359/180)
@@ -9,8 +10,8 @@
 static double epsilon = 0.0001;
 
 float Clamp(float val, float min = 0, float max = 180) {
-	if (val > max) val = max;
-	if (val < min) val = min;
+	if (val >= max) val = max;
+	if (val <= min) val = min;
 	return val;
 }
 
@@ -47,19 +48,26 @@ std::pair<bool, lra::JointAngles> lra::Kinematics::GetInverseKinematics(const gl
 
 	float base_angle = atan2(x, z) * TO_DEGREE;
 	float l = sqrt(x * x + z * z);
-
-	float c = sqrt(l * l + y * y);
-	float f = c - l1;
-
-	float A = acos((l1 * l1 + f * f - l3 * l3) / (2 * l1 * f)) * TO_DEGREE;
-	float B = acos((f * f + l3 * l3 - l1 * l1) / (2 * f * l3)) * TO_DEGREE;
-	float C = acos((l3 * l3 + l1 * l1 - f * f) / (2 * l3 * l1)) * TO_DEGREE;
-
 	float theta = atan2(y, l) * TO_DEGREE;
 
-	float lm = glm::length(glm::vec2(c, y) - (glm::vec2(cos(theta), sin(theta)) * l1));
+	float a = sqrt(l * l + y * y);
+	float b = (l2 + l3) * (a / (l1 + l2 + l3));
 
-	auto angles = Clamp({ base_angle, A + theta, C + B, 180 - B, 0, 0 });
+	float A = acos((l1 * l1 + a * a - b * b) / (2 * l1 * a)) * TO_DEGREE;
+	float B = acos((b * b + l1 * l1 - a * a) / (2 * b * l1)) * TO_DEGREE;
+	float C = acos((l2 * l2 + b * b - l3 * l3) / (2 * l2 * b)) * TO_DEGREE;
+	float D = acos((l3 * l3 + l2 * l2 - b * b) / (2 * l3 * l2)) * TO_DEGREE;
+
+	// std::cout << B + C << '\n';
+	float lm = sqrt(l1 * l1 + l2 * l2 - (cos((360 - (B + C)) * TO_RADIAN) * 2 * l1 * l2));
+
+	float A_t = acos((l1 * l1 + lm * lm - l2 * l2) / (2 * l1 * lm)) * TO_DEGREE * 2;
+	float D_t = acos((l2 * l2 + lm * lm - l1 * l1) / (2 * l2 * lm)) * TO_DEGREE * 2;
+
+	// float D = acos((lm * lm + l2 * l2 - l3 * l3) / (2 * lm * l2)) * TO_DEGREE;
+	// float E = acos((lm * lm + l3 * l3 - l2 * l2) / (2 * lm * l3)) * TO_DEGREE;
+
+	auto angles = Clamp(JointAngles{ base_angle, A + theta + A_t, 360 - (B + C), D + D_t, 0, 0 });
 
 	bool is_valid = true;
 	for (int i = 0; i < 6; i++) {
