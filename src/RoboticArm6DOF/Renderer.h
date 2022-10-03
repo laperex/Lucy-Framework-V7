@@ -14,7 +14,7 @@ namespace lra {
 	// void RenderGripper(float gripper_angle);
 
 	void RenderLRA(JointAngles jont_angles);
-	void RenderCube(glm::vec3 pos, glm::vec3 scale, int val = 0, lgl::Shader* shader = nullptr);
+	void RenderCube(int val = 0, lgl::Shader* shader = nullptr);
 
 	glm::vec4 PickingData(const glm::vec2& coord);
 }

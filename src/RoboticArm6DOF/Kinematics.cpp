@@ -31,9 +31,9 @@ const glm::vec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_
 	float phi_2 = phi_1 + joint_angles.wrist - 180;
 
 	glm::vec2 P = { 0, 72 };
-	glm::vec2 Q = P + glm::vec2(cos(phi_0), sin(phi_0)) * l1;
-	glm::vec2 R = Q + glm::vec2(cos(phi_1), sin(phi_1)) * l2;
-	glm::vec2 S = R + glm::vec2(cos(phi_2), sin(phi_2)) * l3;
+	glm::vec2 Q = P * glm::vec2(cos(phi_0), sin(phi_0)) * l1;
+	glm::vec2 R = Q * glm::vec2(cos(phi_1), sin(phi_1)) * l2;
+	glm::vec2 S = R * glm::vec2(cos(phi_2), sin(phi_2)) * l3;
 
 	return { S.x * cos(joint_angles.base), S.y, S.x * sin(joint_angles.base)};
 }
@@ -56,6 +56,8 @@ std::pair<bool, lra::JointAngles> lra::Kinematics::GetInverseKinematics(const gl
 	float C = acos((l3 * l3 + l1 * l1 - f * f) / (2 * l3 * l1)) * TO_DEGREE;
 
 	float theta = atan2(y, l) * TO_DEGREE;
+
+	float lm = glm::length(glm::vec2(c, y) - (glm::vec2(cos(theta), sin(theta)) * l1));
 
 	auto angles = Clamp({ base_angle, A + theta, C + B, 180 - B, 0, 0 });
 

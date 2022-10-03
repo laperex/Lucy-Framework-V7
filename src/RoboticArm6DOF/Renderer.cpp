@@ -113,7 +113,7 @@ void lra::RenderLRA(JointAngles joint_angles) {
 }
 
 
-void lra::RenderCube(glm::vec3 pos, glm::vec3 scale, int val, lgl::Shader* shader) {
+void lra::RenderCube(int val, lgl::Shader* shader) {
 	static UTIL_UUID id = 0;
 
 	static std::vector<lre::Vertex::P1N1> vertices = {
@@ -161,6 +161,6 @@ void lra::RenderCube(glm::vec3 pos, glm::vec3 scale, int val, lgl::Shader* shade
 		id = lre::InsertMesh("Cube", vertices.data(), vertices.size(), indices.data(), indices.size());
 	}
 
-	lre::SetModel(glm::translate(glm::mat4(1.0f), pos) * glm::scale(glm::mat4(1.0f), scale));
+	// lre::SetModel(glm::translate(glm::mat4(1.0f), pos) * glm::scale(glm::mat4(1.0f), scale));
 	lre::RenderMesh(id, shader, val);
 }
