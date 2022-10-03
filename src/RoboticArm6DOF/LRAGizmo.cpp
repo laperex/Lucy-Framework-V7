@@ -19,7 +19,7 @@ void lra::GizmoSystem() {
 
 	if (controller.enable_ik) {
 		glm::mat4 delta;
-		ImGuizmo::Manipulate(&camera.view[0][0], &camera.projection[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &(glm::translate(glm::mat4(1.0f), controller.ik_target + glm::vec3(0, 72, 0)))[0][0], &delta[0][0]);
+		ImGuizmo::Manipulate(&camera.view[0][0], &camera.projection[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &(glm::translate(glm::mat4(1.0f), controller.ik_target))[0][0], &delta[0][0]);
 
 		if (ImGuizmo::IsUsing()) {
 			glm::vec3 translation, rotation, scale;
@@ -27,6 +27,8 @@ void lra::GizmoSystem() {
 			ImGuizmo::DecomposeMatrixToComponents(&delta[0][0], &translation[0], &rotation[0], &scale[0]);
 
 			controller.ik_target += translation;
+			if (controller.ik_target.x <= 0)
+				controller.ik_target.x = 0;
 		}
 	}
 }

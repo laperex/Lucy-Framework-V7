@@ -32,11 +32,11 @@ const glm::vec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_
 	float phi_2 = phi_1 + joint_angles.wrist - 180;
 
 	glm::vec2 P = { 0, 72 };
-	glm::vec2 Q = P * glm::vec2(cos(phi_0), sin(phi_0)) * l1;
-	glm::vec2 R = Q * glm::vec2(cos(phi_1), sin(phi_1)) * l2;
-	glm::vec2 S = R * glm::vec2(cos(phi_2), sin(phi_2)) * l3;
+	glm::vec2 Q = P + glm::vec2(cos(phi_0 * TO_RADIAN), sin(phi_0 * TO_RADIAN)) * l1;
+	glm::vec2 R = Q + glm::vec2(cos(phi_1 * TO_RADIAN), sin(phi_1 * TO_RADIAN)) * l2;
+	glm::vec2 S = R + glm::vec2(cos(phi_2 * TO_RADIAN), sin(phi_2 * TO_RADIAN)) * l3;
 
-	return { S.x * cos(joint_angles.base), S.y, S.x * sin(joint_angles.base)};
+	return { S.x * sin(joint_angles.base * TO_RADIAN), S.y, S.x * cos(joint_angles.base * TO_RADIAN)};
 }
 
 std::pair<bool, lra::JointAngles> lra::Kinematics::GetInverseKinematics(const glm::vec3& target, const JointLength& lra_dimensions) {
@@ -45,6 +45,7 @@ std::pair<bool, lra::JointAngles> lra::Kinematics::GetInverseKinematics(const gl
 	float l3 = lra_dimensions.wrist;
 
 	auto [x, y, z] = target;
+	y -= 72;
 
 	float base_angle = atan2(x, z) * TO_DEGREE;
 	float l = sqrt(x * x + z * z);
@@ -58,14 +59,10 @@ std::pair<bool, lra::JointAngles> lra::Kinematics::GetInverseKinematics(const gl
 	float C = acos((l2 * l2 + b * b - l3 * l3) / (2 * l2 * b)) * TO_DEGREE;
 	float D = acos((l3 * l3 + l2 * l2 - b * b) / (2 * l3 * l2)) * TO_DEGREE;
 
-	// std::cout << B + C << '\n';
 	float lm = sqrt(l1 * l1 + l2 * l2 - (cos((360 - (B + C)) * TO_RADIAN) * 2 * l1 * l2));
 
 	float A_t = acos((l1 * l1 + lm * lm - l2 * l2) / (2 * l1 * lm)) * TO_DEGREE * 2;
 	float D_t = acos((l2 * l2 + lm * lm - l1 * l1) / (2 * l2 * lm)) * TO_DEGREE * 2;
-
-	// float D = acos((lm * lm + l2 * l2 - l3 * l3) / (2 * lm * l2)) * TO_DEGREE;
-	// float E = acos((lm * lm + l3 * l3 - l2 * l2) / (2 * lm * l3)) * TO_DEGREE;
 
 	auto angles = Clamp(JointAngles{ base_angle, A + theta + A_t, 360 - (B + C), D + D_t, 0, 0 });
 
