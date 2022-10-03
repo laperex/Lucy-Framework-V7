@@ -48,6 +48,10 @@ void lucy::RunRuntimeSystems() {
 	RunSystems(RUNTIME);
 }
 
+void lucy::RunEditorMainWindowSystems() {
+	RunSystems(EDITOR_MAIN_WINDOW_SYSTEM);
+}
+
 void lucy::RunEditorSystems() {
 	RunSystems(EDITOR);
 }

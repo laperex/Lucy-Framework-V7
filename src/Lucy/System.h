@@ -8,8 +8,11 @@ namespace lucy {
 	enum SYSTEM_TYPE {
 		INTITIALIZATION = 0,
 		RUNTIME = 1,
-		EDITOR = 2,
-		SDL_EVENT_SYSTEM = 3,
+		SDL_EVENT_SYSTEM = 2,
+
+		EDITOR = 3,
+		EDITOR_MAIN_WINDOW_SYSTEM = 4,
+		EDITOR_INITIALIZATION_SYSTEM = 5,
 
 		SYSTEM_TYPE_COUNT
 	};
@@ -21,6 +24,7 @@ namespace lucy {
 	bool IsSystemPresent(SYSTEM_TYPE type, void* system);
 
 	void RunRuntimeSystems();
+	void RunEditorMainWindowSystems();
 	void RunEditorSystems();
 	void RunInitializationSystems();
 	void RunSdlEventSystems(SDL_Event& sdl_event);

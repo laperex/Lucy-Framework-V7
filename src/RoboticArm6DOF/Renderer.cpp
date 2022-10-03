@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "ArmInfo.h"
 #include <glm/glm.hpp>
 #include <iostream>
 #include "Transform.h"
@@ -8,6 +9,7 @@
 #include <Lucy/ECS.h>
 #include <Lucy/Light.h>
 #include <Lucy/Material.h>
+#include <Lucy/Registries/Registry.h>
 
 static auto& registry = Registry::Instance();
 
@@ -58,6 +60,10 @@ void lra::IntializeRenderer() {
 }
 
 void lra::RenderLRA(JointAngles joint_angles) {
+	// auto& info = registry.store<lucy::Arm>().Get("Default");
+	auto& light = registry.store<lucy::LightRegistry>().Get("Default");
+	auto& material = registry.store<lucy::MaterialRegistry>().Get("LRA");
+
 	joint_angles.base = 90 + joint_angles.base;
 	joint_angles.arm = 180 - joint_angles.arm;
 	joint_angles.elbow = 180 - joint_angles.elbow;
@@ -102,13 +108,12 @@ void lra::RenderLRA(JointAngles joint_angles) {
 		if (ROBOTIC_ARM_PARTS[i].mesh_id == UTIL_NULL_UUID) continue;
 
 		lre::SetModel(ROBOTIC_ARM_PARTS[i].matrix);
-
 		lre::RenderMesh(ROBOTIC_ARM_PARTS[i].mesh_id, shader, i);
 	}
 }
 
 
-void lra::RenderCube(glm::vec3 pos, glm::vec3 scale, int val) {
+void lra::RenderCube(glm::vec3 pos, glm::vec3 scale, int val, lgl::Shader* shader) {
 	static UTIL_UUID id = 0;
 
 	static std::vector<lre::Vertex::P1N1> vertices = {
@@ -157,6 +162,5 @@ void lra::RenderCube(glm::vec3 pos, glm::vec3 scale, int val) {
 	}
 
 	lre::SetModel(glm::translate(glm::mat4(1.0f), pos) * glm::scale(glm::mat4(1.0f), scale));
-	lre::RenderMesh(id, lre::GetShader("phong"), val);
+	lre::RenderMesh(id, shader, val);
 }
-

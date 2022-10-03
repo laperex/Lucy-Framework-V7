@@ -7,6 +7,10 @@
 
 static auto& registry = Registry::Instance();
 
+void Editor::SetMainFrameBuffer(lgl::FrameBuffer* framebuffer) {
+	self->framebuffer = framebuffer;
+}
+
 void Editor::Initialize() {
 	auto& window = registry.store<lucy::Window>();
 
@@ -45,7 +49,7 @@ void Editor::RenderBegin() {
 	auto& window = registry.store<lucy::Window>();
 
 	// Screen
-	if (false) {
+	if (self->framebuffer != nullptr) {
 		static bool p_open = false;
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoTitleBar;
@@ -66,11 +70,15 @@ void Editor::RenderBegin() {
 		ImGui::Begin("DockSpace", &p_open, window_flags);
 
 		ImGui::PopStyleVar(3);
-		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+		// if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
 			
-			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-		}
+		// 	ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+		// 	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+		// }
+		ImGui::GetWindowDrawList()->AddImage((void*)self->framebuffer->texture->id, ImVec2(x, y), ImVec2(x + w, y + h), ImVec2(0, (float)h / self->framebuffer->height), ImVec2((float)w / self->framebuffer->width, 0));
+
+		lucy::RunEditorMainWindowSystems();
+	
 		ImGui::End();
 	}
 }

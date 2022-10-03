@@ -21,7 +21,7 @@ void lra::panel::Controller() {
 		ImGui::SliderDragFloat("Wrist", &controller.target_joint_angles.wrist, 0.1, 0, 180, is_slider);
 
 		ImGui::SliderDragFloat("Gripper Rotation", &controller.target_joint_angles.gripper_rotate, 0.1, 0, 180, is_slider);
-		
+
 		ImGui::SliderDragFloat("Gripper Control", &controller.target_joint_angles.gripper_control, 0.1, 0, 180, is_slider);
 	}
 

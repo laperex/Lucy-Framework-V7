@@ -22,7 +22,20 @@ lra::JointAngles Clamp(lra::JointAngles position) {
 }
 
 const glm::vec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_angles, const JointLength& lra_dimensions) {
-	return { 0, 0, 0 };
+	float l1 = lra_dimensions.arm;
+	float l2 = lra_dimensions.elbow;
+	float l3 = lra_dimensions.wrist;
+
+	float phi_0 = joint_angles.arm;
+	float phi_1 = phi_0 + joint_angles.elbow - 180;
+	float phi_2 = phi_1 + joint_angles.wrist - 180;
+
+	glm::vec2 P = { 0, 72 };
+	glm::vec2 Q = P + glm::vec2(cos(phi_0), sin(phi_0)) * l1;
+	glm::vec2 R = Q + glm::vec2(cos(phi_1), sin(phi_1)) * l2;
+	glm::vec2 S = R + glm::vec2(cos(phi_2), sin(phi_2)) * l3;
+
+	return { S.x * cos(joint_angles.base), S.y, S.x * sin(joint_angles.base)};
 }
 
 std::pair<bool, lra::JointAngles> lra::Kinematics::GetInverseKinematics(const glm::vec3& target, const JointLength& lra_dimensions) {
