@@ -32,7 +32,6 @@ void lra::InitializeArm() {
 	auto& lightregistry = registry.store<lucy::LightRegistry>();
 
 	registry.store<lucy::LightRegistry>().Insert("Default");
-	registry.store<lucy::LightRegistry>().Insert("Default");
 	registry.store<lucy::MaterialRegistry>().Insert("LRA");
 
 	IntializeRenderer();

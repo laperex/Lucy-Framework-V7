@@ -9,7 +9,6 @@ namespace lra {
 		bool enable_ik = false;
 		glm::vec3 ik_target = { 150, 150, 150 };
 
-		bool enable_fk = false;
 		glm::vec3 fk_result;
 		glm::vec3 fk_result_arm;
 		glm::vec3 fk_result_elbow;

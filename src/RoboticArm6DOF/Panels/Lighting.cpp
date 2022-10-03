@@ -10,15 +10,16 @@ static auto& registry = Registry::Instance();
 void lra::panel::Lighting() {
 	if (ImGui::Begin("Lighting and Material", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
 		if (ImGui::TreeNodeEx("Material Registry", ImGuiTreeNodeFlags_DefaultOpen)) {
+			int i = 0;
 			for (auto& pair: registry.store<lucy::MaterialRegistry>().storage_hashmap) {
 				auto& material = pair.second.store_data;
 				auto& name = pair.second.name;
 
 				if (ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
-					ImGui::DragFloat3("Ambient", &material.ambient[0], 0.01, 0, 1);
-					ImGui::DragFloat3("Diffuse", &material.diffuse[0], 0.01, 0, 1);
-					ImGui::DragFloat3("Specular", &material.specular[0], 0.01, 0, 1);
-					ImGui::DragFloat("Shininess", &material.shininess, 0.01, 0, 256);
+					ImGui::DragFloat3(("Ambient##Mat" + std::to_string(i++)).c_str(), &material.ambient[0], 0.01, 0, 1);
+					ImGui::DragFloat3(("Diffuse##Mat" + std::to_string(i++)).c_str(), &material.diffuse[0], 0.01, 0, 1);
+					ImGui::DragFloat3(("Specular##Mat" + std::to_string(i++)).c_str(), &material.specular[0], 0.01, 0, 1);
+					ImGui::DragFloat(("Shininess##Mat" + std::to_string(i++)).c_str(), &material.shininess, 0.01, 0, 256);
 
 					ImGui::TreePop();
 				}
@@ -28,16 +29,17 @@ void lra::panel::Lighting() {
 		}
 
 		if (ImGui::TreeNodeEx("Light Registry", ImGuiTreeNodeFlags_DefaultOpen)) {
+			int i = 0;
 			for (auto& pair: registry.store<lucy::LightRegistry>().storage_hashmap) {
 				auto& light = pair.second.store_data;
 				auto& name = pair.second.name;
 
 				if (ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
-					ImGui::DragFloat("Ambient", &light.ambient, 0.01, 0, 1);
-					ImGui::DragFloat("Diffuse", &light.diffuse, 0.01, 0, 1);
-					ImGui::DragFloat("Specular", &light.specular, 0.1, 0, 1);
+					ImGui::DragFloat(("Ambient##Ligh" + std::to_string(i++)).c_str(), &light.ambient, 0.01, 0, 1);
+					ImGui::DragFloat(("Diffuse##Ligh" + std::to_string(i++)).c_str(), &light.diffuse, 0.01, 0, 1);
+					ImGui::DragFloat(("Specular##Ligh" + std::to_string(i++)).c_str(), &light.specular, 0.1, 0, 1);
 
-					ImGui::ColorEdit4("Color", &light.color[0], ImGuiColorEditFlags_NoInputs);
+					ImGui::ColorEdit4(("Color##Ligh" + std::to_string(i++)).c_str(), &light.color[0], ImGuiColorEditFlags_NoInputs);
 
 					ImGui::TreePop();
 				}
