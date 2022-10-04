@@ -15,8 +15,8 @@ void lra::panel::Animator() {
 	static UTIL_UUID selected_animation = UTIL_NULL_UUID;
 
 	if (ImGui::Begin("Animator", nullptr, ImGuiWindowFlags_NoTitleBar)) {
-		static float slider = 0.25;
-		// ImGui::SliderFloat("Column Size", &slider, 0.1f, 1.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
+		static float slider = 0.2;
+		ImGui::SliderFloat("Column Size", &slider, 0.1f, 1.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
 		float offset = ImGui::GetContentRegionAvail().x * slider;
 
 		ImGui::Columns(2, 0, false);
@@ -45,19 +45,26 @@ void lra::panel::Animator() {
 			ImGui::PopStyleColor();
 		}
 
-		// if (ImGui::Button("New Animation")) {
-			
-		// }
+		if (ImGui::BeginTable("Animation##0203", 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("Name");
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("Loop");
 
-		if (ImGui::BeginTable("Animation##0203", 1, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
+			int idx = 0;
 			for (auto& pair: animator.animation_registry) {
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
-
-				ImGui::SanitisedInputText(("Name##" + std::to_string(pair.first)).c_str(), pair.second.name);
-				ImGui::Checkbox(("Loop##" + std::to_string(pair.first)).c_str(), &pair.second.animation.loop);
-				if (ImGui::Button(("View##" + std::to_string(pair.first)).c_str())) {
+				if (ImGui::Selectable((pair.second.name + "##" + std::to_string(idx)).c_str())) {
 					selected_animation = pair.first;
+				}
+
+				// ImGui::SanitisedInputText(("##" + std::to_string(pair.first)).c_str(), pair.second.name);
+
+				ImGui::TableSetColumnIndex(1);
+				if (ImGui::Button((pair.second.animation.loop) ? ("True##" + std::to_string(idx++)).c_str() : ("False##" + std::to_string(idx++)).c_str(), { ImGui::GetColumnWidth(2), 0 })) {
+					pair.second.animation.loop = !pair.second.animation.loop;
 				}
 			}
 
@@ -81,6 +88,8 @@ void lra::panel::Animator() {
 			if (ImGui::BeginTable("View##0203", 1 + 6 + 3 + 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
 				auto& animation = animator.animation_registry[selected_animation].animation;
 				auto& name = animator.animation_registry[selected_animation].name;
+
+				ImGui::SanitisedInputText("Name", name);
 
 				int f = 0, idx = 0;
 				for (auto& step: animation.step_array) {
