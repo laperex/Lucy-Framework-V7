@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Events.h"
 #include "ECS.h"
+#include <Lucy/imgui_lucy_impl.h>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -57,9 +58,9 @@ void lucy::Camera::Update(double dt) {
 	this->front = glm::normalize(quaternion * this->world_front);
 	this->up = glm::normalize(quaternion * this->world_up);
 
-	if (Events::IsMouseScrollingUp())
+	if (Events::IsMouseScrollingUp() && !ImGui::IsAnyItemHovered())
 		this->position += this->front * float(scrollspeed * dt);
-	if (Events::IsMouseScrollingDown())
+	if (Events::IsMouseScrollingDown() && !ImGui::IsAnyItemHovered())
 		this->position -= this->front * float(scrollspeed * dt);
 
 	float distance = glm::length(this->position);

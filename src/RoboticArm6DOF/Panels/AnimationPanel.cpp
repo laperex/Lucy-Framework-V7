@@ -60,8 +60,6 @@ void lra::panel::Animator() {
 					selected_animation = pair.first;
 				}
 
-				// ImGui::SanitisedInputText(("##" + std::to_string(pair.first)).c_str(), pair.second.name);
-
 				ImGui::TableSetColumnIndex(1);
 				if (ImGui::Button((pair.second.animation.loop) ? ("True##" + std::to_string(idx++)).c_str() : ("False##" + std::to_string(idx++)).c_str(), { ImGui::GetColumnWidth(2), 0 })) {
 					pair.second.animation.loop = !pair.second.animation.loop;
@@ -82,39 +80,37 @@ void lra::panel::Animator() {
 		ImGui::NextColumn();
 
 		ImGui::BeginChild("#1");
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-
 		if (selected_animation != UTIL_NULL_UUID) {
-			if (ImGui::BeginTable("View##0203", 1 + 6 + 3 + 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
-				auto& animation = animator.animation_registry[selected_animation].animation;
-				auto& name = animator.animation_registry[selected_animation].name;
+			auto& animation = animator.animation_registry[selected_animation].animation;
+			auto& name = animator.animation_registry[selected_animation].name;
 
-				ImGui::SanitisedInputText("Name", name);
+			ImGui::SanitisedInputText("Name", name);
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			if (ImGui::BeginTable("View##0203", 1 + 6 + 3 + 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0 + 1);
+				ImGui::Text("Base");
+				ImGui::TableSetColumnIndex(1 + 1);
+				ImGui::Text("Arm");
+				ImGui::TableSetColumnIndex(2 + 1);
+				ImGui::Text("Elbow");
+				ImGui::TableSetColumnIndex(3 + 1);
+				ImGui::Text("Wrist");
+				ImGui::TableSetColumnIndex(4 + 1);
+				ImGui::Text("G. Rot");
+				ImGui::TableSetColumnIndex(5 + 1);
+				ImGui::Text("G. Cont");
+				
+				ImGui::TableSetColumnIndex(0 + 7);
+				ImGui::Text("X.x");
+				ImGui::TableSetColumnIndex(1 + 7);
+				ImGui::Text("X.y");
+				ImGui::TableSetColumnIndex(2 + 7);
+				ImGui::Text("X.z");
 
 				int f = 0, idx = 0;
 				for (auto& step: animation.step_array) {
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0 + 1);
-					ImGui::Text("Base");
-					ImGui::TableSetColumnIndex(1 + 1);
-					ImGui::Text("Arm");
-					ImGui::TableSetColumnIndex(2 + 1);
-					ImGui::Text("Elbow");
-					ImGui::TableSetColumnIndex(3 + 1);
-					ImGui::Text("Wrist");
-					ImGui::TableSetColumnIndex(4 + 1);
-					ImGui::Text("G. Rot");
-					ImGui::TableSetColumnIndex(5 + 1);
-					ImGui::Text("G. Cont");
-					
-					ImGui::TableSetColumnIndex(0 + 7);
-					ImGui::Text("X.x");
-					ImGui::TableSetColumnIndex(1 + 7);
-					ImGui::Text("X.y");
-					ImGui::TableSetColumnIndex(2 + 7);
-					ImGui::Text("X.z");
-
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
 					ImGui::Text(std::to_string(idx).c_str());
@@ -144,27 +140,15 @@ void lra::panel::Animator() {
 					}
 
 					ImGui::TableSetColumnIndex(10);
-					ImGui::SetNextItemWidth(ImGui::GetColumnWidth(10));
-					if (ImGui::Button(("RESET##" + std::to_string(idx)).c_str())) {
+					if (ImGui::Button(("RESET##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(10), 0 })) {
 						step.target_angles = controller.target_joint_angles;
 						step.target_position = Kinematics::GetForwardKinematics(step.target_angles, step.lra_dimension);
 					}
-					if (ImGui::Button(("VIEW##" + std::to_string(idx)).c_str())) {
-						// step.target_angles = controller.target_joint_angles;
-						// step.target_position = Kinematics::GetForwardKinematics(step.target_angles, step.lra_dimension);
+					ImGui::TableSetColumnIndex(11);
+					if (ImGui::Button(("VIEW##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(11), 0 })) {
 						controller.target_joint_angles = step.target_angles;
 					}
 
-					// ImGui::TableSetColumnIndex(11);
-					// ImGui::SetNextItemWidth(ImGui::GetColumnWidth(11));
-
-					// auto temp = step.mode;
-					// ImGui::EnumComboLogic("Select Mode", { "WRITING", "PICKING" }, step.mode);
-					// if (step.mode != temp) {
-					// 	step.target_position = controller.ik_target;
-					// 	bool is_valid;
-					// 	step.target_angles = Kinematics::GetForwardKinematics(is_valid, step.target_position, step.lra_dimension);
-					// }
 					idx++;
 				}
 
@@ -173,9 +157,9 @@ void lra::panel::Animator() {
 
 				if (ImGui::Button("+", { ImGui::GetColumnWidth(), 0 })) {
 					AnimationStep step;
-					step.target_position = controller.ik_target;
 					step.target_angles = controller.target_joint_angles;
 					step.lra_dimension = controller.lra_dimension;
+					step.target_position = Kinematics::GetForwardKinematics(step.target_angles, step.lra_dimension);
 					step.mode = controller.mode;
 					step.phi = controller.phi;
 					animation.step_array.push_back(step);
