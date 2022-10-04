@@ -21,4 +21,5 @@ namespace lra {
 	void RenderGrid();
 	// void DrawGrid(uint32_t size = 1000, const std::vector<uint32_t>& unit = { 10, 100 });
 	glm::vec4 PickingData(const glm::vec2& coord);
+	uint32_t SelectID();
 }

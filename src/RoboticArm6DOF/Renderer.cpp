@@ -1,13 +1,16 @@
 #include "Renderer.h"
 #include "ArmInfo.h"
+#include <Lucy/Window.h>
 #include <glm/glm.hpp>
 #include <iostream>
 #include "Transform.h"
 #include <LucyUtil/UUID.h>
 #include <LucyRE/LucyRE.h>
 #include <LucyUtil/Importer.h>
+#include <Lucy/Editor.h>
 #include <Lucy/ECS.h>
 #include <Lucy/Light.h>
+#include <Lucy/Events.h>
 #include <Lucy/Material.h>
 #include <Lucy/Registries/Registry.h>
 
@@ -33,6 +36,7 @@ static auto& registry = Registry::Instance();
 #define DYNAMIC_GRIPPER_LEFT (ROBOTIC_ARM_PARTS[7])
 #define MESH_PARTS_COUNT 8
 
+static glm::vec4 selected_pixel;
 static std::vector<glm::vec3> grid, grid_small;
 
 static struct {
@@ -59,7 +63,7 @@ void lra::IntializeRenderer() {
 			ROBOTIC_ARM_PARTS[i].transform.translation = ROBOTIC_ARM_PARTS[i].position - STATIC_BASE.position;
 		}
 	}
-	
+
 	for (int i = -500; i <= 500; i++) {
 		if (i % 100 == 0) {
 			grid.push_back({ -500, 0, i });
@@ -81,6 +85,7 @@ void lra::IntializeRenderer() {
 void lra::RenderLRA(JointAngles joint_angles) {
 	auto& info = registry.store<ArmInfo>();
 	auto& light = registry.store<lucy::LightRegistry>().Get("Default");
+	auto& window = registry.store<lucy::Window>();
 	auto& material = registry.store<lucy::MaterialRegistry>().Get("LRA");
 
 	joint_angles.base = 90 + joint_angles.base;
@@ -120,9 +125,10 @@ void lra::RenderLRA(JointAngles joint_angles) {
 	info.J1 = DYNAMIC_ARM.transform.translation;
 	info.J2 = DYNAMIC_ELBOW.transform.translation;
 	info.J3 = DYNAMIC_WRIST.transform.translation;
+	info.J4 = STATIC_GRIPPER.transform.translation;
+	info.J5 = (DYNAMIC_GRIPPER_LEFT.transform.translation + DYNAMIC_GRIPPER_RIGHT.transform.translation) / 2.0f;
 
 	auto* shader = lre::GetShader("phong");
-
 	shader->Bind();
 
 	light.Bind(shader);
@@ -132,10 +138,23 @@ void lra::RenderLRA(JointAngles joint_angles) {
 		if (ROBOTIC_ARM_PARTS[i].mesh_id == UTIL_NULL_UUID) continue;
 
 		lre::SetModel(ROBOTIC_ARM_PARTS[i].matrix);
-		lre::RenderMesh(ROBOTIC_ARM_PARTS[i].mesh_id, shader, i);
+		lre::RenderMesh(ROBOTIC_ARM_PARTS[i].mesh_id, shader, i + 1);
 	}
-}
 
+	// auto* framebuffer = Editor::GetMainFrameBuffer();
+	// if (framebuffer != nullptr) {
+	// 	framebuffer->Bind();
+		if (lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
+			auto norm = (lucy::Events::GetCursorPosNormalized(0, 0, window.size.x, window.size.y) * glm::vec3(window.size.x, window.size.y, 0) + glm::vec3(window.size.x, window.size.y, 0)) / 2.0f;
+
+			lgl::SetReadBuffer(lgl::Attachment::COLOR_ATTACHMENT1);
+			lgl::ReadPixels(norm.x, norm.y, 1, 1, lgl::Format::RGBA, lgl::Type::FLOAT, &selected_pixel[0]);
+			lgl::ResetReadBuffer();
+			// std::cout << norm.x << ' ' << norm.y << ' | ' << selected_pixel.x << ' ' << selected_pixel.y << ' ' << selected_pixel.z << ' ' << selected_pixel.w << '\n';
+		}
+	// 	framebuffer->UnBind();
+	// }
+}
 
 void lra::RenderCube(int val, lgl::Shader* shader) {
 	static UTIL_UUID id = 0;
@@ -173,12 +192,12 @@ void lra::RenderCube(int val, lgl::Shader* shader) {
 	};
 
 	static std::vector<uint32_t> indices = {
-		0 + 4*0, 1 + 4*0, 2 + 4*0, 2 + 4*0, 3 + 4*0, 0 + 4*0,
-		0 + 4*1, 1 + 4*1, 2 + 4*1, 2 + 4*1, 3 + 4*1, 0 + 4*1,
-		0 + 4*2, 1 + 4*2, 2 + 4*2, 2 + 4*2, 3 + 4*2, 0 + 4*2,
-		0 + 4*3, 1 + 4*3, 2 + 4*3, 2 + 4*3, 3 + 4*3, 0 + 4*3,
-		0 + 4*4, 1 + 4*4, 2 + 4*4, 2 + 4*4, 3 + 4*4, 0 + 4*4,
-		0 + 4*5, 1 + 4*5, 2 + 4*5, 2 + 4*5, 3 + 4*5, 0 + 4*5,
+		0 + 4 * 0, 1 + 4 * 0, 2 + 4 * 0, 2 + 4 * 0, 3 + 4 * 0, 0 + 4 * 0,
+		0 + 4 * 1, 1 + 4 * 1, 2 + 4 * 1, 2 + 4 * 1, 3 + 4 * 1, 0 + 4 * 1,
+		0 + 4 * 2, 1 + 4 * 2, 2 + 4 * 2, 2 + 4 * 2, 3 + 4 * 2, 0 + 4 * 2,
+		0 + 4 * 3, 1 + 4 * 3, 2 + 4 * 3, 2 + 4 * 3, 3 + 4 * 3, 0 + 4 * 3,
+		0 + 4 * 4, 1 + 4 * 4, 2 + 4 * 4, 2 + 4 * 4, 3 + 4 * 4, 0 + 4 * 4,
+		0 + 4 * 5, 1 + 4 * 5, 2 + 4 * 5, 2 + 4 * 5, 3 + 4 * 5, 0 + 4 * 5,
 	};
 
 	if (id == UTIL_NULL_UUID) {
@@ -192,12 +211,9 @@ void lra::RenderCube(int val, lgl::Shader* shader) {
 void lra::RenderAxisLine(bool x, bool y, bool z) {
 	lre::SetModel(glm::mat4(1.0f));
 
-	if (x)
-		lre::RenderLine({ 0, 0, 0 }, { 1000, 0, 0 }, { 1, 0, 0, 1 });
-	if (y)
-		lre::RenderLine({ 0, 0, 0 }, { 0, 1000, 0 }, { 0, 1, 0, 1 });
-	if (z)
-		lre::RenderLine({ 0, 0, 0 }, { 0, 0, 1000 }, { 0, 0, 1, 1 });
+	if (x) lre::RenderLine({ 0, 0, 0 }, { 1000, 0, 0 }, { 1, 0, 0, 1 });
+	if (y) lre::RenderLine({ 0, 0, 0 }, { 0, 1000, 0 }, { 0, 1, 0, 1 });
+	if (z) lre::RenderLine({ 0, 0, 0 }, { 0, 0, 1000 }, { 0, 0, 1, 1 });
 
 	lre::RenderFlushLine();
 }
@@ -227,3 +243,7 @@ void lra::RenderGrid() {
 // 		}
 // 	}
 // }
+
+uint32_t lra::SelectID() {
+	return uint32_t(selected_pixel.y);
+}

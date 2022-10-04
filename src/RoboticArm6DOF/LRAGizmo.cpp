@@ -1,10 +1,17 @@
+#define GLM_ENABLE_EXPERIMENTAL
+#include <iostream>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 #include "LRAGizmo.h"
 #include "Controller.h"
 #include "ArmInfo.h"
 #include <glad/glad.h>
+#include <iostream>
 #include <Lucy/Lucy.h>
 #include <Lucy/Window.h>
 #include <Lucy/Editor.h>
+#include "Renderer.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 static auto& registry = Registry::Instance();
@@ -20,10 +27,6 @@ void lra::GizmoSystem() {
 
 	ImGuizmo::SetRect(window.pos.x, window.pos.y, window.size.x, window.size.y);
 
-	// float phi_0 = joint_angles.arm;
-	// float phi_1 = phi_0 + joint_angles.elbow - 180;
-	// float phi_2 = phi_1 + joint_angles.wrist - 180;
-
 	if (controller.enable_ik || controller.mode == WRITING) {
 		glm::mat4 delta;
 		ImGuizmo::Manipulate(&camera.view[0][0], &camera.projection[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &(glm::translate(glm::mat4(1.0f), controller.ik_target))[0][0], &delta[0][0]);
@@ -37,14 +40,91 @@ void lra::GizmoSystem() {
 			if (controller.ik_target.x <= 0)
 				controller.ik_target.x = 0;
 		}
+	} else {
+		static uint32_t selected_id = 0;
 
-		static auto pixel = glm::vec4(0.0);
-		if (lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
-			auto norm = (lucy::Events::GetCursorPosNormalized(0, 0, window.size.x, window.size.y) * glm::vec3(window.size.x, window.size.y, 0) + glm::vec3(window.size.x, window.size.y, 0)) / 2.0f;
+		if (SelectID() && !ImGuizmo::IsOver() && !ImGuizmo::IsUsing())
+			selected_id = SelectID();
 
-			lgl::SetReadBuffer(lgl::Attachment::COLOR_ATTACHMENT1);
-			lgl::ReadPixels(norm.x, norm.y, 1, 1, lgl::Format::RGBA, lgl::Type::FLOAT, &pixel[0]);
-			lgl::ResetReadBuffer();
+		if (selected_id) {
+			glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(glm::vec3(0, controller.target_joint_angles.base, 0))));
+			glm::mat4 model = rotation;
+
+			switch (selected_id) {
+				case 1: case 2:
+					model *= glm::translate(glm::mat4(1.0f), info.J0);
+					break;
+				
+				case 3:
+					model *= glm::translate(glm::mat4(1.0f), info.J1);
+					break;
+				
+				case 4:
+					model *= glm::translate(glm::mat4(1.0f), info.J2);
+					break;
+					
+				case 5:
+					model *= glm::translate(glm::mat4(1.0f), info.J3);
+					break;
+
+				case 6:
+					model *= glm::translate(glm::mat4(1.0f), info.J4);
+					break;
+				
+				case 7: case 8:
+					model *= glm::translate(glm::mat4(1.0f), info.J5);
+					break;
+					
+				default:
+					break;
+			}
+
+			glm::mat4 delta;
+			ImGuizmo::Manipulate(&camera.view[0][0], &camera.projection[0][0], ImGuizmo::OPERATION::ROTATE_SCREEN, ImGuizmo::WORLD, &model[0][0], &delta[0][0]);
+
+			model *= glm::inverse(rotation);
+
+			if (ImGuizmo::IsUsing()) {
+				glm::vec3 translation, rotation, scale;
+
+				ImGuizmo::DecomposeMatrixToComponents(&delta[0][0], &translation[0], &rotation[0], &scale[0]);
+
+				switch (selected_id) {
+					case 1: case 2:
+						controller.target_joint_angles.base += rotation.y;
+						break;
+					
+					case 3:
+						controller.target_joint_angles.arm += rotation.x;
+						break;
+					
+					case 4:
+						controller.target_joint_angles.elbow += rotation.x;
+						break;
+						
+					case 5:
+						controller.target_joint_angles.wrist += rotation.x;
+						break;
+
+					case 6:
+						controller.target_joint_angles.gripper_rotate += rotation.x;
+						break;
+	
+					case 7: case 8:
+						controller.target_joint_angles.gripper_control += rotation.y;
+						break;
+
+					default:
+						break;
+				}
+
+				for (int i = 0; i < 6; i++) {
+					if (controller.target_joint_angles[i] > 180)
+						controller.target_joint_angles[i] = 180;
+					if (controller.target_joint_angles[i] < 0)
+						controller.target_joint_angles[i] = 0;
+				}
+			}
 		}
 	}
 }

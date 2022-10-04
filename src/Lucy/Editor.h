@@ -17,6 +17,7 @@ public:
 	~Editor() {}
 
 	static void SetMainFrameBuffer(lgl::FrameBuffer* framebuffer);
+	static lgl::FrameBuffer* GetMainFrameBuffer();
 	static void Initialize();
 	static void RenderBegin();
 	static void RenderEnd();

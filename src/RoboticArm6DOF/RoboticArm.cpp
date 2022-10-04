@@ -63,8 +63,8 @@ void lra::RuntimeUpdateArm() {
 	lgl::Viewport(0, 0, window.size.x, window.size.y);
 	lgl::Clear(0, 0, 0, 1, lgl::COLOR_BUFFER_BIT | lgl::DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// glEnable(GL_BLEND);
+	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	lre::SetView(camera.view);
 	lre::SetProjection(camera.projection);

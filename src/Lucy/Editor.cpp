@@ -11,6 +11,10 @@ void Editor::SetMainFrameBuffer(lgl::FrameBuffer* framebuffer) {
 	self->framebuffer = framebuffer;
 }
 
+lgl::FrameBuffer* Editor::GetMainFrameBuffer() {
+	return self->framebuffer;
+}
+
 void Editor::Initialize() {
 	auto& window = registry.store<lucy::Window>();
 
