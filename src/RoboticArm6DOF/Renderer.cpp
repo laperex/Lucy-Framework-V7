@@ -33,6 +33,8 @@ static auto& registry = Registry::Instance();
 #define DYNAMIC_GRIPPER_LEFT (ROBOTIC_ARM_PARTS[7])
 #define MESH_PARTS_COUNT 8
 
+static std::vector<glm::vec3> grid, grid_small;
+
 static struct {
 	glm::vec3 position = { 0, 0, 0 };
 	std::string name;
@@ -57,10 +59,27 @@ void lra::IntializeRenderer() {
 			ROBOTIC_ARM_PARTS[i].transform.translation = ROBOTIC_ARM_PARTS[i].position - STATIC_BASE.position;
 		}
 	}
+	
+	for (int i = -500; i <= 500; i++) {
+		if (i % 100 == 0) {
+			grid.push_back({ -500, 0, i });
+			grid.push_back({ +500, 0, i });
+
+			grid.push_back({ i, 0, -500 });
+			grid.push_back({ i, 0, +500 });
+		}
+		if (i % 10 == 0) {
+			grid_small.push_back({ -500, 0, i });
+			grid_small.push_back({ +500, 0, i });
+
+			grid_small.push_back({ i, 0, -500 });
+			grid_small.push_back({ i, 0, +500 });
+		}
+	}
 }
 
 void lra::RenderLRA(JointAngles joint_angles) {
-	// auto& info = registry.store<lucy::Arm>().Get("Default");
+	auto& info = registry.store<ArmInfo>();
 	auto& light = registry.store<lucy::LightRegistry>().Get("Default");
 	auto& material = registry.store<lucy::MaterialRegistry>().Get("LRA");
 
@@ -96,6 +115,11 @@ void lra::RenderLRA(JointAngles joint_angles) {
 		DYNAMIC_GRIPPER_RIGHT.matrix = DYNAMIC_BASE.transform.GetRotationMatrix() * DYNAMIC_GRIPPER_RIGHT.transform.GetTranslationMatrix() * DYNAMIC_WRIST.transform.GetRotationMatrix() * STATIC_GRIPPER.transform.GetRotationMatrix() * DYNAMIC_GRIPPER_RIGHT.transform.GetRotationMatrix();
 		DYNAMIC_GRIPPER_LEFT.matrix = DYNAMIC_BASE.transform.GetRotationMatrix() * DYNAMIC_GRIPPER_LEFT.transform.GetTranslationMatrix() * DYNAMIC_WRIST.transform.GetRotationMatrix() * STATIC_GRIPPER.transform.GetRotationMatrix() * DYNAMIC_GRIPPER_LEFT.transform.GetRotationMatrix();
 	}
+
+	info.J0 = DYNAMIC_BASE.transform.translation;
+	info.J1 = DYNAMIC_ARM.transform.translation;
+	info.J2 = DYNAMIC_ELBOW.transform.translation;
+	info.J3 = DYNAMIC_WRIST.transform.translation;
 
 	auto* shader = lre::GetShader("phong");
 
@@ -164,3 +188,42 @@ void lra::RenderCube(int val, lgl::Shader* shader) {
 	// lre::SetModel(glm::translate(glm::mat4(1.0f), pos) * glm::scale(glm::mat4(1.0f), scale));
 	lre::RenderMesh(id, shader, val);
 }
+
+void lra::RenderAxisLine(bool x, bool y, bool z) {
+	lre::SetModel(glm::mat4(1.0f));
+
+	if (x)
+		lre::RenderLine({ 0, 0, 0 }, { 1000, 0, 0 }, { 1, 0, 0, 1 });
+	if (y)
+		lre::RenderLine({ 0, 0, 0 }, { 0, 1000, 0 }, { 0, 1, 0, 1 });
+	if (z)
+		lre::RenderLine({ 0, 0, 0 }, { 0, 0, 1000 }, { 0, 0, 1, 1 });
+
+	lre::RenderFlushLine();
+}
+
+void lra::RenderGrid() {
+	lre::SetModel(glm::mat4(1.0f));
+
+	lre::RenderLine(grid, { 1, 1, 1, 0.7 });
+	lre::RenderLine(grid_small, { 0.5, 0.5, 0.5, 0.7 });
+}
+
+// void lra::DrawGrid(uint32_t size, const std::vector<uint32_t>& unit) {
+// 	static uint32_t t_size = 1000;
+// 	static std::vector<uint32_t> t_unit = { 10, 100 };
+
+// 	if (size != t_size || t_unit != unit) {
+// 		for (int i = -500; i <= 500; i++) {
+// 			for (int i = 0; i < unit.size(); i++) {
+// 				if (i % 100 == 0) {
+// 					grid.push_back({ -500, 0, i });
+// 					grid.push_back({ +500, 0, i });
+
+// 					grid.push_back({ i, 0, -500 });
+// 					grid.push_back({ i, 0, +500 });
+// 				}
+// 			}
+// 		}
+// 	}
+// }

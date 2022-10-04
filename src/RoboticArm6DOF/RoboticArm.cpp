@@ -17,7 +17,6 @@
 #include "LRAGizmo.h"
 
 static auto& registry = Registry::Instance();
-static std::vector<glm::vec3> grid, grid_small;
 
 // TODO//: ROBOTIC ARM MODEL CONTROL
 // TODO: Add Gizmo
@@ -28,6 +27,7 @@ static std::vector<glm::vec3> grid, grid_small;
 
 void lra::InitializeArm() {
 	auto& camera = registry.store<lucy::Camera>();
+	auto& controller = registry.store<Controller>();
 	auto& materialregistry = registry.store<lucy::MaterialRegistry>();
 	auto& lightregistry = registry.store<lucy::LightRegistry>();
 
@@ -37,22 +37,7 @@ void lra::InitializeArm() {
 	IntializeRenderer();
 
 	camera.position = { 0, 0, 1000 };
-
-	for (int i = -500; i <= 500; i += 10) {
-		if (i % 100 == 0) {
-			grid.push_back({ -500, 0, i });
-			grid.push_back({ +500, 0, i });
-
-			grid.push_back({ i, 0, -500 });
-			grid.push_back({ i, 0, +500 });
-		} else {
-			grid_small.push_back({ -500, 0, i });
-			grid_small.push_back({ +500, 0, i });
-
-			grid_small.push_back({ i, 0, -500 });
-			grid_small.push_back({ i, 0, +500 });
-		}
-	}
+	controller.mode = PICKING;
 
 	lucy::AddSystem(lucy::EDITOR_MAIN_WINDOW_SYSTEM, lra::GizmoSystem);
 }
@@ -62,6 +47,12 @@ void lra::RuntimeUpdateArm() {
 	auto& camera = registry.store<lucy::Camera>();
 	auto& window = registry.store<lucy::Window>();
 	auto& controller = registry.store<Controller>();
+
+	if (controller.mode == WRITING) {
+		controller.lra_dimension.wrist = 240;
+	} else {
+		controller.lra_dimension.wrist = 190;
+	}
 
 	if (framebuffer == nullptr) {
 		framebuffer = new lgl::FrameBuffer(camera.width, camera.height, true);
@@ -78,42 +69,24 @@ void lra::RuntimeUpdateArm() {
 	lre::SetView(camera.view);
 	lre::SetProjection(camera.projection);
 
-	lre::SetModel(glm::mat4(1.0f));
-
-	lre::RenderLine({ 0, 0, 0 }, { 1000, 0, 0 }, { 1, 0, 0, 1 });
-	lre::RenderLine({ 0, 0, 0 }, { 0, 1000, 0 }, { 0, 1, 0, 1 });
-	lre::RenderLine({ 0, 0, 0 }, { 0, 0, 1000 }, { 0, 0, 1, 1 });
-
-	lre::RenderFlushLine();
-
-	lre::RenderLine(grid, { 1, 1, 1, 0.7 });
-	lre::RenderLine(grid_small, { 0.5, 0.5, 0.5, 0.7 });
-
-	if (controller.enable_ik) {
-		auto [is_valid, angles] = Kinematics::GetInverseKinematics(controller.ik_target, controller.lra_dimension);
+	if ((controller.mode == PICKING && controller.enable_ik) || controller.mode == WRITING) {
+		bool is_valid;
+		auto angles = Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.lra_dimension);
 		if (is_valid) {
 			angles.gripper_control = controller.target_joint_angles.gripper_control;
 			angles.gripper_rotate = controller.target_joint_angles.gripper_rotate;
+
 			controller.target_joint_angles = angles;
 		}
 	}
 
+	// std::cout << controller.target_joint_angles.gripper_rotate << '\n';
+
 	controller.fk_result = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 
+	RenderAxisLine(true, false, true);
+	RenderGrid();
 	RenderLRA(controller.target_joint_angles);
-
-	// registry.store<lucy::MaterialRegistry>().Get("Gimbal X").Bind(lre::GetShader("phong"));
-
-	// auto* shader = lre::GetShader("const_color");
-	// shader->Bind();
-	// shader->SetUniformVec4("u_color", &glm::vec4(1, 1, 1, 1)[0]);	// Center
-	// RenderCube(controller.ik_target + glm::vec3(0, 72.5000, 0), glm::vec3(10, 10, 10), 1, shader);
-	// shader->SetUniformVec4("u_color", &glm::vec4(1, 0, 0, 1)[0]);	// X
-	// RenderCube(controller.ik_target + glm::vec3(50 / 2 + 15, 72.5000, 0), glm::vec3(50, 5, 5), 2, shader);
-	// shader->SetUniformVec4("u_color", &glm::vec4(0, 1, 0, 1)[0]);	// Y
-	// RenderCube(controller.ik_target + glm::vec3(0, 72.5000 + 50 / 2 + 15, 0), glm::vec3(5, 50, 5), 3, shader);
-	// shader->SetUniformVec4("u_color", &glm::vec4(0, 0, 1, 1)[0]);	// Z
-	// RenderCube(controller.ik_target + glm::vec3(0, 72.5000, 50 / 2 + 15), glm::vec3(5, 5, 50), 4, shader);
 
 	// static auto pixel = glm::vec4(0.0);
 	// if (lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
@@ -138,6 +111,7 @@ void lra::EditorUpdateArm() {
 	panel::Lighting();
 	panel::Controller();
 	panel::Kinematics();
+	panel::Animator();
 
 	// if (ImGui::Begin("Gizmo")) {
 	// 	glm::vec3 temp;

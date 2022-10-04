@@ -6,7 +6,7 @@ lra::JointAngles::JointAngles(float angle) {
 		operator[](i) = angle;
 }
 
-lra::JointAngles::JointAngles(float base, float arm, float elbow, float wrist, float gripper_control, float gripper_rotate) {
+lra::JointAngles::JointAngles(float base, float arm, float elbow, float wrist, float gripper_rotate, float gripper_control) {
 	this->base = base;
 	this->arm = arm;
 	this->elbow = elbow;

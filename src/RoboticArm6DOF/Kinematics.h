@@ -8,6 +8,7 @@ namespace lra {
 	class Kinematics {
 	public:
 		static const glm::vec3& GetForwardKinematics(const JointAngles& joint_angles, const JointLength& lra_dimensions);
-		static std::pair<bool, lra::JointAngles> GetInverseKinematics(const glm::vec3& target, const JointLength& lra_dimensions);
+		static lra::JointAngles GetInverseKinematics(bool& is_valid, const glm::vec3& target, const JointLength& lra_dimensions);
+		static lra::JointAngles GetInverseKinematics(bool &is_valid, const glm::vec3& target, const JointLength& lra_dimensions, float phi);
 	};
 }

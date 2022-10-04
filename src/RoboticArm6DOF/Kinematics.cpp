@@ -39,7 +39,7 @@ const glm::vec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_
 	return { S.x * sin(joint_angles.base * TO_RADIAN), S.y, S.x * cos(joint_angles.base * TO_RADIAN)};
 }
 
-std::pair<bool, lra::JointAngles> lra::Kinematics::GetInverseKinematics(const glm::vec3& target, const JointLength& lra_dimensions) {
+lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm::vec3& target, const JointLength& lra_dimensions) {
 	float l1 = lra_dimensions.arm;
 	float l2 = lra_dimensions.elbow;
 	float l3 = lra_dimensions.wrist;
@@ -64,9 +64,17 @@ std::pair<bool, lra::JointAngles> lra::Kinematics::GetInverseKinematics(const gl
 	float A_t = acos((l1 * l1 + lm * lm - l2 * l2) / (2 * l1 * lm)) * TO_DEGREE * 2;
 	float D_t = acos((l2 * l2 + lm * lm - l1 * l1) / (2 * l2 * lm)) * TO_DEGREE * 2;
 
-	auto angles = Clamp(JointAngles{ base_angle, A + theta + A_t, 360 - (B + C), D + D_t, 0, 0 });
+	float E;
+	if (base_angle > 90) {
+		E = base_angle - 90;
+	}
+	if (base_angle < 90) {
+		E = 90 - base_angle;
+	}
 
-	bool is_valid = true;
+	auto angles = Clamp(JointAngles{ base_angle, A + theta + A_t, 360 - (B + C), D + D_t, E, 0 });
+
+	is_valid = true;
 	for (int i = 0; i < 6; i++) {
 		if ((angles[i] != angles[i])) {
 			is_valid = false;
@@ -74,5 +82,45 @@ std::pair<bool, lra::JointAngles> lra::Kinematics::GetInverseKinematics(const gl
 		}
 	}
 
-	return { is_valid, angles };
+	return angles;
+}
+
+lra::JointAngles lra::Kinematics::GetInverseKinematics(bool &is_valid, const glm::vec3& target, const JointLength& lra_dimensions, float phi) {
+	float l1 = lra_dimensions.arm;
+	float l2 = lra_dimensions.elbow;
+	float l3 = lra_dimensions.wrist;
+
+	auto [x, y, z] = target;
+	y -= 72;
+
+	float base_angle = atan2(x, z) * TO_DEGREE;
+	float l = sqrt(x * x + z * z);
+	float lm = sqrt(l * l + y * y);
+	float theta = atan2(y, l) * TO_DEGREE;
+
+	float e = l3 * sin(phi * TO_RADIAN);
+	float f = e / sin(theta * TO_RADIAN);
+	float d = f * cos(theta * TO_RADIAN);
+	float g = l3 * cos(phi * TO_RADIAN);
+	float c = g - d;
+	float a = lm - f;
+	float b = sqrt(a * a + c * c - (cos(theta * TO_RADIAN) * 2 * a * c));
+
+	float E = acos((b * b + c * c - a * a) / (2 * b * c)) * TO_DEGREE;
+	float D = acos((l2 * l2 + b * b - l1 * l1) / (2 * l2 * b)) * TO_DEGREE;
+	float C = acos((l1 * l1 + l2 * l2 - b * b) / (2 * l1 * l2)) * TO_DEGREE;
+	float B = acos((l1 * l1 + b * b - l2 * l2) / (2 * l1 * b)) * TO_DEGREE;
+	float A = acos((b * b + a * a - c * c) / (2 * b * a)) * TO_DEGREE;
+
+	auto angles = Clamp(JointAngles{ base_angle, theta + A + B, C, D + E + phi, base_angle, 0 });
+
+	is_valid = true;
+	for (int i = 0; i < 6; i++) {
+		if ((angles[i] != angles[i])) {
+			is_valid = false;
+			break;
+		}
+	}
+
+	return angles;
 }

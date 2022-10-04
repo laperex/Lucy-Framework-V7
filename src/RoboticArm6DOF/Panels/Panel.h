@@ -5,4 +5,5 @@ namespace lra::panel {
 	void Lighting();
 	void Kinematics();
 	void Settings();
+	void Animator();
 }

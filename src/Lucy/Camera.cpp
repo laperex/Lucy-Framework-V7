@@ -36,7 +36,7 @@ void lucy::Camera::Update(double dt) {
 		this->projection = glm::perspective(glm::radians(this->fov), (float)this->width / this->height, this->c_near, this->c_far);
 	}
 
-	if (Events::IsButtonPressed(SDL_BUTTON_MIDDLE)) {
+	if (Events::IsButtonPressed(SDL_BUTTON_RIGHT)) {
 		if (this->first_mouse) {
 			this->lastx = cursor_pos.x;
 			this->lasty = cursor_pos.y;
