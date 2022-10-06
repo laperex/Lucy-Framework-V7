@@ -51,6 +51,7 @@ namespace lra {
 		AnimtationState animtationstate = STOP;
 		LUCY_UUID selected_animation = LUCY_NULL_UUID;
 
+		void Step();
 		bool IsNamePresent(std::string name);
 		std::string GetName(std::string name);
 		LUCY_UUID NewAnimation(std::string name, AnimationProperty animation, LUCY_UUID id = LUCY_GENERATE_UUID);

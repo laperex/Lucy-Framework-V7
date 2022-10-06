@@ -5,10 +5,11 @@
 #include "Panel.h"
 
 void lra::panel::PropertiesPanel() {
-	ImGui::SetNextWindowBgAlpha(WindowAplha);
+	ImGui::SetNextWindowBgAlpha(WindowAlpha);
 
 	if (ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
-		
+		if (ImGui::IsWindowHovered())
+			PanelManager::IsHovering = true;
 	}
 	ImGui::End();
 }

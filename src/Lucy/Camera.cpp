@@ -22,9 +22,6 @@ lucy::Camera::Camera() {
 }
 
 void lucy::Camera::Update(double dt) {
-	auto norm_cursor_pos = Events::GetCursorPosNormalized(0, 0, this->width, this->height);
-	auto cursor_pos = Events::GetCursorPos();
-
 	if (this->width != last_size.x || this->height != last_size.y) {
 		last_size.x = this->width;
 		last_size.y = this->height;
@@ -36,6 +33,10 @@ void lucy::Camera::Update(double dt) {
 
 		this->projection = glm::perspective(glm::radians(this->fov), (float)this->width / this->height, this->c_near, this->c_far);
 	}
+
+	if (!enable) return;
+	auto norm_cursor_pos = Events::GetCursorPosNormalized(0, 0, this->width, this->height);
+	auto cursor_pos = Events::GetCursorPos();
 
 	if (Events::IsButtonPressed(SDL_BUTTON_RIGHT)) {
 		if (this->first_mouse) {
@@ -58,9 +59,9 @@ void lucy::Camera::Update(double dt) {
 	this->front = glm::normalize(quaternion * this->world_front);
 	this->up = glm::normalize(quaternion * this->world_up);
 
-	if (Events::IsMouseScrollingUp() && !ImGui::IsAnyItemHovered())
+	if (Events::IsMouseScrollingUp())
 		this->position += this->front * float(scrollspeed * dt);
-	if (Events::IsMouseScrollingDown() && !ImGui::IsAnyItemHovered())
+	if (Events::IsMouseScrollingDown())
 		this->position -= this->front * float(scrollspeed * dt);
 
 	float distance = glm::length(this->position);

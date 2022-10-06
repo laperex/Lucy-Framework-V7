@@ -76,3 +76,9 @@ void lucy::RayLine3DPoints(std::vector<glm::ivec3>&positions, int startX, int st
 void lucy::RayLine3DPoints(std::vector<glm::ivec3>&positions, const glm::ivec3& start, const glm::ivec3& end) {
 	RayLine3DPoints(positions, start.x, start.y, start.z, end.x, end.y, end.z);
 }
+
+const std::vector<glm::ivec3>& lucy::RayLine3DPoints(const glm::ivec3& start, const glm::ivec3& end) {
+	std::vector<glm::ivec3> positions;
+	RayLine3DPoints(positions, start, end);
+	return positions;
+}

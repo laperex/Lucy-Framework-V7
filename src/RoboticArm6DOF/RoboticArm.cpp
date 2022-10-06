@@ -19,9 +19,9 @@
 static auto& registry = Registry::Instance();
 
 // TODO//: ROBOTIC ARM MODEL CONTROL
-// TODO: Add Gizmo
+// TODO//: Add Gizmo
 // TODO//: Add Grid
-// TODO: Add Animator
+// TODO//: Add Animator
 // TODO: Smooth Movement
 // TODO: Serial Comms
 
@@ -96,9 +96,7 @@ void lra::EditorUpdateArm() {
 	auto& camera = registry.store<lucy::Camera>();
 	auto& window = registry.store<lucy::Window>();
 
-	registry.store<lucy::Camera>().enable = !ImGui::IsAnyItemFocused();
+	panel::PanelUpdate();
 
-	panel::RendererPanel();
-	panel::RoboticArmPanel();
-	panel::AnimationPanel();
+	camera.enable = Editor::IsMainWindowHovered();
 }

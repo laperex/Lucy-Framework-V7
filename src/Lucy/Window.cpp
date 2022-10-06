@@ -2,7 +2,7 @@
 
 lucy::Window::Window() {
 	this->pos = { 0, 0 };
-	this->size = { 1920 * .8, 1080 * .8 };
+	this->size = { 1920 * .7, 1080 * .7 };
 
 	this->title = "Lucy Framework V7";
 	this->flags |= SDL_WINDOW_BORDERLESS | SDL_WINDOW_SHOWN;

@@ -13,9 +13,12 @@ static auto treenode_flags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_Open
 void lra::panel::RoboticArmPanel() {
 	auto& controller = registry.store<lra::Controller>();
 
-	ImGui::SetNextWindowBgAlpha(WindowAplha);
+	ImGui::SetNextWindowBgAlpha(WindowAlpha);
 
 	if (ImGui::Begin("RoboticArm", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::IsWindowHovered())
+			PanelManager::IsHovering = true;
+
 		// if (ImGui::TreeNodeEx("Properties", treenode_flags)) {
 		// 	ImGui::EnumComboLogic("Select Mode", { "WRITING", "PICKING" }, controller.mode);
 

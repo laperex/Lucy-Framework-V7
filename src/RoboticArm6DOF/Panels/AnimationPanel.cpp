@@ -10,13 +10,17 @@ static auto& registry = Registry::Instance();
 static auto treenode_flags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
 
 void lra::panel::AnimationPanel() {
+	static bool open_view_gen = false;
 	auto& animator = registry.store<lra::Animator>();
 	auto& controller = registry.store<lra::Controller>();
 
-	ImGui::SetNextWindowBgAlpha(WindowAplha);
+	ImGui::SetNextWindowBgAlpha(WindowAlpha);
 
 	if (ImGui::Begin("Animator", nullptr, ImGuiWindowFlags_NoTitleBar)) {
+		IS_WINDOW_HOVERED;
+
 		static float slider = 0.17;
+
 		ImGui::SliderFloat("Column Size", &slider, 0.1f, 1.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
 		float offset = ImGui::GetContentRegionAvail().x * slider;
 
@@ -25,7 +29,7 @@ void lra::panel::AnimationPanel() {
 
 		{
 			ImGui::BeginChild("#0");
-
+			IS_WINDOW_HOVERED;
 			// ImGui::Columns(2, 0, false);
 			// ImGui::SetColumnOffset(1, ImGui::GetContentRegionAvail().x / 2);
 
@@ -88,7 +92,8 @@ void lra::panel::AnimationPanel() {
 		ImGui::NextColumn();
 
 		{
-			ImGui::BeginChild("#1");
+			ImGui::BeginChild("#1", { 0, 0 }, false);
+			IS_WINDOW_HOVERED;
 		
 			if (animator.selected_animation != LUCY_NULL_UUID) {
 				auto& animation = animator.animation_registry[animator.selected_animation].animation;
@@ -97,11 +102,17 @@ void lra::panel::AnimationPanel() {
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x / 3);
 				ImGui::SanitisedInputText("Name", name);
 
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x / 3);
-				ImGui::SameLine();
+				float w = ImGui::GetContentRegionAvail().x / 3;
 
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(w);
 				if (ImGui::Button("Regenerate")) {
 					animation.Generate();
+				}
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(w);
+				if (ImGui::Button("View Gen")) {
+					open_view_gen = !open_view_gen;
 				}
 
 				if (ImGui::BeginTable("View##0203", 1 + 6 + 3 + 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
@@ -186,7 +197,29 @@ void lra::panel::AnimationPanel() {
 					ImGui::EndTable();
 				}
 			}
+
 			ImGui::EndChild();
+		}
+
+		ImGui::SetNextWindowBgAlpha(WindowAlpha);
+		if (animator.selected_animation != LUCY_NULL_UUID && open_view_gen) {
+			if (ImGui::Begin("View Generated", nullptr, ImGuiWindowFlags_NoTitleBar)) {
+				IS_WINDOW_HOVERED;
+	
+				if (ImGui::BeginTable("View##0203", 6, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_PreciseWidths)) {
+					int idx = 0;
+					for (auto& angle: animator.animation_registry[animator.selected_animation].animation.generated) {
+						ImGui::TableNextRow();
+						for (int i = 0; i < 6; i++) {
+							ImGui::TableSetColumnIndex(i);
+							ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
+							ImGui::DragFloat(("##" + std::to_string(i) + "#" + std::to_string(idx)).c_str(), &angle[i], 0);
+						}
+					}
+					ImGui::EndTable();
+				}
+			}
+			ImGui::End();
 		}
 	}
 	ImGui::End();

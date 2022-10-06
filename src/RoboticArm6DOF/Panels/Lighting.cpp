@@ -4,14 +4,18 @@
 #include <Lucy/Light.h>
 #include <Lucy/Material.h>
 #include <Lucy/Registries/Registry.h>
+#include <iostream>
 
 static auto& registry = Registry::Instance();
 static auto treenode_flags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
 
 void lra::panel::RendererPanel() {
-	ImGui::SetNextWindowBgAlpha(WindowAplha);
+	ImGui::SetNextWindowBgAlpha(WindowAlpha);
 
 	if (ImGui::Begin("RendererProperties", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::IsWindowHovered()) {
+			PanelManager::IsHovering = true;
+		}
 		if (ImGui::TreeNodeEx("Properties", treenode_flags)) {
 			// ImGui::Checkbox("Enable Grid");
 

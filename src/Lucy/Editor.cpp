@@ -4,8 +4,16 @@
 #include "Events.h"
 #include "Window.h"
 #include "imgui_lucy_impl.h"
+#include "Camera.h"
+#include <iostream>
 
 static auto& registry = Registry::Instance();
+
+static bool main_window_hovered = false;
+
+bool Editor::IsMainWindowHovered() {
+	return main_window_hovered;
+}
 
 void Editor::SetMainFrameBuffer(lgl::FrameBuffer* framebuffer) {
 	self->framebuffer = framebuffer;
@@ -73,6 +81,7 @@ void Editor::RenderBegin() {
 
 		ImGui::Begin("DockSpace", &p_open, window_flags);
 
+		main_window_hovered = ImGui::IsWindowHovered();
 		ImGui::PopStyleVar(3);
 		// if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
 			
