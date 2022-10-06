@@ -38,12 +38,9 @@ void lra::InitializeArm() {
 
 	camera.position = { 0, 0, 1000 };
 	controller.mode = PICKING;
-
-	lucy::AddSystem(lucy::EDITOR_MAIN_WINDOW_SYSTEM, lra::GizmoSystem);
 }
 
 void lra::RuntimeUpdateArm() {
-	static lgl::FrameBuffer* framebuffer = nullptr;
 	auto& camera = registry.store<lucy::Camera>();
 	auto& window = registry.store<lucy::Window>();
 	auto& controller = registry.store<Controller>();
@@ -54,49 +51,39 @@ void lra::RuntimeUpdateArm() {
 		controller.lra_dimension.wrist = 190;
 	}
 
-	if (framebuffer == nullptr) {
-		framebuffer = new lgl::FrameBuffer(camera.width, camera.height, true);
-	}
+	if (camera.framebuffer != nullptr) {
+		camera.framebuffer->Bind();
 
-	framebuffer->Bind();
+		lgl::Viewport(0, 0, window.size.x, window.size.y);
+		lgl::Clear(0, 0, 0, 1, lgl::COLOR_BUFFER_BIT | lgl::DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		// glEnable(GL_BLEND);
+		// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	lgl::Viewport(0, 0, window.size.x, window.size.y);
-	lgl::Clear(0, 0, 0, 1, lgl::COLOR_BUFFER_BIT | lgl::DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	// glEnable(GL_BLEND);
-	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		lre::SetView(camera.view);
+		lre::SetProjection(camera.projection);
 
-	lre::SetView(camera.view);
-	lre::SetProjection(camera.projection);
+		if ((controller.mode == PICKING && controller.enable_ik) || controller.mode == WRITING) {
+			bool is_valid;
+			auto angles = Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.lra_dimension);
+			if (is_valid) {
+				angles.gripper_control = controller.target_joint_angles.gripper_control;
+				angles.gripper_rotate = controller.target_joint_angles.gripper_rotate;
 
-	if ((controller.mode == PICKING && controller.enable_ik) || controller.mode == WRITING) {
-		bool is_valid;
-		auto angles = Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.lra_dimension);
-		if (is_valid) {
-			angles.gripper_control = controller.target_joint_angles.gripper_control;
-			angles.gripper_rotate = controller.target_joint_angles.gripper_rotate;
-
-			controller.target_joint_angles = angles;
+				controller.target_joint_angles = angles;
+			}
 		}
+
+		controller.fk_result = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
+
+		RenderAxisLine(true, false, true);
+		RenderGrid();
+		RenderLRA(controller.target_joint_angles);
+
+		camera.framebuffer->UnBind();
 	}
-
-	controller.fk_result = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
-
-	RenderAxisLine(true, false, true);
-	RenderGrid();
-	RenderLRA(controller.target_joint_angles);
-
-	framebuffer->UnBind();
-
-	// lre::RenderFrameBufferToScreen(framebuffer, { camera.width, camera.height });
-	Editor::SetMainFrameBuffer(framebuffer);
 }
 
 void lra::EditorUpdateArm() {
-	auto& camera = registry.store<lucy::Camera>();
-	auto& window = registry.store<lucy::Window>();
-
 	panel::PanelUpdate();
-
-	camera.enable = Editor::IsMainWindowHovered();
 }

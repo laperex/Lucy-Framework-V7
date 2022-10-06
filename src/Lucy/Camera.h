@@ -29,6 +29,8 @@ namespace lucy {
 
 		bool enable = true;
 
+		lgl::FrameBuffer* framebuffer = nullptr;
+
 		Camera();
 		void Update(double dt);
 	};

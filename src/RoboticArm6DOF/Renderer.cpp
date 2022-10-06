@@ -13,6 +13,7 @@
 #include <Lucy/Events.h>
 #include <Lucy/Material.h>
 #include <Lucy/Registries/Registry.h>
+#include <Lucy/Camera.h>
 
 static auto& registry = Registry::Instance();
 
@@ -85,7 +86,7 @@ void lra::IntializeRenderer() {
 void lra::RenderLRA(JointAngles joint_angles) {
 	auto& info = registry.store<ArmInfo>();
 	auto& light = registry.store<lucy::LightRegistry>().Get("Default");
-	auto& window = registry.store<lucy::Window>();
+	auto& camera = registry.store<lucy::Camera>();
 	auto& material = registry.store<lucy::MaterialRegistry>().Get("LRA");
 
 	joint_angles.base = 90 + joint_angles.base;
@@ -144,14 +145,7 @@ void lra::RenderLRA(JointAngles joint_angles) {
 	// auto* framebuffer = Editor::GetMainFrameBuffer();
 	// if (framebuffer != nullptr) {
 	// 	framebuffer->Bind();
-		if (lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
-			auto norm = (lucy::Events::GetCursorPosNormalized(0, 0, window.size.x, window.size.y) * glm::vec3(window.size.x, window.size.y, 0) + glm::vec3(window.size.x, window.size.y, 0)) / 2.0f;
-
-			lgl::SetReadBuffer(lgl::Attachment::COLOR_ATTACHMENT1);
-			lgl::ReadPixels(norm.x, norm.y, 1, 1, lgl::Format::RGBA, lgl::Type::FLOAT, &selected_pixel[0]);
-			lgl::ResetReadBuffer();
-			// std::cout << norm.x << ' ' << norm.y << ' | ' << selected_pixel.x << ' ' << selected_pixel.y << ' ' << selected_pixel.z << ' ' << selected_pixel.w << '\n';
-		}
+		
 	// 	framebuffer->UnBind();
 	// }
 }
@@ -221,8 +215,8 @@ void lra::RenderAxisLine(bool x, bool y, bool z) {
 void lra::RenderGrid() {
 	lre::SetModel(glm::mat4(1.0f));
 
-	lre::RenderLine(grid, { 1, 1, 1, 0.7 });
-	lre::RenderLine(grid_small, { 0.5, 0.5, 0.5, 0.7 });
+	lre::RenderLine(grid, { 1, 1, 1, 0.5 });
+	lre::RenderLine(grid_small, { 0.5, 0.5, 0.5, 0.5 });
 }
 
 // void lra::DrawGrid(uint32_t size, const std::vector<uint32_t>& unit) {
@@ -245,5 +239,6 @@ void lra::RenderGrid() {
 // }
 
 uint32_t lra::SelectID() {
+	std::cout << selected_pixel.y << '\n';
 	return uint32_t(selected_pixel.y);
 }

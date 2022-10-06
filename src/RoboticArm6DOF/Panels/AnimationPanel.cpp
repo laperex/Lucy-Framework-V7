@@ -203,20 +203,30 @@ void lra::panel::AnimationPanel() {
 
 		ImGui::SetNextWindowBgAlpha(WindowAlpha);
 		if (animator.selected_animation != LUCY_NULL_UUID && open_view_gen) {
-			if (ImGui::Begin("View Generated", nullptr, ImGuiWindowFlags_NoTitleBar)) {
-				IS_WINDOW_HOVERED;
-	
-				if (ImGui::BeginTable("View##0203", 6, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_PreciseWidths)) {
-					int idx = 0;
-					for (auto& angle: animator.animation_registry[animator.selected_animation].animation.generated) {
-						ImGui::TableNextRow();
-						for (int i = 0; i < 6; i++) {
-							ImGui::TableSetColumnIndex(i);
+			if (animator.animation_registry[animator.selected_animation].animation.generated.size()) {
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 10 });
+				ImGui::Begin("View Generated", nullptr, ImGuiWindowFlags_NoTitleBar);
+				ImGui::PopStyleVar();
+				{
+					if (ImGui::BeginTable("View##0203", 7, ImGuiTableFlags_ScrollY | ImGuiTableFlags_NoPadInnerX)) {
+						int idx = 0;
+						for (auto& angle: animator.animation_registry[animator.selected_animation].animation.generated) {
+							ImGui::TableNextRow();
+
+							ImGui::TableSetColumnIndex(0);
 							ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
-							ImGui::DragFloat(("##" + std::to_string(i) + "#" + std::to_string(idx)).c_str(), &angle[i], 0);
+							ImGui::Text(("  " + std::to_string(idx)).c_str());
+
+							for (int i = 0; i < 6; i++) {
+								ImGui::TableSetColumnIndex(i + 1);
+								ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
+								ImGui::DragFloat(("##" + std::to_string(i) + "#" + std::to_string(idx)).c_str(), &angle[i], 0);
+							}
+
+							idx++;
 						}
+						ImGui::EndTable();
 					}
-					ImGui::EndTable();
 				}
 			}
 			ImGui::End();

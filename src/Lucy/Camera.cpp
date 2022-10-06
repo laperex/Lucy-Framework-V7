@@ -35,7 +35,7 @@ void lucy::Camera::Update(double dt) {
 	}
 
 	if (!enable) return;
-	auto norm_cursor_pos = Events::GetCursorPosNormalized(0, 0, this->width, this->height);
+	auto norm_cursor_pos = Events::GetCursorPosNormalized(this->posx, this->posy, this->width, this->height);
 	auto cursor_pos = Events::GetCursorPos();
 
 	if (Events::IsButtonPressed(SDL_BUTTON_RIGHT)) {
