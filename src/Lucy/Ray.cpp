@@ -1,11 +1,6 @@
-#include "Game.h"
-#include <Lucy/Lucy.h>
-#include <LucyRE/LucyRE.h>
-#include <iostream>
+#include "Ray.h"
 
-static auto& registry = Registry::Instance();
-
-void line3D(std::vector<glm::ivec3>&positions, int endX, int endY, int endZ, int startX, int startY, int startZ) {
+void lucy::RayLine3DPoints(std::vector<glm::ivec3>&positions, int startX, int startY, int startZ, int endX, int endY, int endZ) {
 	int x1 = endX, y1 = endY, z1 = endZ, x0 = startX, y0 = startY, z0 = startZ;
 
 	int dx = abs(x1 - x0);
@@ -78,26 +73,6 @@ void line3D(std::vector<glm::ivec3>&positions, int endX, int endY, int endZ, int
 	}
 }
 
-void lve::InitializeGame() {
-	auto& camera = registry.store<lucy::Camera>();
-
-	camera.position = { 0, 0, 10 };
-	camera.c_far = 100;
-	camera.c_near = 0.1;
-
-	std::vector<glm::ivec3> positions;
-	line3D(positions, 5, 3, 4, 0, 0, 0);
-
-	for (int i = 0; i < positions.size(); i++) {
-		std::cout << positions[i].x << ' ' << positions[i].y << ' ' << positions[i].z << '\n';
-	}
-}
-
-void lve::RuntimeGame() {
-	auto& camera = registry.store<lucy::Camera>();
-
-	lre::SetView(camera.view);
-	lre::SetProjection(camera.projection);
-
-	// lre::Test();
+void lucy::RayLine3DPoints(std::vector<glm::ivec3>&positions, const glm::ivec3& start, const glm::ivec3& end) {
+	RayLine3DPoints(positions, start.x, start.y, start.z, end.x, end.y, end.z);
 }

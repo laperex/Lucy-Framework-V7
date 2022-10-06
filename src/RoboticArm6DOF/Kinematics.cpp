@@ -1,4 +1,6 @@
 #include "Kinematics.h"
+#include "Controller.h"
+#include <Lucy/Lucy.h>
 #include <array>
 #include <iostream>
 
@@ -7,6 +9,7 @@
 #define PI (3.141592653589793238462)
 #define HALF_PI (3.141592653589793238462/2)
 
+static auto& registry = Registry::Instance();
 static double epsilon = 0.0001;
 
 float Clamp(float val, float min = 0, float max = 180) {
@@ -83,6 +86,10 @@ lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm
 	}
 
 	return angles;
+}
+
+lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm::ivec3& target) {
+	return GetInverseKinematics(is_valid, target, registry.store<Controller>().lra_dimension);
 }
 
 lra::JointAngles lra::Kinematics::GetInverseKinematics(bool &is_valid, const glm::ivec3& target, const JointLength& lra_dimensions, float phi) {

@@ -18,7 +18,6 @@ namespace lra {
 		JointAngles target_angles;
 		glm::ivec3 target_position;
 
-		JointLength lra_dimension;
 		RoboticArmMode mode;
 		float phi;
 		bool enable_ik_trajectory = true;

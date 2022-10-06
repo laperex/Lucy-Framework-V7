@@ -1,5 +1,6 @@
 #include "Animator.h"
 #include "Kinematics.h"
+#include <Lucy/Ray.h>
 #include <assert.h>
 
 bool lra::Animator::IsNamePresent(std::string name) {
@@ -38,11 +39,22 @@ LUCY_UUID lra::Animator::NewAnimation(std::string name, AnimationProperty animat
 void lra::AnimationProperty::Generate() {
 	generated.clear();
 
-	std::vector<glm::vec3> positions;
+	std::vector<glm::ivec3> positions;
 
 	for (int i = 0; i < step_array.size(); i++) {
 		auto& step = step_array[i];
 
-		
+		if (positions.size() == 0) {
+			positions.push_back(step.target_position);
+		} else {
+			lucy::RayLine3DPoints(positions, positions.back(), step.target_position);
+		}
+	}
+
+	for (int i = 0; i < positions.size(); i++) {
+		bool is_valid;
+		auto angles = Kinematics::GetInverseKinematics(is_valid, positions[i]);
+		if (is_valid)
+			generated.push_back(angles);
 	}
 }
