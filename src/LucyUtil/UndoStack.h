@@ -6,7 +6,7 @@
 namespace util::undo {
 	struct Data {
 		std::string type = "";
-		UTIL_UUID id = 0;
+		LUCY_UUID id = 0;
 		uint32_t temp_data;
 		void* data = nullptr;
 		uint32_t size = 0;

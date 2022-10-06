@@ -3,26 +3,25 @@
 #include "Lucy/System.h"
 // #include <MineClone/Game.h>
 // #include <Writer 2 DOF/Write.h>
+#include <LucyVE/Game.h>
 #include <RoboticArm6DOF/RoboticArm.h>
 
 int main(int argcount, char** args) {
 	// lucy::AddSystem(lucy::INTITIALIZATION, lpv::InitializeGame);
 	// lucy::AddSystem(lucy::RUNTIME, lpv::RuntimeGame);
 
-	// lucy::AddSystem(lucy::INTITIALIZATION, lpv::InitializeGame);
-	// lucy::AddSystem(lucy::RUNTIME, lpv::RuntimeGame);
+	// lucy::AddSystem(lucy::INTITIALIZATION, lve::InitializeGame);
+	// lucy::AddSystem(lucy::RUNTIME, lve::RuntimeGame);
+
+	lucy::AddSystem(lucy::INTITIALIZATION, Editor::Initialize);
+	lucy::AddSystem(lucy::RUNTIME, Editor::Update);
 
 	lucy::AddSystem(lucy::INTITIALIZATION, lra::InitializeArm);
 	lucy::AddSystem(lucy::EDITOR, lra::EditorUpdateArm);
 	lucy::AddSystem(lucy::RUNTIME, lra::RuntimeUpdateArm);
 
-	lucy::AddSystem(lucy::INTITIALIZATION, Editor::Initialize);
-	lucy::AddSystem(lucy::RUNTIME, Editor::Update);
-
 	lucy::Initialize();
 	lucy::Mainloop();
-
-	Editor::ShutDown();
 
 	return 0;
 }

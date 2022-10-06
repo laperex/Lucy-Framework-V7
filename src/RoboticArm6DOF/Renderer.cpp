@@ -42,7 +42,7 @@ static std::vector<glm::vec3> grid, grid_small;
 static struct {
 	glm::vec3 position = { 0, 0, 0 };
 	std::string name;
-	UTIL_UUID mesh_id = UTIL_NULL_UUID;
+	LUCY_UUID mesh_id = LUCY_NULL_UUID;
 	Transform transform;
 	glm::mat4 matrix = glm::mat4(1.0f);
 } ROBOTIC_ARM_PARTS[] = {
@@ -58,7 +58,7 @@ static struct {
 
 void lra::IntializeRenderer() {
 	for (int i = 0; i < MESH_PARTS_COUNT; i++) {
-		if (ROBOTIC_ARM_PARTS[i].mesh_id == UTIL_NULL_UUID) {
+		if (ROBOTIC_ARM_PARTS[i].mesh_id == LUCY_NULL_UUID) {
 			ROBOTIC_ARM_PARTS[i].mesh_id = lre::InsertMesh("i", util::LoadMeshToGPU("D:\\C++\\Lucy Framework V7\\assets\\" + ROBOTIC_ARM_PARTS[i].name + ".stl", "", -ROBOTIC_ARM_PARTS[i].position));
 			ROBOTIC_ARM_PARTS[i].transform.translation = ROBOTIC_ARM_PARTS[i].position - STATIC_BASE.position;
 		}
@@ -135,7 +135,7 @@ void lra::RenderLRA(JointAngles joint_angles) {
 	material.Bind(shader);
 
 	for (int i = 0; i < MESH_PARTS_COUNT; i++) {
-		if (ROBOTIC_ARM_PARTS[i].mesh_id == UTIL_NULL_UUID) continue;
+		if (ROBOTIC_ARM_PARTS[i].mesh_id == LUCY_NULL_UUID) continue;
 
 		lre::SetModel(ROBOTIC_ARM_PARTS[i].matrix);
 		lre::RenderMesh(ROBOTIC_ARM_PARTS[i].mesh_id, shader, i + 1);
@@ -157,7 +157,7 @@ void lra::RenderLRA(JointAngles joint_angles) {
 }
 
 void lra::RenderCube(int val, lgl::Shader* shader) {
-	static UTIL_UUID id = 0;
+	static LUCY_UUID id = 0;
 
 	static std::vector<lre::Vertex::P1N1> vertices = {
 		{{ -0.5, -0.5, -0.5 }, { 0.0, 0.0, -1.0 }},
@@ -200,7 +200,7 @@ void lra::RenderCube(int val, lgl::Shader* shader) {
 		0 + 4 * 5, 1 + 4 * 5, 2 + 4 * 5, 2 + 4 * 5, 3 + 4 * 5, 0 + 4 * 5,
 	};
 
-	if (id == UTIL_NULL_UUID) {
+	if (id == LUCY_NULL_UUID) {
 		id = lre::InsertMesh("Cube", vertices.data(), vertices.size(), indices.data(), indices.size());
 	}
 

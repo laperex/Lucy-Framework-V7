@@ -8,7 +8,9 @@
 static auto& registry = Registry::Instance();
 static auto treenode_flags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
 
-void lra::panel::Lighting() {
+void lra::panel::RendererPanel() {
+	ImGui::SetNextWindowBgAlpha(WindowAplha);
+
 	if (ImGui::Begin("RendererProperties", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
 		if (ImGui::TreeNodeEx("Properties", treenode_flags)) {
 			// ImGui::Checkbox("Enable Grid");

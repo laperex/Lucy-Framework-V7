@@ -22,7 +22,7 @@ lra::JointAngles Clamp(lra::JointAngles position) {
 	return position;
 }
 
-const glm::vec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_angles, const JointLength& lra_dimensions) {
+const glm::ivec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_angles, const JointLength& lra_dimensions) {
 	float l1 = lra_dimensions.arm;
 	float l2 = lra_dimensions.elbow;
 	float l3 = lra_dimensions.wrist;
@@ -39,7 +39,7 @@ const glm::vec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_
 	return { S.x * sin(joint_angles.base * TO_RADIAN), S.y, S.x * cos(joint_angles.base * TO_RADIAN)};
 }
 
-lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm::vec3& target, const JointLength& lra_dimensions) {
+lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm::ivec3& target, const JointLength& lra_dimensions) {
 	float l1 = lra_dimensions.arm;
 	float l2 = lra_dimensions.elbow;
 	float l3 = lra_dimensions.wrist;
@@ -64,15 +64,15 @@ lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm
 	float A_t = acos((l1 * l1 + lm * lm - l2 * l2) / (2 * l1 * lm)) * TO_DEGREE * 2;
 	float D_t = acos((l2 * l2 + lm * lm - l1 * l1) / (2 * l2 * lm)) * TO_DEGREE * 2;
 
-	float E;
-	if (base_angle > 90) {
-		E = base_angle - 90;
-	}
-	if (base_angle < 90) {
-		E = 90 - base_angle;
-	}
+	// float E;
+	// if (base_angle > 90) {
+	// 	E = base_angle - 90;
+	// }
+	// if (base_angle < 90) {
+	// 	E = 90 - base_angle;
+	// }
 
-	auto angles = Clamp(JointAngles{ base_angle, A + theta + A_t, 360 - (B + C), D + D_t, E, 0 });
+	auto angles = Clamp(JointAngles{ base_angle, A + theta + A_t, 360 - (B + C), D + D_t, 0, 0 });
 
 	is_valid = true;
 	for (int i = 0; i < 6; i++) {
@@ -85,7 +85,7 @@ lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm
 	return angles;
 }
 
-lra::JointAngles lra::Kinematics::GetInverseKinematics(bool &is_valid, const glm::vec3& target, const JointLength& lra_dimensions, float phi) {
+lra::JointAngles lra::Kinematics::GetInverseKinematics(bool &is_valid, const glm::ivec3& target, const JointLength& lra_dimensions, float phi) {
 	float l1 = lra_dimensions.arm;
 	float l2 = lra_dimensions.elbow;
 	float l3 = lra_dimensions.wrist;
@@ -112,7 +112,7 @@ lra::JointAngles lra::Kinematics::GetInverseKinematics(bool &is_valid, const glm
 	float B = acos((l1 * l1 + b * b - l2 * l2) / (2 * l1 * b)) * TO_DEGREE;
 	float A = acos((b * b + a * a - c * c) / (2 * b * a)) * TO_DEGREE;
 
-	auto angles = Clamp(JointAngles{ base_angle, theta + A + B, C, D + E + phi, base_angle, 0 });
+	auto angles = Clamp(JointAngles{ base_angle, theta + A + B, C, D + E + phi, 0, 0 });
 
 	is_valid = true;
 	for (int i = 0; i < 6; i++) {

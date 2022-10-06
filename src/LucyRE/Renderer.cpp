@@ -165,7 +165,27 @@ void lre::RenderFrameBufferToScreen(lgl::FrameBuffer* framebuffer, const glm::ve
 	shader->UnBind();
 }
 
-UTIL_UUID lre::InsertMesh(std::string name, const util::TYPE_MESH_GPU& mesh, UTIL_UUID id) {
+void lre::RenderTextureToFramebuffer(lgl::FrameBuffer* framebuffer, lgl::Texture* texture, const glm::vec2& size) {
+	framebuffer->Bind();
+	auto* shader = GetShader("screen");
+
+	shader->Bind();
+	shader->SetUniformVec2("res_uv", &glm::vec2(size.x / framebuffer->width, size.y / framebuffer->height)[0]);
+	shader->SetUniformi("u_texture", 0);
+
+	texture->BindUnit(0);
+
+	static auto* vertexarray = new lgl::VertexArray({});
+	vertexarray->Bind();
+
+	lgl::Draw(lgl::TRIANGLE, 0, 6);
+
+	vertexarray->UnBind();
+	shader->UnBind();
+	framebuffer->UnBind();
+}
+
+LUCY_UUID lre::InsertMesh(std::string name, const util::TYPE_MESH_GPU& mesh, LUCY_UUID id) {
 	assert(self->mesh_registry.find(id) == self->mesh_registry.end());
 
 	self->mesh_registry[id] = { name, mesh };
@@ -173,7 +193,7 @@ UTIL_UUID lre::InsertMesh(std::string name, const util::TYPE_MESH_GPU& mesh, UTI
 	return id;
 }
 
-UTIL_UUID lre::InsertMesh(std::string name, lgl::VertexArray* vertexarray, void* vertices, int stride, int vertexcount, void* indices, int indexcount, lgl::Type type, UTIL_UUID id) {
+LUCY_UUID lre::InsertMesh(std::string name, lgl::VertexArray* vertexarray, void* vertices, int stride, int vertexcount, void* indices, int indexcount, lgl::Type type, LUCY_UUID id) {
 	assert(vertexarray != nullptr);
 	assert(vertices != nullptr && vertexcount > 0);
 
@@ -254,7 +274,7 @@ void lre::Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray
 	lgl::Draw(primitive, 0, vertexcount);
 }
 
-void lre::RenderMesh(UTIL_UUID id, lgl::Shader* shader) {
+void lre::RenderMesh(LUCY_UUID id, lgl::Shader* shader) {
 	assert(self->mesh_registry.find(id) != self->mesh_registry.end());
 
 	auto [vertexarray, vertexbuffer, vertexcount, indexbuffer, indexcount] = self->mesh_registry[id].second;
@@ -262,7 +282,7 @@ void lre::RenderMesh(UTIL_UUID id, lgl::Shader* shader) {
 	Render(lgl::TRIANGLE, shader, vertexarray, vertexbuffer, indexbuffer, indexcount);
 }
 
-void lre::RenderMesh(UTIL_UUID id, lgl::Shader* shader, int picking_data) {
+void lre::RenderMesh(LUCY_UUID id, lgl::Shader* shader, int picking_data) {
 	assert(self->mesh_registry.find(id) != self->mesh_registry.end());
 
 	auto [vertexarray, vertexbuffer, vertexcount, indexbuffer, indexcount] = self->mesh_registry[id].second;
@@ -331,7 +351,6 @@ void lre::Destroy() {
 
 	Vertex::FreeVertexArray();
 }
-
 
 void lre::Test() {
 	SetModel(glm::mat4(1.0f));

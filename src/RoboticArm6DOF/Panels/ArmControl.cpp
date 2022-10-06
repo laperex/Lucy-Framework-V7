@@ -4,24 +4,23 @@
 #include <Lucy/Light.h>
 #include <Lucy/Material.h>
 #include <RoboticArm6DOF/Controller.h>
+#include <RoboticArm6DOF/Kinematics.h>
 #include <iostream>
 
 static auto& registry = Registry::Instance();
 static auto treenode_flags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
 
-void lra::panel::Controller() {
-
-}
-
-void lra::panel::Kinematics() {
+void lra::panel::RoboticArmPanel() {
 	auto& controller = registry.store<lra::Controller>();
 
-	if (ImGui::Begin("RoboticArm", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
-		if (ImGui::TreeNodeEx("Properties", treenode_flags)) {
-			ImGui::EnumComboLogic("Select Mode", { "WRITING", "PICKING" }, controller.mode);
+	ImGui::SetNextWindowBgAlpha(WindowAplha);
 
-			ImGui::TreePop();
-		}
+	if (ImGui::Begin("RoboticArm", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
+		// if (ImGui::TreeNodeEx("Properties", treenode_flags)) {
+		// 	ImGui::EnumComboLogic("Select Mode", { "WRITING", "PICKING" }, controller.mode);
+
+		// 	ImGui::TreePop();
+		// }
 		if (ImGui::TreeNodeEx("Joint Angles", treenode_flags)) {
 			static bool is_slider = true;
 
@@ -32,7 +31,7 @@ void lra::panel::Kinematics() {
 
 			ImGui::SliderDragFloat("Gripper Rotation", &controller.target_joint_angles.gripper_rotate, 0.1, 0, 180, is_slider);
 			ImGui::SliderDragFloat("Gripper Control", &controller.target_joint_angles.gripper_control, 0.1, 0, 180, is_slider);
-			
+
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("Joint Length", treenode_flags)) {
@@ -59,12 +58,20 @@ void lra::panel::Kinematics() {
 				ImGui::SliderDragFloat("phi", &controller.phi, 0.1, -90, 90);
 			}
 
-			ImGui::DragFloat3("End Affector", &controller.ik_target[0], 0.1);
+			static glm::vec3 temp;
+			ImGui::DragInt3("End Affector", &controller.ik_target[0], 1);
+
+			bool is_valid;
+			Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.lra_dimension);
+			if (!is_valid)
+				controller.ik_target = temp;
+			else
+				temp = controller.ik_target;
 
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("Forward Kinematics", treenode_flags)) {
-			ImGui::DragFloat3("Position", &controller.fk_result[0], 0.0);
+			ImGui::DragInt3("Position", &controller.fk_result[0], 0.0);
 
 			ImGui::TreePop();
 		}

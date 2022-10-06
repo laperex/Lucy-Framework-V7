@@ -16,7 +16,7 @@ namespace lra {
 
 	struct AnimationStep {
 		JointAngles target_angles;
-		glm::vec3 target_position;
+		glm::ivec3 target_position;
 
 		JointLength lra_dimension;
 		RoboticArmMode mode;
@@ -33,6 +33,10 @@ namespace lra {
 		std::vector<AnimationStep> step_array;
 		bool loop = false;
 
+		std::vector<JointAngles> generated;
+		std::size_t size;
+
+		void Generate();
 		AnimationProperty() {}
 	};
 
@@ -44,11 +48,12 @@ namespace lra {
 		};
 
 	public:
-		std::unordered_map<UTIL_UUID, AnimationPropertyContainer> animation_registry;
+		std::unordered_map<LUCY_UUID, AnimationPropertyContainer> animation_registry;
 		AnimtationState animtationstate = STOP;
+		LUCY_UUID selected_animation = LUCY_NULL_UUID;
 
 		bool IsNamePresent(std::string name);
 		std::string GetName(std::string name);
-		UTIL_UUID NewAnimation(std::string name, AnimationProperty animation, UTIL_UUID id = UTIL_GENERATE_UUID);
+		LUCY_UUID NewAnimation(std::string name, AnimationProperty animation, LUCY_UUID id = LUCY_GENERATE_UUID);
 	};
 }

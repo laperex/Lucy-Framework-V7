@@ -106,6 +106,10 @@ void Editor::Update() {
 	lucy::RunEditorSystems();
 
 	RenderEnd();
+
+	if (lucy::Events::IsQuittable()) {
+		Editor::ShutDown();
+	}
 }
 
 void Editor::ShutDown() {

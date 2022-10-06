@@ -25,7 +25,7 @@ namespace lre {
 
 		std::unordered_map<std::string, lgl::Shader*> shader_registry;
 
-		std::unordered_map<UTIL_UUID, std::pair<std::string, util::TYPE_MESH_GPU>> mesh_registry;
+		std::unordered_map<LUCY_UUID, std::pair<std::string, util::TYPE_MESH_GPU>> mesh_registry;
 
 		static Renderer* Instance() {
 			static Renderer instance;
@@ -55,16 +55,17 @@ namespace lre {
 	lgl::Shader* GetShader(std::string name);
 
 	void RenderFrameBufferToScreen(lgl::FrameBuffer* framebuffer, const glm::vec2& size);
+	void RenderTextureToFramebuffer(lgl::FrameBuffer* framebuffer, lgl::Texture* texture, const glm::vec2& size);
 
-	UTIL_UUID InsertMesh(std::string name, const util::TYPE_MESH_GPU& mesh, UTIL_UUID id = UTIL_GENERATE_UUID);
-	UTIL_UUID InsertMesh(std::string name, lgl::VertexArray* vertexarray, void* vertices, int stride, int vertexcount, void* indices = nullptr, int indexcount = 0, lgl::Type type = lgl::UNSIGNED_INT, UTIL_UUID id = UTIL_GENERATE_UUID);
+	LUCY_UUID InsertMesh(std::string name, const util::TYPE_MESH_GPU& mesh, LUCY_UUID id = LUCY_GENERATE_UUID);
+	LUCY_UUID InsertMesh(std::string name, lgl::VertexArray* vertexarray, void* vertices, int stride, int vertexcount, void* indices = nullptr, int indexcount = 0, lgl::Type type = lgl::UNSIGNED_INT, LUCY_UUID id = LUCY_GENERATE_UUID);
 	template <typename T>
-	UTIL_UUID InsertMesh(std::string name, T* vertices, int vertexcount, void* indices = nullptr, int indexcount = 0, lgl::Type type = lgl::UNSIGNED_INT, UTIL_UUID id = UTIL_GENERATE_UUID) {
+	LUCY_UUID InsertMesh(std::string name, T* vertices, int vertexcount, void* indices = nullptr, int indexcount = 0, lgl::Type type = lgl::UNSIGNED_INT, LUCY_UUID id = LUCY_GENERATE_UUID) {
 		return InsertMesh(name, T::VertexArray(), (void*)vertices, sizeof(T), vertexcount, indices, indexcount, type, id);
 	}
 
-	void RenderMesh(UTIL_UUID id, lgl::Shader* shader);
-	void RenderMesh(UTIL_UUID id, lgl::Shader* shader, int picking_data);
+	void RenderMesh(LUCY_UUID id, lgl::Shader* shader);
+	void RenderMesh(LUCY_UUID id, lgl::Shader* shader, int picking_data);
 
 	void Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, lgl::IndexBuffer* indexbuffer, int indexcount);
 	void Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, lgl::IndexBuffer* indexbuffer, int indexcount, int picking_data);

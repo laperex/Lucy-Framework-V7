@@ -4,7 +4,9 @@
 #include <Lucy/Lucy.h>
 #include "Panel.h"
 
-void lra::panel::Settings() {
+void lra::panel::PropertiesPanel() {
+	ImGui::SetNextWindowBgAlpha(WindowAplha);
+
 	if (ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
 		
 	}

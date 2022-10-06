@@ -80,22 +80,11 @@ void lra::RuntimeUpdateArm() {
 		}
 	}
 
-	// std::cout << controller.target_joint_angles.gripper_rotate << '\n';
-
 	controller.fk_result = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 
 	RenderAxisLine(true, false, true);
 	RenderGrid();
 	RenderLRA(controller.target_joint_angles);
-
-	// static auto pixel = glm::vec4(0.0);
-	// if (lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
-	// 	auto norm = (lucy::Events::GetCursorPosNormalized(0, 0, window.size.x, window.size.y) * glm::vec3(window.size.x, window.size.y, 0) + glm::vec3(window.size.x, window.size.y, 0)) / 2.0f;
-
-	// 	lgl::SetReadBuffer(lgl::Attachment::COLOR_ATTACHMENT1);
-	// 	lgl::ReadPixels(norm.x, norm.y, 1, 1, lgl::Format::RGBA, lgl::Type::FLOAT, &pixel[0]);
-	// 	lgl::ResetReadBuffer();
-	// }
 
 	framebuffer->UnBind();
 
@@ -108,17 +97,8 @@ void lra::EditorUpdateArm() {
 	auto& window = registry.store<lucy::Window>();
 
 	registry.store<lucy::Camera>().enable = !ImGui::IsAnyItemFocused();
-	panel::Lighting();
-	panel::Controller();
-	panel::Kinematics();
-	panel::Animator();
 
-	// if (ImGui::Begin("Gizmo")) {
-	// 	glm::vec3 temp;
-	// 	if (pixel.y) {
-	// 		temp = lucy::Picking::GetWorldPos({ pixel.z, pixel.w }, { window.size.x, window.size.y }, camera.position, camera.front, camera.view, camera.projection);
-	// 	}
-	// 	ImGui::InputFloat3("Position", &temp[0]);
-	// }
-	// ImGui::End();
+	panel::RendererPanel();
+	panel::RoboticArmPanel();
+	panel::AnimationPanel();
 }

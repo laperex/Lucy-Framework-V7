@@ -1,9 +1,11 @@
 #pragma once
 
 namespace lra::panel {
-	void Controller();
-	void Lighting();
-	void Kinematics();
-	void Settings();
-	void Animator();
+	#define WindowAplha (0.5)
+
+	void RendererPanel();
+	void RoboticArmPanel();
+	void PropertiesPanel();
+	void AnimationPanel();
+	void SerialCommunicationPanel();
 }
