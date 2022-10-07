@@ -8,6 +8,7 @@
 static auto& registry = Registry::Instance();
 
 glm::vec2 last_size = { 0, 0 };
+glm::vec2 last_pos = { 0, 0 };
 float scrollspeed = 0.75 * 3;
 bool toggle = false;
 
@@ -22,9 +23,11 @@ lucy::Camera::Camera() {
 }
 
 void lucy::Camera::Update(double dt) {
-	if (this->width != last_size.x || this->height != last_size.y) {
+	if (this->width != last_size.x || this->height != last_size.y || this->posx != last_pos.x || this->posy != last_pos.y) {
 		last_size.x = this->width;
 		last_size.y = this->height;
+		last_pos.x = this->posx;
+		last_pos.y = this->posy;
 
 		this->lastx = this->width / 2;
 		this->lasty = this->height / 2;
@@ -34,7 +37,11 @@ void lucy::Camera::Update(double dt) {
 		this->projection = glm::perspective(glm::radians(this->fov), (float)this->width / this->height, this->c_near, this->c_far);
 	}
 
-	if (!enable) return;
+	if (!enable) {
+		this->first_mouse = true;
+		return;
+	}
+
 	auto norm_cursor_pos = Events::GetCursorPosNormalized(this->posx, this->posy, this->width, this->height);
 	auto cursor_pos = Events::GetCursorPos();
 
@@ -68,7 +75,8 @@ void lucy::Camera::Update(double dt) {
 	scrollspeed = distance / 10;
 	this->position = distance * -this->front;
 
-	if (Events::IsButtonPressed(SDL_BUTTON_LEFT) && Events::IsKeyPressed(SDL_SCANCODE_LALT)) {
+	static bool click_toggle = false;
+	if (Events::IsButtonPressed(SDL_BUTTON_LEFT) && Events::IsKeyPressed(SDL_SCANCODE_LALT) && click_toggle) {
 		glm::vec4 ray_clip = glm::vec4(norm_cursor_pos.x, norm_cursor_pos.y, -1.0, 1.0);
 		glm::vec4 ray_eye = glm::inverse(this->projection) * ray_clip;
 		ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
@@ -85,6 +93,7 @@ void lucy::Camera::Update(double dt) {
 		delta = pos - initpos;
 		toggle = true;
 	}
+	click_toggle = !Events::IsButtonPressed(SDL_BUTTON_LEFT);
 
 	this->view = glm::lookAt(this->position + this->offset + delta, this->position + this->offset + delta + this->front, this->up);
 

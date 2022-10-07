@@ -4,7 +4,6 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include <RoboticArm6DOF/LRAGizmo.h>
 #include <RoboticArm6DOF/Controller.h>
 #include <RoboticArm6DOF/ArmInfo.h>
 #include <glad/glad.h>
@@ -33,18 +32,20 @@ void lra::panel::MainPanel() {
 		auto [x, y] = ImGui::GetWindowPos();
 		auto [w, h] = ImGui::GetWindowSize();
 
+		// if (w >)
+
+		if (camera.framebuffer != nullptr) {
+			if (camera.framebuffer->width != w || camera.framebuffer->height != h) {
+				delete camera.framebuffer;
+				camera.framebuffer = nullptr;
+			}
+		}
+
 		camera.enable = ImGui::IsWindowHovered();
 		camera.posx = x;
 		camera.posy = y;
 		camera.width = w;
 		camera.height = h;
-
-		if (camera.framebuffer != nullptr) {
-			if (camera.framebuffer->width != w && camera.framebuffer->width != h) {
-				delete camera.framebuffer;
-				camera.framebuffer = nullptr;
-			}
-		}
 
 		if (camera.framebuffer == nullptr) {
 			camera.framebuffer = new lgl::FrameBuffer(w, h, true);

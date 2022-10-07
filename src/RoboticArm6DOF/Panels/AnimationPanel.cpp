@@ -14,11 +14,7 @@ void lra::panel::AnimationPanel() {
 	auto& animator = registry.store<lra::Animator>();
 	auto& controller = registry.store<lra::Controller>();
 
-	ImGui::SetNextWindowBgAlpha(WindowAlpha);
-
 	if (ImGui::Begin("Animator", nullptr, ImGuiWindowFlags_NoTitleBar)) {
-		IS_WINDOW_HOVERED;
-
 		static float slider = 0.17;
 
 		ImGui::SliderFloat("Column Size", &slider, 0.1f, 1.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
@@ -29,7 +25,6 @@ void lra::panel::AnimationPanel() {
 
 		{
 			ImGui::BeginChild("#0");
-			IS_WINDOW_HOVERED;
 			// ImGui::Columns(2, 0, false);
 			// ImGui::SetColumnOffset(1, ImGui::GetContentRegionAvail().x / 2);
 
@@ -93,7 +88,6 @@ void lra::panel::AnimationPanel() {
 
 		{
 			ImGui::BeginChild("#1", { 0, 0 }, false);
-			IS_WINDOW_HOVERED;
 		
 			if (animator.selected_animation != LUCY_NULL_UUID) {
 				auto& animation = animator.animation_registry[animator.selected_animation].animation;
@@ -201,12 +195,12 @@ void lra::panel::AnimationPanel() {
 			ImGui::EndChild();
 		}
 
-		ImGui::SetNextWindowBgAlpha(WindowAlpha);
 		if (animator.selected_animation != LUCY_NULL_UUID && open_view_gen) {
 			if (animator.animation_registry[animator.selected_animation].animation.generated.size()) {
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 10 });
 				ImGui::Begin("View Generated", nullptr, ImGuiWindowFlags_NoTitleBar);
 				ImGui::PopStyleVar();
+				
 				{
 					if (ImGui::BeginTable("View##0203", 7, ImGuiTableFlags_ScrollY | ImGuiTableFlags_NoPadInnerX)) {
 						int idx = 0;
@@ -228,8 +222,9 @@ void lra::panel::AnimationPanel() {
 						ImGui::EndTable();
 					}
 				}
+
+				ImGui::End();
 			}
-			ImGui::End();
 		}
 	}
 	ImGui::End();

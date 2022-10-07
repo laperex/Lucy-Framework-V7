@@ -1,3 +1,5 @@
+#define ENABLE_VIEWPORT
+
 #include "Lucy/Lucy.h"
 #include <Lucy/Editor.h>
 #include "Lucy/System.h"

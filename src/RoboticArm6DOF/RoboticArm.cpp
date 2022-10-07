@@ -14,7 +14,6 @@
 #include <glm/gtx/string_cast.hpp>
 #include "Controller.h"
 #include <glad/glad.h>
-#include "LRAGizmo.h"
 
 static auto& registry = Registry::Instance();
 
@@ -54,7 +53,7 @@ void lra::RuntimeUpdateArm() {
 	if (camera.framebuffer != nullptr) {
 		camera.framebuffer->Bind();
 
-		lgl::Viewport(0, 0, window.size.x, window.size.y);
+		lgl::Viewport(0, 0, camera.width, camera.height);
 		lgl::Clear(0, 0, 0, 1, lgl::COLOR_BUFFER_BIT | lgl::DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		// glEnable(GL_BLEND);

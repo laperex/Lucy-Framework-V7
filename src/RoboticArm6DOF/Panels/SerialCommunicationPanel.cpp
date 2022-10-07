@@ -8,8 +8,6 @@ static auto& registry = Registry::Instance();
 void lra::panel::SerialCommunicationPanel() {
 	auto& servo_controller = registry.store<ServoContoller>();
 
-	ImGui::SetNextWindowBgAlpha(WindowAlpha);
-
 	if (ImGui::Begin("Servo PWM", nullptr, ImGuiWindowFlags_NoTitleBar)) {
 		if (ImGui::BeginTable("View##0203", 3, ImGuiTableFlags_ScrollY)) {
 			int f = 0;

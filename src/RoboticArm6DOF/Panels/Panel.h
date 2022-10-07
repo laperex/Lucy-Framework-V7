@@ -1,12 +1,7 @@
 #pragma once
 
 namespace lra::panel {
-	#define WindowAlpha (0.6)
-	#define IS_WINDOW_HOVERED if (ImGui::IsWindowHovered() && ImGui::IsItemHovered()) lra::panel::PanelManager::IsHovering = true
-
-	struct PanelManager {
-		static bool IsHovering;
-	};
+	#define WindowAlpha (0.8)
 
 	void MainPanel();
 	void RendererPanel();

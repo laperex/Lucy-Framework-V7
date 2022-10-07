@@ -7,6 +7,9 @@
 #include "Camera.h"
 #include <iostream>
 
+#define ENABLE_DOCKSPACE
+// #define ENABLE_VIEWPORT
+
 static auto& registry = Registry::Instance();
 
 void Editor::Initialize() {
@@ -21,10 +24,10 @@ void Editor::Initialize() {
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 	io.ConfigDockingWithShift = true;
 
-	// if (editor_state.enable_viewports) {
-	// 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	// 	io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;
-	// }
+	#ifdef ENABLE_VIEWPORT
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;
+	#endif ENABLE_VIEWPORT
 
 	ImGui_ImplSDL2_InitForOpenGL(window.sdl_window, (void*)window.sdl_glcontext);
 	ImGui_ImplOpenGL3_Init("#version 400");
@@ -47,7 +50,7 @@ void Editor::RenderBegin() {
 	auto& window = registry.store<lucy::Window>();
 
 	// Screen
-	if (true) {
+	#ifdef ENABLE_DOCKSPACE
 		static bool p_open = false;
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_AutoHideTabBar;
 		static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoTitleBar;
@@ -55,8 +58,9 @@ void Editor::RenderBegin() {
 		int x = 0, y = 0, w = 0, h = 0;
 		SDL_GetWindowSize(window.sdl_window, &w, &h);
 
-		// if (editor_state.enable_viewports)
-		// 	SDL_GetWindowPosition(window.sdl_window, &x, &y);
+		#ifdef ENABLE_VIEWPORT
+			SDL_GetWindowPosition(window.sdl_window, &x, &y);
+		#endif ENABLE_VIEWPORT
 
 		ImGui::SetNextWindowPos(ImVec2(x, y));
 		ImGui::SetNextWindowSize(ImVec2(w, h));
@@ -76,11 +80,7 @@ void Editor::RenderBegin() {
 		// lucy::RunEditorMainWindowSystems();
 	
 		ImGui::End();
-	}
-
-	// ImGui::Begin();
-	// main_window_hovered = ImGui::IsWindowHovered();
-	// ImGui::GetWindowDrawList()->AddImage((void*)self->framebuffer->texture->id, ImVec2(x, y), ImVec2(x + w, y + h), ImVec2(0, (float)h / self->framebuffer->height), ImVec2((float)w / self->framebuffer->width, 0));
+	#endif ENABLE_DOCKSPACE
 }
 
 void Editor::RenderEnd() {
@@ -88,12 +88,12 @@ void Editor::RenderEnd() {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	
-	// if (editor_state.enable_viewports) {
-	// 	ImGui::UpdatePlatformWindows();
-	// 	ImGui::RenderPlatformWindowsDefault();
+	#ifdef ENABLE_VIEWPORT
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
 
-	// 	window.SetCurrent();
-	// }
+		registry.store<lucy::Window>().SetCurrent();
+	#endif ENABLE_VIEWPORT
 }
 
 void Editor::Update() {
