@@ -7,7 +7,6 @@ lucy::Window::Window() {
 	this->size *= 0.8;
 
 	this->title = "Lucy Framework V7";
-	this->flags |= SDL_WINDOW_BORDERLESS | SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP;
 }
 
 lucy::Window::~Window() {

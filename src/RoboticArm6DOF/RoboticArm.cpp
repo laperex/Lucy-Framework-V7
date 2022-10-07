@@ -1,6 +1,8 @@
 #include "RoboticArm.h"
 #include <iostream>
+#include "LoadSave.h"
 #include "Renderer.h"
+#include "Animator.h"
 #include <Lucy/Editor.h>
 #include <Lucy/Picking.h>
 #include <Lucy/Events.h>
@@ -33,6 +35,8 @@ void lra::InitializeArm() {
 	registry.store<lucy::LightRegistry>().Insert("Default");
 	registry.store<lucy::MaterialRegistry>().Insert("LRA");
 
+	DeSerializeAnimator("animator.yaml");
+
 	IntializeRenderer();
 
 	camera.position = { 0, 0, 1000 };
@@ -42,6 +46,7 @@ void lra::RuntimeUpdateArm() {
 	auto& camera = registry.store<lucy::Camera>();
 	auto& window = registry.store<lucy::Window>();
 	auto& controller = registry.store<Controller>();
+	auto& animator = registry.store<Animator>();
 
 	if (camera.framebuffer != nullptr) {
 		camera.framebuffer->Bind();
@@ -68,9 +73,19 @@ void lra::RuntimeUpdateArm() {
 
 		controller.fk_result = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 
+		if (animator.selected_animation != LUCY_NULL_UUID && animator.animtationstate == PLAY) {
+			auto& animation = animator.animation_registry[animator.selected_animation];
+
+			// controller.target_joint_angles = 
+		}
+
 		RenderAxisLine(true, false, true);
 		RenderGrid();
 		RenderLRA(controller.target_joint_angles);
+
+		if (lucy::Events::IsKeyChord({ SDL_SCANCODE_LCTRL, SDL_SCANCODE_S })) {
+			SerializeAnimator("animator.yaml");
+		}
 
 		camera.framebuffer->UnBind();
 	}

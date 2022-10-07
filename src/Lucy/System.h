@@ -10,9 +10,8 @@ namespace lucy {
 		RUNTIME = 1,
 		SDL_EVENT_SYSTEM = 2,
 
-		EDITOR = 3,
-		EDITOR_MAIN_WINDOW_SYSTEM = 4,
-		EDITOR_INITIALIZATION_SYSTEM = 5,
+		EDITOR_RUNTIME = 3,
+		EDITOR_INITIALIZATION = 4,
 
 		SYSTEM_TYPE_COUNT
 	};
@@ -24,8 +23,8 @@ namespace lucy {
 	bool IsSystemPresent(SYSTEM_TYPE type, void* system);
 
 	void RunRuntimeSystems();
-	void RunEditorMainWindowSystems();
 	void RunEditorSystems();
 	void RunInitializationSystems();
+	void RunEditorInitializationSystems();
 	void RunSdlEventSystems(SDL_Event& sdl_event);
 }

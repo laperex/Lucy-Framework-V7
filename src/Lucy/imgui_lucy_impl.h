@@ -32,8 +32,8 @@ namespace ImGui {
 	bool SliderDragFloat3(const char* label, float* v, float speed, float min, float max, bool& is_slider);
 }
 
-void embraceTheDarkness();
-
-void VS_Theme();
-
-void Red_DarkTheme();
+namespace ImGui::Theme {
+	void EmbraceTheDarkness();
+	void VisualStudio();
+	void RedDark();
+}

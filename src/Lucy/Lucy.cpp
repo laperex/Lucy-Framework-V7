@@ -10,7 +10,7 @@
 
 static auto& registry = Registry::Instance();
 
-void lucy::Initialize(const char* title, int posx, int posy, int width, int height) {
+void lucy::Initialize(const char* title, int posx, int posy, int width, int height, uint32_t flags) {
 	auto& window = registry.store<Window>();
 
 	window.pos.x = posx;
@@ -18,6 +18,9 @@ void lucy::Initialize(const char* title, int posx, int posy, int width, int heig
 	window.size.x = width;
 	window.size.y = height;
 	window.title = title;
+	window.flags |= flags;
+
+	Initialize();
 }
 
 void lucy::Initialize() {

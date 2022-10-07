@@ -3,7 +3,7 @@
 #include <Lucy/Window.h>
 #include <glm/glm.hpp>
 #include <iostream>
-#include "Transform.h"
+#include <Lucy/Transform.h>
 #include <LucyUtil/UUID.h>
 #include <LucyRE/LucyRE.h>
 #include <LucyUtil/Importer.h>
@@ -14,7 +14,6 @@
 #include <Lucy/Material.h>
 #include <Lucy/Registries/Registry.h>
 #include <Lucy/Camera.h>
-
 static auto& registry = Registry::Instance();
 
 // 55.0000, 0.0000, 63.5085
@@ -44,7 +43,7 @@ static struct {
 	glm::vec3 position = { 0, 0, 0 };
 	std::string name;
 	LUCY_UUID mesh_id = LUCY_NULL_UUID;
-	Transform transform;
+	lucy::Transform transform;
 	glm::mat4 matrix = glm::mat4(1.0f);
 } ROBOTIC_ARM_PARTS[] = {
 	{{ 55.0000, 0.0000, 63.5085 }, "STATIC_BASE" },
@@ -215,28 +214,9 @@ void lra::RenderAxisLine(bool x, bool y, bool z) {
 void lra::RenderGrid() {
 	lre::SetModel(glm::mat4(1.0f));
 
-	lre::RenderLine(grid, { 1, 1, 1, 0.5 });
-	lre::RenderLine(grid_small, { 0.5, 0.5, 0.5, 0.5 });
+	lre::RenderLine(grid, { 1, 1, 1, 0.4 });
+	lre::RenderLine(grid_small, { 0.5, 0.5, 0.5, 0.4 });
 }
-
-// void lra::DrawGrid(uint32_t size, const std::vector<uint32_t>& unit) {
-// 	static uint32_t t_size = 1000;
-// 	static std::vector<uint32_t> t_unit = { 10, 100 };
-
-// 	if (size != t_size || t_unit != unit) {
-// 		for (int i = -500; i <= 500; i++) {
-// 			for (int i = 0; i < unit.size(); i++) {
-// 				if (i % 100 == 0) {
-// 					grid.push_back({ -500, 0, i });
-// 					grid.push_back({ +500, 0, i });
-
-// 					grid.push_back({ i, 0, -500 });
-// 					grid.push_back({ i, 0, +500 });
-// 				}
-// 			}
-// 		}
-// 	}
-// }
 
 uint32_t lra::SelectID() {
 	std::cout << selected_pixel.y << '\n';

@@ -117,7 +117,7 @@ bool ImGui::SliderDragFloat(const char* label, float* v, float speed, float min,
 	return SliderDragFloat(label, v, speed, min, max, slider_state_map[label]);
 }
 
-void embraceTheDarkness() {
+void ImGui::Theme::EmbraceTheDarkness() {
 	ImVec4* colors = ImGui::GetStyle().Colors;
 	colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
@@ -200,7 +200,7 @@ void embraceTheDarkness() {
 	style.TabRounding                       = 4;
 }
 
-void VS_Theme() {
+void ImGui::Theme::VisualStudio() {
 	constexpr auto ColorFromBytes = [](uint8_t r, uint8_t g, uint8_t b) {
 		return ImVec4((float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f, 1.0f);
 	};
@@ -278,7 +278,7 @@ void VS_Theme() {
 	style.TabRounding       = 0.0f;
 }
 
-void Red_DarkTheme() {
+void ImGui::Theme::RedDark() {
 	ImVec4* colors = ImGui::GetStyle().Colors;
 
 	colors[ImGuiCol_Text]                   = ImVec4(0.75f, 0.75f, 0.75f, 1.00f);
@@ -288,7 +288,7 @@ void Red_DarkTheme() {
 	colors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
 	colors[ImGuiCol_Border]                 = ImVec4(0.00f, 0.00f, 0.00f, 0.50f);
 	colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[ImGuiCol_FrameBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.54f);
+	colors[ImGuiCol_FrameBg]                = ImVec4(0.54f, 0.08f, 0.16f, 0.54f);
 	colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.37f, 0.14f, 0.14f, 0.67f);
 	colors[ImGuiCol_FrameBgActive]          = ImVec4(0.39f, 0.20f, 0.20f, 0.67f);
 	colors[ImGuiCol_TitleBg]                = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);

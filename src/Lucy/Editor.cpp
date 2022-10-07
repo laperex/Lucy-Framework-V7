@@ -32,9 +32,9 @@ void Editor::Initialize() {
 	ImGui_ImplSDL2_InitForOpenGL(window.sdl_window, (void*)window.sdl_glcontext);
 	ImGui_ImplOpenGL3_Init("#version 400");
 
-	VS_Theme();
-
 	ImGui::StyleColorsDark();
+
+	lucy::RunEditorInitializationSystems();
 
 	lucy::Events::AddFunction([](SDL_Event& event) {
 		ImGui_ImplSDL2_ProcessEvent(&event);

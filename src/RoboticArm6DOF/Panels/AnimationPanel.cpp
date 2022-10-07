@@ -160,6 +160,10 @@ void lra::panel::AnimationPanel() {
 									step.target_position[i] = temp;
 								}
 							}
+
+							if (step.target_position.x <= 0) {
+								step.target_position.x = 0;
+							}
 						}
 
 						ImGui::TableSetColumnIndex(10);

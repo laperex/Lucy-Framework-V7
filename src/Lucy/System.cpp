@@ -48,16 +48,16 @@ void lucy::RunRuntimeSystems() {
 	RunSystems(RUNTIME);
 }
 
-void lucy::RunEditorMainWindowSystems() {
-	RunSystems(EDITOR_MAIN_WINDOW_SYSTEM);
-}
-
 void lucy::RunEditorSystems() {
-	RunSystems(EDITOR);
+	RunSystems(EDITOR_RUNTIME);
 }
 
 void lucy::RunInitializationSystems() {
 	RunSystems(INTITIALIZATION);
+}
+
+void lucy::RunEditorInitializationSystems() {
+	RunSystems(EDITOR_INITIALIZATION);
 }
 
 void lucy::RunSdlEventSystems(SDL_Event& sdl_event) {

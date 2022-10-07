@@ -75,8 +75,8 @@ void lucy::Camera::Update(double dt) {
 	scrollspeed = distance / 10;
 	this->position = distance * -this->front;
 
-	static bool click_toggle = false;
-	if (Events::IsButtonPressed(SDL_BUTTON_LEFT) && Events::IsKeyPressed(SDL_SCANCODE_LALT) && click_toggle) {
+	static bool click_toggle = true;
+	if (Events::IsButtonPressed(SDL_BUTTON_LEFT) && Events::IsKeyPressed(SDL_SCANCODE_LALT)/*  && click_toggle */) {
 		glm::vec4 ray_clip = glm::vec4(norm_cursor_pos.x, norm_cursor_pos.y, -1.0, 1.0);
 		glm::vec4 ray_eye = glm::inverse(this->projection) * ray_clip;
 		ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
