@@ -183,7 +183,6 @@ void lra::panel::AnimationPanel() {
 
 						step.target_angles = controller.target_joint_angles;
 						step.target_position = Kinematics::GetForwardKinematics(step.target_angles, controller.lra_dimension);
-						step.mode = controller.mode;
 						step.phi = controller.phi;
 
 						animation.step_array.push_back(step);

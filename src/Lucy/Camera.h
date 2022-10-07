@@ -23,9 +23,9 @@ namespace lucy {
 		int posx, posy;
 		int lastx, lasty;
 		bool first_mouse = true;
-		float fov = 45;
-		float c_near = 0.01, c_far = 1000;
-		float sensitivity = 0.5;
+		float fov = 45.0f;
+		float c_near = 0.01f, c_far = 1000.0f;
+		float sensitivity = 0.5f;
 
 		bool enable = true;
 

@@ -42,10 +42,10 @@ void lra::panel::MainPanel() {
 		}
 
 		camera.enable = ImGui::IsWindowHovered();
-		camera.posx = x;
-		camera.posy = y;
-		camera.width = w;
-		camera.height = h;
+		camera.posx = int(x);
+		camera.posy = int(y);
+		camera.width = int(w);
+		camera.height = int(h);
 
 		if (camera.framebuffer == nullptr) {
 			camera.framebuffer = new lgl::FrameBuffer(w, h, true);
@@ -58,7 +58,7 @@ void lra::panel::MainPanel() {
 
 		ImGuizmo::SetRect(x, y, w, h);
 
-		if (controller.enable_ik || controller.mode == WRITING) {
+		if (controller.enable_ik) {
 			glm::mat4 delta;
 			ImGuizmo::Manipulate(&camera.view[0][0], &camera.projection[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &(glm::translate(glm::mat4(1.0f), glm::vec3(controller.ik_target)))[0][0], &delta[0][0]);
 
@@ -74,22 +74,9 @@ void lra::panel::MainPanel() {
 		}
 
 		static uint32_t selected_id = 0;
+		static glm::vec4 pixel;
 
-		if (lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT) && !ImGuizmo::IsOver() && !ImGuizmo::IsUsing() && ImGui::IsWindowHovered()) {
-			camera.framebuffer->Bind();
-			auto norm = (lucy::Events::GetCursorPosNormalized(camera.posx, camera.posy, camera.width, camera.height) * glm::vec3(camera.width, camera.height, 0) + glm::vec3(camera.width, camera.height, 0)) / 2.0f;
-			glm::vec4 pixel;
-			lgl::SetReadBuffer(lgl::Attachment::COLOR_ATTACHMENT1);
-			lgl::ReadPixels(norm.x, norm.y, 1, 1, lgl::Format::RGBA, lgl::Type::FLOAT, &pixel[0]);
-			lgl::ResetReadBuffer();
-			selected_id = uint32_t(pixel.y);
-			camera.framebuffer->UnBind();
-			// std::cout << norm.x << ' ' << norm.y << " | " << selected_pixel.x << ' ' << selected_pixel.y << ' ' << selected_pixel.z << ' ' << selected_pixel.w << '\n';
-		} else if (!ImGuizmo::IsOver() && !ImGuizmo::IsUsing() && lucy::Events::IsButtonPressedAny() && selected_id == 0 && ImGui::IsWindowHovered()) {
-			selected_id = 0;
-		}
-
-		if (selected_id) {
+		if (selected_id && (!controller.enable_ik || (controller.enable_ik && (selected_id == 7 || selected_id == 8 || selected_id == 6)))) {
 			glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(glm::vec3(0, controller.target_joint_angles.base, 0))));
 			glm::mat4 model = rotation;
 
@@ -168,6 +155,19 @@ void lra::panel::MainPanel() {
 						controller.target_joint_angles[i] = 0;
 				}
 			}
+		}
+
+		if (lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT) && !ImGuizmo::IsOver() && !ImGuizmo::IsUsing() && ImGui::IsWindowHovered()) {
+			camera.framebuffer->Bind();
+			glm::ivec2 norm = (lucy::Events::GetCursorPosNormalized(camera.posx, camera.posy, camera.width, camera.height) * glm::vec3(camera.width, camera.height, 0) + glm::vec3(camera.width, camera.height, 0)) / 2.0f;
+			lgl::SetReadBuffer(lgl::Attachment::COLOR_ATTACHMENT1);
+			lgl::ReadPixels(norm.x, norm.y, 1, 1, lgl::Format::RGBA, lgl::Type::FLOAT, &pixel[0]);
+			lgl::ResetReadBuffer();
+			selected_id = uint32_t(pixel.y);
+			camera.framebuffer->UnBind();
+			// std::cout << norm.x << ' ' << norm.y << " | " << selected_pixel.x << ' ' << selected_pixel.y << ' ' << selected_pixel.z << ' ' << selected_pixel.w << '\n';
+		} else if (!ImGuizmo::IsOver() && !ImGuizmo::IsUsing() && lucy::Events::IsButtonPressedAny() && selected_id == 0 && ImGui::IsWindowHovered()) {
+			selected_id = 0;
 		}
 	}
 	ImGui::End();

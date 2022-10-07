@@ -5,18 +5,11 @@
 #include "JointLength.h"
 
 namespace lra {
-	enum RoboticArmMode {
-		WRITING,
-		PICKING,
-
-		RoboticArmMode_COUNT
-	};
 	struct Controller {
 		bool enable_ik = false;
 
 		glm::ivec3 ik_target = { 150, 150, 150 };
 		float phi = -45;
-		RoboticArmMode mode;
 
 		glm::ivec3 fk_result;
 

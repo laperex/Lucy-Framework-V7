@@ -1,7 +1,8 @@
 #define ENABLE_VIEWPORT
+#define DISABLE_DOCKSPACE
 
-#include "Lucy/Lucy.h"
 #include <Lucy/Editor.h>
+#include "Lucy/Lucy.h"
 #include "Lucy/System.h"
 // #include <MineClone/Game.h>
 // #include <Writer 2 DOF/Write.h>

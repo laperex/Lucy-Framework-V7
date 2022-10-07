@@ -36,19 +36,12 @@ void lra::InitializeArm() {
 	IntializeRenderer();
 
 	camera.position = { 0, 0, 1000 };
-	controller.mode = PICKING;
 }
 
 void lra::RuntimeUpdateArm() {
 	auto& camera = registry.store<lucy::Camera>();
 	auto& window = registry.store<lucy::Window>();
 	auto& controller = registry.store<Controller>();
-
-	if (controller.mode == WRITING) {
-		controller.lra_dimension.wrist = 240;
-	} else {
-		controller.lra_dimension.wrist = 190;
-	}
 
 	if (camera.framebuffer != nullptr) {
 		camera.framebuffer->Bind();
@@ -62,7 +55,7 @@ void lra::RuntimeUpdateArm() {
 		lre::SetView(camera.view);
 		lre::SetProjection(camera.projection);
 
-		if ((controller.mode == PICKING && controller.enable_ik) || controller.mode == WRITING) {
+		if (controller.enable_ik) {
 			bool is_valid;
 			auto angles = Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.lra_dimension);
 			if (is_valid) {

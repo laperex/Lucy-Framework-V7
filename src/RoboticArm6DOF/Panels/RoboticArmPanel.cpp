@@ -40,21 +40,15 @@ void lra::panel::RoboticArmPanel() {
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("Inverse Kinematics", treenode_flags)) {
-			if (controller.mode == RoboticArmMode::PICKING) {
-				if (controller.enable_ik)
-					ImGui::PushStyleColor(ImGuiCol_Button, { 1, 0, 0, 0.7 });
-				else
-					ImGui::PushStyleColor(ImGuiCol_Button, { 0, 1, 0, 0.7 });
+			if (controller.enable_ik)
+				ImGui::PushStyleColor(ImGuiCol_Button, { 1, 0, 0, 0.7 });
+			else
+				ImGui::PushStyleColor(ImGuiCol_Button, { 0, 1, 0, 0.7 });
 
-				if (ImGui::Button((controller.enable_ik) ? "Disable" : " Enable"))
-					controller.enable_ik = !controller.enable_ik;
+			if (ImGui::Button((controller.enable_ik) ? "Disable" : " Enable"))
+				controller.enable_ik = !controller.enable_ik;
 
-				ImGui::PopStyleColor();
-			}
-
-			if (controller.mode == RoboticArmMode::WRITING) {
-				ImGui::SliderDragFloat("phi", &controller.phi, 0.1, -90, 90);
-			}
+			ImGui::PopStyleColor();
 
 			static glm::vec3 temp;
 			ImGui::DragInt3("End Affector", &controller.ik_target[0], 1);
