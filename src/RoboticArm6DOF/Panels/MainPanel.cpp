@@ -34,8 +34,6 @@ void lra::panel::MainPanel() {
 		auto [x, y] = ImGui::GetWindowPos();
 		auto [w, h] = ImGui::GetWindowSize();
 
-		// if (w >)
-
 		if (camera.framebuffer != nullptr) {
 			if (camera.framebuffer->width != w || camera.framebuffer->height != h) {
 				delete camera.framebuffer;
@@ -77,8 +75,7 @@ void lra::panel::MainPanel() {
 
 		static uint32_t selected_id = 0;
 		static glm::vec4 pixel;
-
-		if (selected_id == 100) {
+		if (selected_id == 100 && !controller.enable_ik) {
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(canvas.position)) * glm::scale(glm::mat4(1.0f), glm::vec3(canvas.scale));
 			ImGuizmo::Manipulate(&camera.view[0][0], &camera.projection[0][0], ImGuizmo::OPERATION::TRANSLATE | ImGuizmo::OPERATION::SCALE_X | ImGuizmo::OPERATION::SCALE_Z, ImGuizmo::LOCAL, &model[0][0]);
 

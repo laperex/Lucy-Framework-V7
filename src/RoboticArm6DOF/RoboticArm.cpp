@@ -65,7 +65,7 @@ void lra::RuntimeUpdateArm() {
 		lre::SetView(camera.view);
 		lre::SetProjection(camera.projection);
 
-		if (controller.enable_ik) {
+		if (controller.enable_ik && animator.animationstate != PLAY) {
 			bool is_valid;
 			auto angles = Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.lra_dimension);
 			if (is_valid) {
@@ -85,15 +85,26 @@ void lra::RuntimeUpdateArm() {
 			if (animator.selected_animation != LUCY_NULL_UUID) {
 				auto& animation = animator.animation_registry[animator.selected_animation].animation;
 				auto& generated = animation.GetGenerated();
+				static LUCY_UUID last_animation = LUCY_NULL_UUID;
 
-				TraceAnimationPoints(idx, &animation);
+				if (animator.selected_animation != last_animation) {
+					idx = 0;
+					progress = 0;
+					last_animation = animator.selected_animation;
+				}
+
+				if (animator.render_path)
+					TraceAnimationPoints(idx, generated.size() - 1, &animation, { 0.2, 1, 1, 1 });
+
+				if (animator.trace_path)
+					TraceAnimationPoints(0, idx, &animation);
 
 				if (animator.animationstate == PLAY) {
 					if (idx >= generated.size()) {
 						idx = 0;
 					}
 
-					if (idx == 0) {
+					if (idx == 0 && generated.size()) {
 						static JointAngles last_angles, next_angles;
 
 						if (progress == 0) {
@@ -110,6 +121,8 @@ void lra::RuntimeUpdateArm() {
 						} else {
 							for (int i = 0; i < 6; i++)
 								controller.target_joint_angles[i] = last_angles[i] + (next_angles[i] - last_angles[i]) * EASE_FUNC(progress, 2.5);
+
+							controller.ik_target = animation.generated_positions[idx].position;
 							progress += 1.0f / 500.0f;
 						}
 					} else if (idx < generated.size()) {
@@ -135,6 +148,7 @@ void lra::RuntimeUpdateArm() {
 						if (p >= 1) p = 1;
 						for (int i = 0; i < 6; i++)
 							controller.target_joint_angles[i] = last_angles[i] + (next_angles[i] - last_angles[i]) * EASE_FUNC(p, 2.5);
+						controller.ik_target = animation.generated_positions[idx].position;
 
 						if (current_time - last_time >= controller.speed) {
 							last_time = current_time;
@@ -142,8 +156,9 @@ void lra::RuntimeUpdateArm() {
 						}
 
 						if (idx >= generated.size()) {
-							// idx = 0;
-							if (!animation.loop)
+							if (animation.loop)
+								idx = 0;
+							else
 								animator.animationstate = PAUSE;
 						}
 					}

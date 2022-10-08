@@ -14,6 +14,11 @@
 #include <RoboticArm6DOF/RoboticArm.h>
 
 int main(int argcount, char** args) {
+	// lucy::RayCastPoint({ 10, 10, 0 }, { 0, 0, 0 }, [](int x, int y, int z) -> bool {
+	// 	std::cout << "P: " << x << ' ' << y << ' ' << z << '\n';
+	// 	return false;
+	// });
+
 	// lucy::AddSystem(lucy::EDITOR_RUNTIME, ImGui::ShowDemoWindow);
 
 	// lucy::AddSystem(lucy::INTITIALIZATION, lpv::InitializeGame);

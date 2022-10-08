@@ -3,7 +3,7 @@
 #include <LucyRE/LucyRE.h>
 #include <glm/glm.hpp>
 
-void lra::TraceAnimationPoints(int idx, AnimationProperty* animation, const glm::vec4& color) {
+void lra::TraceAnimationPoints(int start_idx, int idx, AnimationProperty* animation, const glm::vec4& color) {
 	assert(animation != nullptr);
 	if (!animation->GetGenerated().size()) return;
 
@@ -35,5 +35,5 @@ void lra::TraceAnimationPoints(int idx, AnimationProperty* animation, const glm:
 	shader->Bind();
 	shader->SetUniformVec4("u_color", &color[0]);
 
-	lre::Render(lgl::LINE_STRIP, nullptr, lre::Vertex::P1::VertexArray(), vertexbuffer, idx);
+	lre::Render(lgl::LINE_STRIP, nullptr, lre::Vertex::P1::VertexArray(), vertexbuffer, start_idx, idx - start_idx);
 }

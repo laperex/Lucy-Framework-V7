@@ -25,7 +25,7 @@ void lra::panel::CanvasPanel() {
 
 		static std::vector<std::vector<glm::vec2>> canvas_shapes;
 		static DrawMode shape;
-		static bool draw_begin = false;
+		static bool toggle = false;
 
 		static float slider = 0.17;
 		ImGui::SliderFloat("##3842746", &slider, 0.1f, 1.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
@@ -36,28 +36,12 @@ void lra::panel::CanvasPanel() {
 
 		if (ImGui::BeginChild("#6783")) {
 			if (ImGui::TreeNodeEx("Properties", ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_DefaultOpen)) {
-				static glm::ivec3 position = { 150, 0, 150 }, scale = { 100, 100, 100 };
+				static glm::ivec3 position = { 150, 150, 150 }, scale = { 100, 100, 100 };
 				static LUCY_UUID test_id = LUCY_NULL_UUID, last_selected_animation = LUCY_NULL_UUID;
+				static bool is_gen = false;
 
 				ImGui::DragInt3("Position", &canvas.position[0], 1);
 				ImGui::DragInt3("Scale", &canvas.scale[0], 1);
-
-				if (ImGui::Button("Test")) {
-					if (test_id == LUCY_NULL_UUID) {
-						AnimationProperty animation;
-						animation.loop = false;
-						test_id = animator.NewAnimation("__##Test", animation);
-					}
-
-					last_selected_animation = animator.selected_animation;
-					animator.selected_animation = test_id;
-					animator.animationstate = PLAY;
-				}
-
-				if (animator.selected_animation == test_id && animator.animationstate == PAUSE) {
-					animator.animationstate = STOP;
-					animator.selected_animation = last_selected_animation;
-				}
 
 				auto rest_pos = canvas.GetArmRestPos();
 
@@ -75,20 +59,6 @@ void lra::panel::CanvasPanel() {
 					if (is_valid) Kinematics::GetInverseKinematics(is_valid, p2);
 					if (is_valid) Kinematics::GetInverseKinematics(is_valid, p3);
 					if (is_valid) Kinematics::GetInverseKinematics(is_valid, rest_pos);
-
-					if (is_valid) {
-						auto& animation = animator.animation_registry[test_id].animation;
-						animation.step_array.clear();
-						animation.step_array.reserve(5);
-						// animation.step_array.emplace_back(AnimationStep{{ rest_pos }});
-						animation.step_array.emplace_back(AnimationStep{{ p0 }});
-						animation.step_array.emplace_back(AnimationStep{{ p1 }});
-						animation.step_array.emplace_back(AnimationStep{{ p2 }});
-						animation.step_array.emplace_back(AnimationStep{{ p3 }});
-						animation.step_array.emplace_back(AnimationStep{{ rest_pos }});
-
-						animation.Generate();
-					}
 				}
 
 				if (!is_valid) {
@@ -99,6 +69,43 @@ void lra::panel::CanvasPanel() {
 					scale = canvas.scale;
 				}
 
+				if (ImGui::Button("Test")) {
+					if (test_id == LUCY_NULL_UUID) {
+						AnimationProperty animation;
+						animation.loop = false;
+						test_id = animator.NewAnimation("__##Test", animation);
+					}
+
+					auto& animation = animator.animation_registry[test_id].animation;
+					auto size = canvas.GetCanvasSize();
+
+					glm::ivec3 p0 = { rest_pos.x, canvas.position.y, rest_pos.z };
+					glm::ivec3 p1 = { rest_pos.x, canvas.position.y, rest_pos.z + size.y };
+					glm::ivec3 p2 = { rest_pos.x + size.x, canvas.position.y, rest_pos.z };
+					glm::ivec3 p3 = { rest_pos.x + size.x, canvas.position.y, rest_pos.z + size.y };
+
+					last_selected_animation = animator.selected_animation;
+
+					animator.selected_animation = test_id;
+					animator.animationstate = PLAY;
+
+					animation.step_array.clear();
+
+					animation.step_array.push_back(AnimationStep{{ canvas.GetArmRestPos() }});
+					animation.step_array.push_back(AnimationStep{{ p0 }});
+					animation.step_array.push_back(AnimationStep{{ p1 }});
+					animation.step_array.push_back(AnimationStep{{ p3 }});
+					animation.step_array.push_back(AnimationStep{{ p2 }});
+					animation.step_array.push_back(AnimationStep{{ p0 }});
+					animation.step_array.push_back(AnimationStep{{ canvas.GetArmRestPos() }});
+
+					animation.Generate();
+				}
+
+				// if (animator.selected_animation == test_id && animator.animationstate == PAUSE) {
+				// 	animator.animationstate = STOP;
+				// 	animator.selected_animation = last_selected_animation;
+				// }
 				ImGui::TreePop();
 			}
 
@@ -131,10 +138,9 @@ void lra::panel::CanvasPanel() {
 		ImGui::NextColumn();
 
 		if (ImGui::BeginChild("#0283")) {
-			if (ImGui::IsWindowHovered() && lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT))
-				draw_begin = true;
-			else
-				draw_begin = false;
+			static glm::vec2 point0 = { 0, 0 };
+			static bool draw_begin = false;
+			toggle = ImGui::IsWindowHovered() && lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT);
 
 			ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();
 			ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
@@ -144,8 +150,18 @@ void lra::panel::CanvasPanel() {
 
 			ImGuiIO& io = ImGui::GetIO();
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
-			draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
+
+			draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(25, 25, 25, 255));
 			draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(255, 255, 255, 255));
+
+			const float GRID_STEP_X = 64.0f;
+			const float GRID_STEP_Y = 64.0f / 2;
+
+			
+			for (float x = fmodf(0, GRID_STEP_Y); x < canvas_sz.x; x += GRID_STEP_Y)
+				draw_list->AddLine(ImVec2(canvas_p0.x + x, canvas_p0.y), ImVec2(canvas_p0.x + x, canvas_p1.y), IM_COL32(200, 200, 200, 40));
+			for (float y = fmodf(0, GRID_STEP_X); y < canvas_sz.y; y += GRID_STEP_X)
+				draw_list->AddLine(ImVec2(canvas_p0.x, canvas_p0.y + y), ImVec2(canvas_p1.x, canvas_p0.y + y), IM_COL32(200, 200, 200, 40));
 		}
 		ImGui::EndChild();
 	}

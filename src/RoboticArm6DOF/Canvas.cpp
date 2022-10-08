@@ -30,11 +30,12 @@ void lra::Canvas::Render(const glm::vec4& color) {
 	shader->SetUniformi("data", 100);
 	shader->SetUniformVec4("u_color", &color[0]);
 
-	glLineWidth(3);
+	glLineWidth(4);
 
 	lre::Render(lgl::LINE_STRIP, nullptr, lre::Vertex::P1::VertexArray(), vertexbuffer, 5);
 
 	glLineWidth(1);
+	shader->SetUniformi("data", 0);
 }
 
 const glm::ivec2& lra::Canvas::GetOriginPos() {

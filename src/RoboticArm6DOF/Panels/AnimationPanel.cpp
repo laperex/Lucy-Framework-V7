@@ -111,6 +111,18 @@ void lra::panel::AnimationPanel() {
 					open_view_gen = !open_view_gen;
 				}
 
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(w);
+				if (ImGui::Button("Show Path")) {
+					animator.render_path = !animator.render_path;
+				}
+
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(w);
+				if (ImGui::Button((animator.trace_path) ? "Trace Off": "Trace On")) {
+					animator.trace_path = !animator.trace_path;
+				}
+
 				if (ImGui::BeginTable("View##0203", 1 + 6 + 3 + 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
 					ImGui::TableNextRow();
 

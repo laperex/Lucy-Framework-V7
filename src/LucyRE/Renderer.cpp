@@ -234,7 +234,7 @@ void lre::Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray
 	lgl::DrawIndexed(primitive, indexcount, lgl::UNSIGNED_INT, nullptr);
 }
 
-void lre::Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, lgl::IndexBuffer* indexbuffer, int indexcount, int picking_data) {
+void lre::RenderPicking(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, lgl::IndexBuffer* indexbuffer, int indexcount, int picking_data) {
 	assert(indexbuffer != nullptr && vertexarray != nullptr && shader != nullptr);
 	if (indexcount == 0) return;
 
@@ -248,9 +248,9 @@ void lre::Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray
 	lgl::DrawIndexed(primitive, indexcount, lgl::UNSIGNED_INT, nullptr);
 }
 
-void lre::Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, int vertexcount) {
+void lre::Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, int first, int count) {
 	assert(vertexarray != nullptr);
-	if (vertexcount == 0) return;
+	if (count == 0) return;
 
 	vertexarray->Bind();
 	vertexarray->BindVertexBuffer(vertexbuffer, vertexarray->stride);
@@ -258,10 +258,14 @@ void lre::Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray
 	if (shader != nullptr)
 		shader->Bind();
 
-	lgl::Draw(primitive, 0, vertexcount);
+	lgl::Draw(primitive, first, count);
 }
 
-void lre::Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, int vertexcount, int picking_data) {
+void lre::Render(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, int vertexcount) {
+	Render(primitive, shader, vertexarray, vertexbuffer, 0, vertexcount);
+}
+
+void lre::RenderPicking(lgl::Primitive primitive, lgl::Shader* shader, lgl::VertexArray* vertexarray, lgl::VertexBuffer* vertexbuffer, int vertexcount, int picking_data) {
 	assert(vertexarray != nullptr && shader != nullptr);
 	if (vertexcount == 0) return;
 
@@ -287,7 +291,7 @@ void lre::RenderMesh(LUCY_UUID id, lgl::Shader* shader, int picking_data) {
 
 	auto [vertexarray, vertexbuffer, vertexcount, indexbuffer, indexcount] = self->mesh_registry[id].second;
 
-	Render(lgl::TRIANGLE, shader, vertexarray, vertexbuffer, indexbuffer, indexcount, picking_data);
+	RenderPicking(lgl::TRIANGLE, shader, vertexarray, vertexbuffer, indexbuffer, indexcount, picking_data);
 }
 
 void lre::RenderLine(const std::vector<Vertex::P1>& vertices, const glm::vec4& color) {

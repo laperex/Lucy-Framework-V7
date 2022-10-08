@@ -60,6 +60,8 @@ namespace lra {
 		std::unordered_map<LUCY_UUID, AnimationPropertyContainer> animation_registry;
 		AnimtationState animationstate = STOP;
 		LUCY_UUID selected_animation = LUCY_NULL_UUID;
+		bool render_path = false;
+		bool trace_path = false;
 
 		void Step();
 		bool IsNamePresent(std::string name);
