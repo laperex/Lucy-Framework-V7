@@ -25,7 +25,6 @@ void lra::panel::CanvasPanel() {
 
 		static std::vector<std::vector<glm::vec2>> canvas_shapes;
 		static DrawMode shape;
-		static bool toggle = false;
 
 		static float slider = 0.17;
 		ImGui::SliderFloat("##3842746", &slider, 0.1f, 1.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
@@ -138,9 +137,10 @@ void lra::panel::CanvasPanel() {
 		ImGui::NextColumn();
 
 		if (ImGui::BeginChild("#0283")) {
-			static glm::vec2 point0 = { 0, 0 };
+			static ImVec2 point0 = { 0, 0 };
+			static std::vector<std::vector<ImVec2>> drawn_shapes;
 			static bool draw_begin = false;
-			toggle = ImGui::IsWindowHovered() && lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT);
+			static bool toggle = false;
 
 			ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();
 			ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
@@ -154,14 +154,48 @@ void lra::panel::CanvasPanel() {
 			draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(25, 25, 25, 255));
 			draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(255, 255, 255, 255));
 
-			const float GRID_STEP_X = 64.0f;
-			const float GRID_STEP_Y = 64.0f / 2;
+			ImGui::InvisibleButton("canvas", canvas_sz, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+            const bool is_hovered = ImGui::IsItemHovered();
+            const bool is_active = ImGui::IsItemActive();
+            ImVec2 origin(canvas_p0.x, canvas_p0.y);
+            ImVec2 mouse_pos_in_canvas(io.MousePos.x - origin.x, io.MousePos.y - origin.y);
 
-			
-			for (float x = fmodf(0, GRID_STEP_Y); x < canvas_sz.x; x += GRID_STEP_Y)
-				draw_list->AddLine(ImVec2(canvas_p0.x + x, canvas_p0.y), ImVec2(canvas_p0.x + x, canvas_p1.y), IM_COL32(200, 200, 200, 40));
-			for (float y = fmodf(0, GRID_STEP_X); y < canvas_sz.y; y += GRID_STEP_X)
-				draw_list->AddLine(ImVec2(canvas_p0.x, canvas_p0.y + y), ImVec2(canvas_p1.x, canvas_p0.y + y), IM_COL32(200, 200, 200, 40));
+			if (toggle && lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
+				point0.x = mouse_pos_in_canvas.x + origin.x;
+				point0.y = mouse_pos_in_canvas.y + origin.y;
+				draw_begin = true;
+			}
+
+			toggle = ImGui::IsItemHovered() && !lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT);
+
+			// if (draw_begin && toggle) {
+			// 	draw_begin = false;
+			// }
+
+			if (draw_begin) {
+				if (mouse_pos_in_canvas.x > 0 && mouse_pos_in_canvas.y > 0) {
+					ImVec2 point1 = { mouse_pos_in_canvas.x + origin.x, mouse_pos_in_canvas.y + origin.y };
+					if (!lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
+						drawn_shapes.push_back({ point0, point1 });
+						draw_begin = false;
+					} else {
+						draw_list->AddLine(point0, point1, IM_COL32(255, 0, 255, 255));
+					}
+				}
+			}
+
+			for (auto& array: drawn_shapes) {
+				for (int i = 1; i < array.size(); i++) {
+					draw_list->AddLine(array[i - 1], array[i], IM_COL32(255, 255, 0, 255));
+				}
+			}
+
+			// const float GRID_STEP_X = 64.0f;
+			// const float GRID_STEP_Y = 64.0f / 2;
+			// for (float x = fmodf(0, GRID_STEP_Y); x < canvas_sz.x; x += GRID_STEP_Y)
+			// 	draw_list->AddLine(ImVec2(canvas_p0.x + x, canvas_p0.y), ImVec2(canvas_p0.x + x, canvas_p1.y), IM_COL32(200, 200, 200, 40));
+			// for (float y = fmodf(0, GRID_STEP_X); y < canvas_sz.y; y += GRID_STEP_X)
+			// 	draw_list->AddLine(ImVec2(canvas_p0.x, canvas_p0.y + y), ImVec2(canvas_p1.x, canvas_p0.y + y), IM_COL32(200, 200, 200, 40));
 		}
 		ImGui::EndChild();
 	}

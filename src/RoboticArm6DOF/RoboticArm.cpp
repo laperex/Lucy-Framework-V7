@@ -93,11 +93,13 @@ void lra::RuntimeUpdateArm() {
 					last_animation = animator.selected_animation;
 				}
 
-				if (animator.render_path)
+				if (animator.render_path) {
 					TraceAnimationPoints(idx, generated.size() - 1, &animation, { 0.2, 1, 1, 1 });
+				}
 
-				if (animator.trace_path)
+				if (animator.trace_path) {
 					TraceAnimationPoints(0, idx, &animation);
+				}
 
 				if (animator.animationstate == PLAY) {
 					if (idx >= generated.size()) {

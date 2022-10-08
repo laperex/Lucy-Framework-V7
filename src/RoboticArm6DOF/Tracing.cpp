@@ -14,9 +14,8 @@ void lra::TraceAnimationPoints(int start_idx, int idx, AnimationProperty* animat
 		std::vector<glm::vec3> positions;
 
 		positions.reserve(animation->generated_positions.size());
-		for (int i = 0; i < animation->generated_positions.size(); i++) {
+		for (int i = 0; i < animation->generated_positions.size(); i++)
 			positions.emplace_back(glm::vec3(animation->generated_positions[i].position));
-		}
 
 		if (vertexbuffer == nullptr)
 			vertexbuffer = new lgl::VertexBuffer();

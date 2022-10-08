@@ -89,6 +89,8 @@ void lra::panel::AnimationPanel() {
 		ImGui::NextColumn();
 
 		{
+			bool regenrate = false;
+
 			ImGui::BeginChild("#1", { 0, 0 }, false);
 		
 			if (animator.selected_animation != LUCY_NULL_UUID) {
@@ -103,7 +105,7 @@ void lra::panel::AnimationPanel() {
 				ImGui::SameLine();
 				ImGui::SetNextItemWidth(w);
 				if (ImGui::Button("Regenerate")) {
-					animation.Generate();
+					regenrate = true;
 				}
 				ImGui::SameLine();
 				ImGui::SetNextItemWidth(w);
@@ -155,10 +157,7 @@ void lra::panel::AnimationPanel() {
 						for (int i = 0; i < 6; i++) {
 							ImGui::TableSetColumnIndex(i + 1);
 							ImGui::SetNextItemWidth(ImGui::GetColumnWidth(i + 1));
-							if (ImGui::DragFloat(("##" + std::to_string(f++)).c_str(), &step.target_angles[i], 0)) {
-								// step.target_position = Kinematics::GetForwardKinematics(step.target_angles, controller.lra_dimension);
-								// step.target_angles = 
-							}
+							ImGui::DragFloat(("##" + std::to_string(f++)).c_str(), &step.target_angles[i], 0);
 						}
 
 						for (int i = 0; i < 3; i++) {
@@ -171,6 +170,7 @@ void lra::panel::AnimationPanel() {
 								auto angles = Kinematics::GetInverseKinematics(is_valid, step.target_position, controller.lra_dimension);
 								if (is_valid) {
 									step.target_angles = angles;
+									regenrate = true;
 								} else {
 									step.target_position[i] = temp;
 								}
@@ -190,10 +190,14 @@ void lra::panel::AnimationPanel() {
 								step.target_angles = angles;
 								step.target_position = pos;
 							}
+
+							regenrate = true;
 						}
 						ImGui::TableSetColumnIndex(11);
 						if (ImGui::Button(("VIEW##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(11), 0 })) {
-							controller.target_joint_angles = step.target_angles;
+							if (ImGui::IsItemHovered()) {
+								
+							}
 						}
 
 						idx++;
