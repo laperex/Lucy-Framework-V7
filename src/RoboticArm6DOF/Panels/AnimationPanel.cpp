@@ -1,4 +1,5 @@
 #include "Panel.h"
+#include <iostream>
 #include <Lucy/Lucy.h>
 #include <Lucy/imgui_lucy_impl.h>
 #include <Lucy/Light.h>
@@ -194,13 +195,25 @@ void lra::panel::AnimationPanel() {
 							regenrate = true;
 						}
 						ImGui::TableSetColumnIndex(11);
-						if (ImGui::Button(("VIEW##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(11), 0 })) {
-							if (ImGui::IsItemHovered()) {
-								
-							}
+						bool pressed = ImGui::Button(("VIEW##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(11), 0 });
+						static JointAngles last_angles;
+						static bool toggle = false;
+
+						if (ImGui::IsItemHovered() && pressed) {
+							last_angles = controller.target_joint_angles;
+							controller.target_joint_angles = step.target_angles;
+							toggle = true;
+						}
+						if ((!ImGui::IsItemHovered() || !lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) && toggle) {
+							controller.target_joint_angles = last_angles;
+							toggle = false;
 						}
 
 						idx++;
+					}
+
+					if (regenrate) {
+						animation.Generate();
 					}
 
 					ImGui::TableNextRow();

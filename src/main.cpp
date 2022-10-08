@@ -1,6 +1,3 @@
-#define ENABLE_VIEWPORT
-#define DISABLE_DOCKSPACE
-
 #include <glm/glm.hpp>
 #include <iostream>
 #include <Lucy/Editor.h>
