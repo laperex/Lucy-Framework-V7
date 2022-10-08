@@ -58,7 +58,7 @@ void lra::panel::MainPanel() {
 
 		ImGuizmo::SetRect(x, y, w, h);
 
-		if (controller.enable_ik) {
+		if (controller.ik_enable) {
 			glm::mat4 delta;
 			ImGuizmo::Manipulate(&camera.view[0][0], &camera.projection[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, &(glm::translate(glm::mat4(1.0f), glm::vec3(controller.ik_target)))[0][0], &delta[0][0]);
 
@@ -75,7 +75,7 @@ void lra::panel::MainPanel() {
 
 		static uint32_t selected_id = 0;
 		static glm::vec4 pixel;
-		if (selected_id == 100 && !controller.enable_ik) {
+		if (selected_id == 100 && !controller.ik_enable) {
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(canvas.position)) * glm::scale(glm::mat4(1.0f), glm::vec3(canvas.scale));
 			ImGuizmo::Manipulate(&camera.view[0][0], &camera.projection[0][0], ImGuizmo::OPERATION::TRANSLATE | ImGuizmo::OPERATION::SCALE_X | ImGuizmo::OPERATION::SCALE_Z, ImGuizmo::LOCAL, &model[0][0]);
 
@@ -87,7 +87,7 @@ void lra::panel::MainPanel() {
 				canvas.position = translation;
 				canvas.scale = scale;
 			}
-		} else if (selected_id && (!controller.enable_ik || (controller.enable_ik && (selected_id == 7 || selected_id == 8 || selected_id == 6)))) {
+		} else if (selected_id && (!controller.ik_enable || (controller.ik_enable && (selected_id == 7 || selected_id == 8 || selected_id == 6)))) {
 			glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(glm::vec3(0, controller.target_joint_angles.base, 0))));
 			glm::mat4 model = rotation;
 

@@ -6,7 +6,7 @@
 
 namespace lra {
 	struct Controller {
-		bool enable_ik = false;
+		bool ik_enable = false;
 		// bool free_movt = true;
 
 		glm::ivec3 ik_target = { 150, 150, 150 };

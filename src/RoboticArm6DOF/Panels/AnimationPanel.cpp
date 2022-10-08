@@ -194,20 +194,59 @@ void lra::panel::AnimationPanel() {
 
 							regenrate = true;
 						}
-						ImGui::TableSetColumnIndex(11);
-						bool pressed = ImGui::Button(("VIEW##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(11), 0 });
-						static JointAngles last_angles;
-						static bool toggle = false;
 
-						if (ImGui::IsItemHovered() && pressed) {
-							last_angles = controller.target_joint_angles;
-							controller.target_joint_angles = step.target_angles;
-							toggle = true;
+						ImGui::TableSetColumnIndex(11);
+
+						static JointAngles last_angles;
+						static glm::ivec3 last_pos;
+						static bool toggled_idx = 0;
+						static bool toggled = false;
+						static bool first = false;
+						static AnimtationState state;
+
+						ImGui::Button(("VIEW##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(11), 0 });
+
+						bool is_hovering = ImGui::IsItemHovered();
+						bool is_clicked = is_hovering && lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT);
+
+						if ((!is_hovering || !is_clicked) && toggled && toggled_idx == idx) {
+							if (controller.ik_enable) {
+								controller.ik_target = last_pos;
+							} else {
+								controller.target_joint_angles = last_angles;
+							}
+							animator.animationstate = state;
+							toggled = false;
 						}
-						if ((!ImGui::IsItemHovered() || !lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) && toggle) {
-							controller.target_joint_angles = last_angles;
-							toggle = false;
+						if (is_clicked && !toggled) {
+							toggled = true;
+							toggled_idx = idx;
+
+							if (controller.ik_enable) {
+								last_pos = controller.ik_target;
+								controller.ik_target = step.target_position;
+							} else {
+								last_angles = controller.target_joint_angles;
+								controller.target_joint_angles = step.target_angles;
+							}
+							
+							state = animator.animationstate;
+							animator.animationstate = PAUSE;
 						}
+
+						// if (toggle && !lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT) && idx == toggled_idx) {
+						// 	toggle = false;
+						// 	controller.target_joint_angles = last_angles;
+						// }
+
+						// if (ImGui::IsItemHovered() && idx == toggled_idx && toggle) {
+						// 	controller.target_joint_angles = step.target_angles;
+						// }
+
+						// if (!ImGui::IsItemHovered() || !lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
+						// 	controller.target_joint_angles = last_angles;
+						// 	toggle = false;
+						// }
 
 						idx++;
 					}

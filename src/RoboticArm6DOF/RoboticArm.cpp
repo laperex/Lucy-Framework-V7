@@ -65,7 +65,7 @@ void lra::RuntimeUpdateArm() {
 		lre::SetView(camera.view);
 		lre::SetProjection(camera.projection);
 
-		if (controller.enable_ik && animator.animationstate != PLAY) {
+		if (controller.ik_enable && animator.animationstate != PLAY) {
 			bool is_valid;
 			auto angles = Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.lra_dimension);
 			if (is_valid) {

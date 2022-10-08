@@ -4,7 +4,7 @@ lucy::Window::Window() {
 	this->pos = { 0, 0 };
 	this->size = { 1920, 1080 };
 
-	this->size *= 0.8;
+	this->size *= 0.7;
 
 	this->title = "Lucy Framework V7";
 }

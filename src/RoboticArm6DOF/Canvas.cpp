@@ -5,6 +5,8 @@
 #include <glad/glad.h>
 
 void lra::Canvas::Render(const glm::vec4& color) {
+	if (!visible) return;
+
 	static lgl::VertexBuffer* vertexbuffer = nullptr;
 	static glm::vec3 positions[] = {
 		{ -0.5, 0, -0.5 },

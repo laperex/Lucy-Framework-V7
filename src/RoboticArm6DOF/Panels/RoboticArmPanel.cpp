@@ -40,13 +40,13 @@ void lra::panel::RoboticArmPanel() {
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("Inverse Kinematics", treenode_flags)) {
-			if (controller.enable_ik)
+			if (controller.ik_enable)
 				ImGui::PushStyleColor(ImGuiCol_Button, { 1, 0, 0, 0.7 });
 			else
 				ImGui::PushStyleColor(ImGuiCol_Button, { 0, 1, 0, 0.7 });
 
-			if (ImGui::Button((controller.enable_ik) ? "Disable" : " Enable"))
-				controller.enable_ik = !controller.enable_ik;
+			if (ImGui::Button((controller.ik_enable) ? "Disable" : " Enable"))
+				controller.ik_enable = !controller.ik_enable;
 
 			ImGui::PopStyleColor();
 

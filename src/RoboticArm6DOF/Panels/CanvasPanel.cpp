@@ -68,7 +68,11 @@ void lra::panel::CanvasPanel() {
 					scale = canvas.scale;
 				}
 
-				if (ImGui::Button("Test")) {
+				if (ImGui::Button((canvas.visible) ? "Hide": "Show")) {
+					canvas.visible = !canvas.visible;
+				}
+
+				if (ImGui::Button("Test Trace")) {
 					if (test_id == LUCY_NULL_UUID) {
 						AnimationProperty animation;
 						animation.loop = false;
@@ -161,8 +165,8 @@ void lra::panel::CanvasPanel() {
             ImVec2 mouse_pos_in_canvas(io.MousePos.x - origin.x, io.MousePos.y - origin.y);
 
 			if (toggle && lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
-				point0.x = mouse_pos_in_canvas.x + origin.x;
-				point0.y = mouse_pos_in_canvas.y + origin.y;
+				point0.x = mouse_pos_in_canvas.x;
+				point0.y = mouse_pos_in_canvas.y;
 				draw_begin = true;
 			}
 
@@ -174,19 +178,23 @@ void lra::panel::CanvasPanel() {
 
 			if (draw_begin) {
 				if (mouse_pos_in_canvas.x > 0 && mouse_pos_in_canvas.y > 0) {
-					ImVec2 point1 = { mouse_pos_in_canvas.x + origin.x, mouse_pos_in_canvas.y + origin.y };
+					ImVec2 point1 = { mouse_pos_in_canvas.x, mouse_pos_in_canvas.y };
 					if (!lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
 						drawn_shapes.push_back({ point0, point1 });
 						draw_begin = false;
 					} else {
-						draw_list->AddLine(point0, point1, IM_COL32(255, 0, 255, 255));
+						ImVec2 p0 = { point0.x + origin.x, point0.y + origin.y };
+						ImVec2 p1 = { point1.x + origin.x, point1.y + origin.y };
+						draw_list->AddLine(p0, p1, IM_COL32(255, 0, 255, 255));
 					}
 				}
 			}
 
 			for (auto& array: drawn_shapes) {
 				for (int i = 1; i < array.size(); i++) {
-					draw_list->AddLine(array[i - 1], array[i], IM_COL32(255, 255, 0, 255));
+					ImVec2 p0 = { array[i - 1].x + origin.x, array[i - 1].y + origin.y };
+					ImVec2 p1 = { array[i].x + origin.x, array[i].y + origin.y };
+					draw_list->AddLine(p0, p1, IM_COL32(255, 255, 0, 255));
 				}
 			}
 
