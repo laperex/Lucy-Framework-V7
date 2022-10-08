@@ -25,6 +25,7 @@ namespace lra {
 		float pow_t = 1.9;	// Step Gradient
 
 		AnimationStep() {}
+		AnimationStep(glm::ivec3 target_position): target_position(target_position) {}
 	};
 
 	struct Position {

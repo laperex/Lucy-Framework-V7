@@ -1,10 +1,5 @@
-#include "RoboticArm.h"
-#include "Tracing.h"
 #include <chrono>
 #include <iostream>
-#include "LoadSave.h"
-#include "Renderer.h"
-#include "Animator.h"
 #include <Lucy/Editor.h>
 #include <Lucy/Picking.h>
 #include <Lucy/Events.h>
@@ -12,12 +7,18 @@
 #include <Lucy/Lucy.h>
 #include <Lucy/Light.h>
 #include <Lucy/Material.h>
-#include "Kinematics.h"
 #include <Lucy/imgui_lucy_impl.h>
-#include "Panels/Panel.h"
 #include <glm/gtx/string_cast.hpp>
-#include "Controller.h"
 #include <glad/glad.h>
+#include "RoboticArm.h"
+#include "Tracing.h"
+#include "LoadSave.h"
+#include "Renderer.h"
+#include "Animator.h"
+#include "Kinematics.h"
+#include "Panels/Panel.h"
+#include "Controller.h"
+#include "Canvas.h"
 
 #define EASE_FUNC(x, t) (pow(x, t) / (pow(x, t) + pow(1 - x, t)))
 
@@ -47,6 +48,7 @@ void lra::InitializeArm() {
 }
 
 void lra::RuntimeUpdateArm() {
+	auto& canvas = registry.store<Canvas>();
 	auto& camera = registry.store<lucy::Camera>();
 	auto& window = registry.store<lucy::Window>();
 	auto& controller = registry.store<Controller>();
@@ -155,6 +157,7 @@ void lra::RuntimeUpdateArm() {
 		RenderAxisLine(true, false, true);
 		RenderGrid();
 		RenderLRA(controller.target_joint_angles);
+		canvas.Render();
 
 		if (lucy::Events::IsKeyChord({ SDL_SCANCODE_LCTRL, SDL_SCANCODE_S })) {
 			SerializeAnimator("animator.yaml");

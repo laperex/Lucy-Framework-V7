@@ -6,4 +6,5 @@ void lra::panel::PanelUpdate() {
 	RoboticArmPanel();
 	AnimationPanel();
 	SerialCommunicationPanel();
+	CanvasPanel();
 }

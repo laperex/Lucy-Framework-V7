@@ -5,6 +5,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <RoboticArm6DOF/Controller.h>
+#include <RoboticArm6DOF/Canvas.h>
 #include <RoboticArm6DOF/ArmInfo.h>
 #include <glad/glad.h>
 #include <iostream>
@@ -20,6 +21,7 @@ static auto& registry = Registry::Instance();
 void lra::panel::MainPanel() {
 	auto& window = registry.store<lucy::Window>();
 	auto& camera = registry.store<lucy::Camera>();
+	auto& canvas = registry.store<Canvas>();
 	auto& controller = registry.store<Controller>();
 	auto& info = registry.store<ArmInfo>();
 
@@ -76,7 +78,19 @@ void lra::panel::MainPanel() {
 		static uint32_t selected_id = 0;
 		static glm::vec4 pixel;
 
-		if (selected_id && (!controller.enable_ik || (controller.enable_ik && (selected_id == 7 || selected_id == 8 || selected_id == 6)))) {
+		if (selected_id == 100) {
+			glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(canvas.position)) * glm::scale(glm::mat4(1.0f), glm::vec3(canvas.scale));
+			ImGuizmo::Manipulate(&camera.view[0][0], &camera.projection[0][0], ImGuizmo::OPERATION::TRANSLATE | ImGuizmo::OPERATION::SCALE_X | ImGuizmo::OPERATION::SCALE_Z, ImGuizmo::LOCAL, &model[0][0]);
+
+			if (ImGuizmo::IsUsing()) {
+				glm::vec3 translation, rotation, scale;
+
+				ImGuizmo::DecomposeMatrixToComponents(&model[0][0], &translation[0], &rotation[0], &scale[0]);
+
+				canvas.position = translation;
+				canvas.scale = scale;
+			}
+		} else if (selected_id && (!controller.enable_ik || (controller.enable_ik && (selected_id == 7 || selected_id == 8 || selected_id == 6)))) {
 			glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(glm::vec3(0, controller.target_joint_angles.base, 0))));
 			glm::mat4 model = rotation;
 

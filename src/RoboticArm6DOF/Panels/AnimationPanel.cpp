@@ -61,6 +61,8 @@ void lra::panel::AnimationPanel() {
 
 				int idx = 0;
 				for (auto& pair: animator.animation_registry) {
+					if (pair.second.name.starts_with("__##")) continue;
+
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
 					if (ImGui::Selectable((pair.second.name + "##" + std::to_string(idx)).c_str())) {
