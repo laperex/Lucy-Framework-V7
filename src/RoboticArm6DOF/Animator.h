@@ -27,14 +27,24 @@ namespace lra {
 		AnimationStep() {}
 	};
 
+	struct Position {
+		glm::ivec3 position;
+		float gripper_rot;
+		float gripper_ctrl;
+
+		Position() {}
+		Position(glm::ivec3 position, float gripper_rot, float gripper_ctrl): position(position), gripper_rot(gripper_rot), gripper_ctrl(gripper_ctrl) {}
+		Position(const AnimationStep& step): position(step.target_position), gripper_rot(step.target_angles.gripper_rotate), gripper_ctrl(step.target_angles.gripper_control) {}
+	};
+
 	struct AnimationProperty {
-		std::vector<AnimationStep> step_array;
 		bool loop = false;
 
-		std::vector<JointAngles> generated;
-		std::size_t size;
+		std::vector<AnimationStep> step_array;
+		std::vector<Position> generated_positions;
 
 		void Generate();
+		const std::vector<Position>& GetGenerated();
 		AnimationProperty() {}
 	};
 
@@ -47,7 +57,7 @@ namespace lra {
 
 	public:
 		std::unordered_map<LUCY_UUID, AnimationPropertyContainer> animation_registry;
-		AnimtationState animtationstate = STOP;
+		AnimtationState animationstate = STOP;
 		LUCY_UUID selected_animation = LUCY_NULL_UUID;
 
 		void Step();

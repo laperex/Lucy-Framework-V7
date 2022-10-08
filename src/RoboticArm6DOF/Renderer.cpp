@@ -204,9 +204,9 @@ void lra::RenderCube(int val, lgl::Shader* shader) {
 void lra::RenderAxisLine(bool x, bool y, bool z) {
 	lre::SetModel(glm::mat4(1.0f));
 
-	if (x) lre::RenderLine({ 0, 0, 0 }, { 1000, 0, 0 }, { 1, 0, 0, 1 });
-	if (y) lre::RenderLine({ 0, 0, 0 }, { 0, 1000, 0 }, { 0, 1, 0, 1 });
-	if (z) lre::RenderLine({ 0, 0, 0 }, { 0, 0, 1000 }, { 0, 0, 1, 1 });
+	if (x) lre::RenderLine({ 0, 0, 0 }, { 500, 0, 0 }, { 1, 0, 0, 1 });
+	if (y) lre::RenderLine({ 0, 0, 0 }, { 0, 500, 0 }, { 0, 1, 0, 1 });
+	if (z) lre::RenderLine({ 0, 0, 0 }, { 0, 0, 500 }, { 0, 0, 1, 1 });
 
 	lre::RenderFlushLine();
 }

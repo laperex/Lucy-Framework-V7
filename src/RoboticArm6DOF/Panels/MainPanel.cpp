@@ -123,15 +123,15 @@ void lra::panel::MainPanel() {
 					case 1: case 2:
 						controller.target_joint_angles.base += rotation.y;
 						break;
-					
+
 					case 3:
 						controller.target_joint_angles.arm += rotation.x;
 						break;
-					
+
 					case 4:
 						controller.target_joint_angles.elbow += rotation.x;
 						break;
-						
+
 					case 5:
 						controller.target_joint_angles.wrist += rotation.x;
 						break;
@@ -139,7 +139,7 @@ void lra::panel::MainPanel() {
 					case 6:
 						controller.target_joint_angles.gripper_rotate += rotation.x;
 						break;
-	
+
 					case 7: case 8:
 						controller.target_joint_angles.gripper_control += rotation.y;
 						break;

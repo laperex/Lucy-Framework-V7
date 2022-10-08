@@ -7,9 +7,10 @@
 namespace lra {
 	struct Controller {
 		bool enable_ik = false;
+		// bool free_movt = true;
 
 		glm::ivec3 ik_target = { 150, 150, 150 };
-		float phi = -45;
+		float speed = 10;
 
 		glm::ivec3 fk_result;
 

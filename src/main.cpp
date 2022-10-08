@@ -1,8 +1,11 @@
 #define ENABLE_VIEWPORT
 #define DISABLE_DOCKSPACE
 
+#include <glm/glm.hpp>
+#include <iostream>
 #include <Lucy/Editor.h>
 #include "Lucy/Lucy.h"
+#include <Lucy/Ray.h>
 #include "Lucy/System.h"
 #include <Lucy/imgui_lucy_impl.h>
 // #include <MineClone/Game.h>
@@ -18,6 +21,8 @@ int main(int argcount, char** args) {
 
 	// lucy::AddSystem(lucy::INTITIALIZATION, lve::InitializeGame);
 	// lucy::AddSystem(lucy::RUNTIME, lve::RuntimeGame);
+
+	// lucy::AddSystem(lucy::EDITOR_INITIALIZATION, );
 
 	lucy::AddSystem(lucy::EDITOR_INITIALIZATION, ImGui::Theme::RedDark);
 	lucy::AddSystem(lucy::EDITOR_RUNTIME, lra::EditorUpdateArm);
