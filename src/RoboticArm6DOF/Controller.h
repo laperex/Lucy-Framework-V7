@@ -7,7 +7,6 @@
 namespace lra {
 	struct Controller {
 		bool ik_enable = false;
-		// bool free_movt = true;
 
 		glm::ivec3 ik_target = { 150, 150, 150 };
 		float speed = 10;
@@ -16,5 +15,9 @@ namespace lra {
 
 		JointAngles target_joint_angles = { 90, 90, 180, 180, 0, 45 };
 		JointLength lra_dimension = { 105, 100, 190 };
+
+		bool enable_smoothing = true;
+		JointAngles last_angles;
+		JointAngles render_angles;
 	};
 }

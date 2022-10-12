@@ -19,6 +19,8 @@
 #include "Panels/Panel.h"
 #include "Controller.h"
 #include "Canvas.h"
+#include "ServoController.h"
+#include "Easing.h"
 
 #define EASE_FUNC(x, t) (pow(x, t) / (pow(x, t) + pow(1 - x, t)))
 
@@ -184,6 +186,12 @@ void lra::RuntimeUpdateArm() {
 		}
 
 		camera.framebuffer->UnBind();
+
+		{
+			auto& serial_comm = registry.store<SerialCommunication>();
+
+			serial_comm.TransmitServoAngles(controller.target_joint_angles);
+		}
 	}
 }
 

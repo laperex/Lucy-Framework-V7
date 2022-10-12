@@ -23,10 +23,10 @@ float& lra::JointAngles::operator[](int idx) {
 			return base;
 			break;
 		case 1:
-			return elbow;
+			return arm;
 			break;
 		case 2:
-			return arm;
+			return elbow;
 			break;
 		case 3:
 			return wrist;
@@ -38,4 +38,12 @@ float& lra::JointAngles::operator[](int idx) {
 			return gripper_control;
 			break;
 	}
+}
+
+bool lra::JointAngles::operator==(const JointAngles& angles) {
+	return (base == angles.base && arm == angles.arm && elbow == angles.elbow && wrist == angles.wrist && gripper_rotate == angles.gripper_rotate && gripper_control == angles.gripper_control);
+}
+
+bool lra::JointAngles::operator!=(const JointAngles& angles) {
+	return (base != angles.base && arm != angles.arm && elbow != angles.elbow && wrist != angles.wrist && gripper_rotate != angles.gripper_rotate && gripper_control != angles.gripper_control);
 }

@@ -14,6 +14,9 @@ namespace lra {
 		JointAngles() {}
 		JointAngles(float angle);
 		JointAngles(float base, float arm, float elbow, float wrist, float gripper_rotate, float gripper_control);
+
 		float& operator[](int idx);
+		bool operator==(const JointAngles& angles);
+		bool operator!=(const JointAngles& angles);
 	};
 }

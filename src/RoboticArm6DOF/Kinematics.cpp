@@ -42,6 +42,10 @@ const glm::ivec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint
 	return { S.x * sin(joint_angles.base * TO_RADIAN), S.y, S.x * cos(joint_angles.base * TO_RADIAN)};
 }
 
+const glm::ivec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_angles) {
+	return GetForwardKinematics(joint_angles, registry.store<Controller>().lra_dimension);
+}
+
 lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm::ivec3& target, const JointLength& lra_dimensions) {
 	float l1 = lra_dimensions.arm;
 	float l2 = lra_dimensions.elbow;

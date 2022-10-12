@@ -3,18 +3,18 @@
 #include "JointAngles.h"
 #include <map>
 #include <array>
+#include <string>
 
 namespace lra {
-	struct ServoContoller {
-		uint16_t current_servo[6];
-		uint16_t servo[6];
+	struct SerialCommunication {
+		std::map<int, int> servo_angles_map[6];
+		std::string port_name = "COM3";
+		std::string connect_port = "";
 
-		std::array<std::map<uint8_t, uint16_t>, 6> mapped_pulse;
+		JointAngles current_angles;
 
-		ServoContoller();
-
-		bool IsAtPosition();
-		void Set(JointAngles angles);
-		void Transmit();
+		SerialCommunication();
+		void TransmitServoAngles(JointAngles angles);
+		void Reconnect();
 	};
 }
