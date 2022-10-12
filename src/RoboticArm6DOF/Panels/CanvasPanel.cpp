@@ -180,7 +180,9 @@ void lra::panel::CanvasPanel() {
 				if (mouse_pos_in_canvas.x > 0 && mouse_pos_in_canvas.y > 0) {
 					ImVec2 point1 = { mouse_pos_in_canvas.x, mouse_pos_in_canvas.y };
 					if (!lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
-						drawn_shapes.push_back({ point0, point1 });
+						ImVec2 n0 = { point0.x / canvas_sz.x, point0.y / canvas_sz.y };
+						ImVec2 n1 = { point1.x / canvas_sz.x, point1.y / canvas_sz.y };
+						drawn_shapes.push_back({ n0, n1 });
 						draw_begin = false;
 					} else {
 						ImVec2 p0 = { point0.x + origin.x, point0.y + origin.y };
@@ -192,8 +194,8 @@ void lra::panel::CanvasPanel() {
 
 			for (auto& array: drawn_shapes) {
 				for (int i = 1; i < array.size(); i++) {
-					ImVec2 p0 = { array[i - 1].x + origin.x, array[i - 1].y + origin.y };
-					ImVec2 p1 = { array[i].x + origin.x, array[i].y + origin.y };
+					ImVec2 p0 = { array[i - 1].x * canvas_sz.x + origin.x, array[i - 1].y * canvas_sz.y + origin.y };
+					ImVec2 p1 = { array[i].x * canvas_sz.x + origin.x, array[i].y * canvas_sz.y + origin.y };
 					draw_list->AddLine(p0, p1, IM_COL32(255, 255, 0, 255));
 				}
 			}

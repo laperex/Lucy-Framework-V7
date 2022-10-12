@@ -80,6 +80,8 @@ void lra::RuntimeUpdateArm() {
 
 		controller.fk_result = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 
+		EaseMovement();
+
 		{
 			static int idx = 0;
 			static float progress = 0;
@@ -113,6 +115,7 @@ void lra::RuntimeUpdateArm() {
 
 					if (idx == 0 && generated.size()) {
 						static JointAngles last_angles, next_angles;
+						static float len = 0;
 
 						if (progress == 0) {
 							last_angles = controller.target_joint_angles;
@@ -120,9 +123,10 @@ void lra::RuntimeUpdateArm() {
 							next_angles = Kinematics::GetInverseKinematics(is_valid, generated[idx].position);
 							next_angles.gripper_control = generated[idx].gripper_ctrl;
 							next_angles.gripper_rotate = generated[idx].gripper_rot;
+							len = glm::length(glm::vec3(Kinematics::GetForwardKinematics(next_angles)) - glm::vec3(Kinematics::GetForwardKinematics(last_angles)));
 						}
 
-						if (progress >= 1) {
+						if (progress >= 1 || len == 0) {
 							progress = 0;
 							idx++;
 						} else {
@@ -130,7 +134,7 @@ void lra::RuntimeUpdateArm() {
 								controller.target_joint_angles[i] = last_angles[i] + (next_angles[i] - last_angles[i]) * EASE_FUNC(progress, 2.5);
 
 							controller.ik_target = animation.generated_positions[idx].position;
-							progress += 1.0f / 500.0f;
+							progress += 1.0f / len;
 						}
 					} else if (idx < generated.size()) {
 						static auto last_time = std::clock();
@@ -178,7 +182,7 @@ void lra::RuntimeUpdateArm() {
 
 		RenderAxisLine(true, false, true);
 		RenderGrid();
-		RenderLRA(controller.target_joint_angles);
+		RenderLRA(controller.render_angles);
 		canvas.Render();
 
 		if (lucy::Events::IsKeyChord({ SDL_SCANCODE_LCTRL, SDL_SCANCODE_S })) {
