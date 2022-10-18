@@ -47,7 +47,7 @@ const glm::ivec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint
 }
 
 const glm::ivec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_angles) {
-	return GetForwardKinematics(joint_angles, registry.store<Controller>().lra_dimension);
+	return GetForwardKinematics(joint_angles, registry.store<LRAController>().lra_dimension);
 }
 
 lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm::ivec3& target, const JointLength& lra_dimensions) {
@@ -99,13 +99,15 @@ lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm
 }
 
 lra::JointAngles lra::Kinematics::GetInverseKinematics(bool& is_valid, const glm::ivec3& target) {
-	return GetInverseKinematics(is_valid, target, registry.store<Controller>().lra_dimension);
+	return GetInverseKinematics(is_valid, target, registry.store<LRAController>().lra_dimension);
 }
 
 lra::JointAngles lra::Kinematics::GetInverseKinematics(bool &is_valid, const glm::ivec3& target, const JointLength& lra_dimensions, float phi) {
 	float l1 = lra_dimensions.arm;
 	float l2 = lra_dimensions.elbow;
 	float l3 = lra_dimensions.wrist;
+
+	std::cout << "ik\n";
 
 	auto [x, y, z] = target;
 	y -= 72;

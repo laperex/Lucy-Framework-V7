@@ -11,7 +11,7 @@ static auto& registry = Registry::Instance();
 static auto treenode_flags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
 
 void lra::panel::RoboticArmPanel() {
-	auto& controller = registry.store<lra::Controller>();
+	auto& controller = registry.store<lra::LRAController>();
 
 	if (ImGui::Begin("RoboticArm", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
 		if (ImGui::TreeNodeEx("Properties", treenode_flags)) {

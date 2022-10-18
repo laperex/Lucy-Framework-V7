@@ -22,7 +22,7 @@ void lra::panel::MainPanel() {
 	auto& window = registry.store<lucy::Window>();
 	auto& camera = registry.store<lucy::Camera>();
 	auto& canvas = registry.store<Canvas>();
-	auto& controller = registry.store<Controller>();
+	auto& controller = registry.store<LRAController>();
 	auto& info = registry.store<ArmInfo>();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });

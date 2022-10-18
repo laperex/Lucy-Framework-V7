@@ -35,7 +35,7 @@ static auto& registry = Registry::Instance();
 
 void lra::InitializeArm() {
 	auto& camera = registry.store<lucy::Camera>();
-	auto& controller = registry.store<Controller>();
+	auto& controller = registry.store<LRAController>();
 	auto& materialregistry = registry.store<lucy::MaterialRegistry>();
 	auto& lightregistry = registry.store<lucy::LightRegistry>();
 
@@ -53,7 +53,7 @@ void lra::RuntimeUpdateArm() {
 	auto& canvas = registry.store<Canvas>();
 	auto& camera = registry.store<lucy::Camera>();
 	auto& window = registry.store<lucy::Window>();
-	auto& controller = registry.store<Controller>();
+	auto& controller = registry.store<LRAController>();
 	auto& animator = registry.store<Animator>();
 
 	if (camera.framebuffer != nullptr) {
@@ -69,7 +69,8 @@ void lra::RuntimeUpdateArm() {
 
 		if (controller.ik_enable && animator.animationstate != PLAY) {
 			bool is_valid;
-			auto angles = Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.lra_dimension);
+			auto angles = Kinematics::GetInverseKinematics(is_valid, controller.ik_target);
+
 			if (is_valid) {
 				angles.gripper_control = controller.target_joint_angles.gripper_control;
 				angles.gripper_rotate = controller.target_joint_angles.gripper_rotate;
@@ -80,7 +81,7 @@ void lra::RuntimeUpdateArm() {
 
 		controller.fk_result = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 
-		{
+		if (false) {
 			static int idx = 0;
 			static float progress = 0;
 

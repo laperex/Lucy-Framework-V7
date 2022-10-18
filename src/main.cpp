@@ -5,7 +5,7 @@
 #include <Lucy/Ray.h>
 #include "Lucy/System.h"
 #include <Lucy/imgui_lucy_impl.h>
-// #include <MineClone/Game.h>
+#include <MineClone/Game.h>
 // #include <Writer 2 DOF/Write.h>
 #include <LucyVE/Game.h>
 #include <RoboticArm6DOF/RoboticArm.h>
@@ -35,8 +35,8 @@ int main(int argcount, char** args) {
 	lucy::AddSystem(lucy::INTITIALIZATION, lra::InitializeArm);
 	lucy::AddSystem(lucy::RUNTIME, lra::RuntimeUpdateArm);
 
-	// lucy::Initialize();
-	lucy::Initialize("Lucy Framework V7", 0, 0, 1600, 900, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_BORDERLESS);
+	lucy::Initialize();
+	// lucy::Initialize("Lucy Framework V7", 0, 0, 1600, 900, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_BORDERLESS);
 	lucy::Mainloop();
 
 	return 0;

@@ -10,7 +10,7 @@
 static auto& registry = Registry::Instance();
 
 void lra::EaseMovement() {
-	auto& controller = registry.store<Controller>();
+	auto& controller = registry.store<LRAController>();
 
 	static float first = false;
 

@@ -5,7 +5,7 @@
 #include "JointLength.h"
 
 namespace lra {
-	struct Controller {
+	struct LRAController {
 		bool ik_enable = false;
 
 		glm::ivec3 ik_target = { 150, 150, 150 };
@@ -16,10 +16,13 @@ namespace lra {
 		glm::ivec3 fk_result;
 
 		JointAngles target_joint_angles = { 90, 90, 180, 180, 0, 45 };
-		JointLength lra_dimension = { 105, 100, 190 };
+		JointLength lra_dimension = { 105, 100, 185 };
 
 		bool enable_smoothing = false;
 		JointAngles last_angles;
 		JointAngles render_angles;
+
+		LRAController() {}
+		~LRAController() {}
 	};
 }

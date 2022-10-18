@@ -13,7 +13,7 @@ static auto treenode_flags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_Open
 void lra::panel::AnimationPanel() {
 	static bool open_view_gen = false;
 	auto& animator = registry.store<lra::Animator>();
-	auto& controller = registry.store<lra::Controller>();
+	auto& controller = registry.store<lra::LRAController>();
 
 	if (ImGui::Begin("Animator", nullptr, ImGuiWindowFlags_NoTitleBar)) {
 		static float slider = 0.17;

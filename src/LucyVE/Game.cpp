@@ -99,5 +99,5 @@ void lve::RuntimeGame() {
 	lre::SetView(camera.view);
 	lre::SetProjection(camera.projection);
 
-	// lre::Test();
+	lre::Test();
 }
