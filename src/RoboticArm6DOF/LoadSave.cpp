@@ -51,13 +51,15 @@ void lra::SerializeAnimator(const char* filename) {
 							out << step.target_angles[i];
 						}
 						out << YAML::EndSeq;
+
+						// out << step.progress_len;
 					}
 					out << YAML::EndSeq;
 				}
 			}
 			out << YAML::EndSeq;
 		}
-		out << YAML::EndSeq;
+		out << YAML::EndMap;
 	}
 	out << YAML::EndSeq;
 

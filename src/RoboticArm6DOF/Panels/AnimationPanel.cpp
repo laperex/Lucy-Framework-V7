@@ -53,12 +53,14 @@ void lra::panel::AnimationPanel() {
 			}
 			ImGui::PopStyleColor();
 
-			if (ImGui::BeginTable("Animation##0203", 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
+			if (ImGui::BeginTable("Animation##0203", 3, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
 				ImGui::Text("Name");
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("Loop");
+				ImGui::TableSetColumnIndex(2);
+				ImGui::Text("IK Type");
 
 				int idx = 0;
 				for (auto& pair: animator.animation_registry) {
@@ -71,9 +73,14 @@ void lra::panel::AnimationPanel() {
 					}
 
 					ImGui::TableSetColumnIndex(1);
-					if (ImGui::Button((pair.second.animation.loop) ? ("True##" + std::to_string(idx++)).c_str() : ("False##" + std::to_string(idx++)).c_str(), { ImGui::GetColumnWidth(2), 0 })) {
+					if (ImGui::Button((pair.second.animation.loop) ? ("True##" + std::to_string(idx)).c_str() : ("False##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(1), 0 })) {
 						pair.second.animation.loop = !pair.second.animation.loop;
 					}
+
+					ImGui::TableSetColumnIndex(2);
+					ImGui::SetNextItemWidth(ImGui::GetColumnWidth(2));
+					ImGui::EnumComboLogic(("##" + std::to_string(idx)).c_str(), { "WRITING", "PICKING" }, pair.second.animation.is_ik_picking);
+					idx++;
 				}
 
 				ImGui::TableNextRow();
@@ -168,7 +175,7 @@ void lra::panel::AnimationPanel() {
 							float temp = step.target_position[i];
 							if (ImGui::DragInt(("##" + std::to_string(f++)).c_str(), &step.target_position[i], 1)) {
 								bool is_valid;
-								auto angles = Kinematics::GetInverseKinematics(is_valid, step.target_position, controller.lra_dimension);
+								auto angles = (animation.is_ik_picking) ? Kinematics::GetInverseKinematics(is_valid, step.target_position): Kinematics::GetInverseKinematics(is_valid, step.target_position, step.phi);
 								if (is_valid) {
 									step.target_angles = angles;
 									regenrate = true;
@@ -186,10 +193,12 @@ void lra::panel::AnimationPanel() {
 						if (ImGui::Button(("RESET##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(10), 0 })) {
 							auto pos = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 							bool is_valid;
-							auto angles = Kinematics::GetInverseKinematics(is_valid, pos);
+							auto angles = (controller.is_ik_picking) ? Kinematics::GetInverseKinematics(is_valid, pos): Kinematics::GetInverseKinematics(is_valid, pos, controller.ik_phi);
 							if (is_valid) {
 								step.target_angles = angles;
 								step.target_position = pos;
+								step.target_angles.gripper_control = controller.target_joint_angles.gripper_control;
+								step.target_angles.gripper_rotate = controller.target_joint_angles.gripper_rotate;
 							}
 
 							regenrate = true;
@@ -263,10 +272,15 @@ void lra::panel::AnimationPanel() {
 
 						auto pos = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 						bool is_valid;
-						auto angles = Kinematics::GetInverseKinematics(is_valid, pos);
+						auto angles = (controller.is_ik_picking) ? Kinematics::GetInverseKinematics(is_valid, pos): Kinematics::GetInverseKinematics(is_valid, pos, controller.ik_phi);
 						if (is_valid) {
 							step.target_angles = angles;
+							step.target_angles.gripper_control = controller.target_joint_angles.gripper_control;
+							step.target_angles.gripper_rotate = controller.target_joint_angles.gripper_rotate;
 							step.target_position = pos;
+							if (animation.step_array.size() == 0)
+								animation.is_ik_picking = controller.is_ik_picking;
+							step.phi = controller.ik_phi;
 						}
 
 						animation.step_array.push_back(step);

@@ -47,7 +47,12 @@ void lra::AnimationProperty::Generate() {
 
 		lucy::RayCastPoint(generated_positions.back().position, step.target_position, [&](int x, int y, int z) -> bool {
 			bool is_valid;
-			Kinematics::GetInverseKinematics(is_valid, { x, y, z });
+			if (is_ik_picking) {
+				Kinematics::GetInverseKinematics(is_valid, { x, y, z });
+			} else {
+				Kinematics::GetInverseKinematics(is_valid, { x, y, z }, step.phi);
+			}
+
 			if (is_valid) {
 				generated_positions.push_back({{ x, y, z }, step.target_angles.gripper_rotate, step.target_angles.gripper_control });
 			}

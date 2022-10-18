@@ -18,12 +18,10 @@ namespace lra {
 		JointAngles target_angles;
 		glm::ivec3 target_position;
 
-		bool is_ik_picking = true;
+		float phi = 0;
+		bool enable_ik_trajectory = false;
 
-		float phi;
-		bool enable_ik_trajectory = true;
-
-		float progress_len = 2000;	// Steps taken to reach this angles
+		float progress_len = 1000;	// Steps taken to reach this angles
 		float pow_t = 1.9;	// Step Gradient
 
 		AnimationStep() {}
@@ -42,6 +40,7 @@ namespace lra {
 
 	struct AnimationProperty {
 		bool loop = false;
+		bool is_ik_picking = true;
 
 		std::vector<AnimationStep> step_array;
 		std::vector<Position> generated_positions;

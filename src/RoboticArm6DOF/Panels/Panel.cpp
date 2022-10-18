@@ -7,4 +7,5 @@ void lra::panel::PanelUpdate() {
 	AnimationPanel();
 	SerialCommunicationPanel();
 	CanvasPanel();
+	ComputerVisionPanel();
 }

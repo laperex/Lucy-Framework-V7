@@ -57,6 +57,10 @@ target_link_libraries(main PRIVATE box2d::box2d)
 find_package(plog CONFIG REQUIRED)
 target_link_libraries(main PRIVATE plog::plog)
 
+find_package(OpenCV CONFIG REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+target_link_libraries(main PRIVATE ${OpenCV_LIBS})
+
 target_link_libraries(main PRIVATE)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

@@ -10,6 +10,7 @@ namespace lra::panel {
 	void AnimationPanel();
 	void SerialCommunicationPanel();
 	void CanvasPanel();
+	void ComputerVisionPanel();
 
 	void PanelUpdate();
 }

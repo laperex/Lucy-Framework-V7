@@ -69,7 +69,7 @@ void lra::RuntimeUpdateArm() {
 
 		if (controller.ik_enable && animator.animationstate != PLAY) {
 			bool is_valid;
-			auto angles = Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.lra_dimension);
+			auto angles = (controller.is_ik_picking) ? Kinematics::GetInverseKinematics(is_valid, controller.ik_target): Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.ik_phi);
 			if (is_valid) {
 				angles.gripper_control = controller.target_joint_angles.gripper_control;
 				angles.gripper_rotate = controller.target_joint_angles.gripper_rotate;
@@ -106,7 +106,48 @@ void lra::RuntimeUpdateArm() {
 						TraceAnimationPoints(0, generated.size() - 1, &animation);
 				}
 
+				static bool first = true;
 				if (animator.animationstate == PLAY) {
+					static JointAngles last_angles;
+
+					if (idx >= animation.step_array.size()) {
+						idx = 0;
+					}
+
+					if (first) {
+						last_angles = controller.target_joint_angles;
+						first = false;
+						progress = 0;
+					}
+
+					if (progress >= 1) {
+						idx++;
+						progress = 0;
+						first = true;
+					} else {
+						if (!animation.step_array[idx].enable_ik_trajectory) {
+							for (int i = 0; i < 6; i++)
+								controller.target_joint_angles[i] = last_angles[i] + (animation.step_array[idx].target_angles[i] - last_angles[i]) * EASE_FUNC(progress, 2.5);
+							progress += 1.0f / animation.step_array[idx].progress_len;
+						} else {
+
+						}
+					}
+
+					if (idx >= animation.step_array.size()) {
+						if (animation.loop) {
+							idx = 0;
+						} else {
+							animator.animationstate = STOP;
+						}
+					}
+
+					controller.ik_target = Kinematics::GetForwardKinematics(controller.target_joint_angles);
+				} else {
+					first = true;
+				}
+
+				if (/* animator.animationstate == PLAY &&  */false) {
 					if (idx >= generated.size()) {
 						idx = 0;
 					}
