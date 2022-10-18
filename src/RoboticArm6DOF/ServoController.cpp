@@ -43,18 +43,38 @@ lra::SerialCommunication::SerialCommunication() {
 	};
 }
 
+static uint8_t data[] = { '&', 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 'M', 0 };
 
 void lra::SerialCommunication::TransmitServoAngles(JointAngles angles) {
 	if (!util::serial::is_port_connected()) return;
 
-	static uint8_t data[] = { '&', 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 'M', 0 };
-
 	data[0] = '&';
 	for (int i = 0; i < 6; i++) {
-		*(uint16_t*)(&data[2 * i + 1]) = uint16_t(MAP_ANGLE_TO_PWN(angles[i], servo_angles_map[i][0], servo_angles_map[i][180]));
+		// *(uint16_t*)(&data[2 * i + 1]) = uint16_t(MAP_ANGLE_TO_PWN(angles[i], servo_angles_map[i][0], servo_angles_map[i][180]));
+		*(float*)(&data[4 * i + 1]) = angles[i];
+		// std::cout << *(uint16_t*)(&data[2 * i + 1]) << ' ';
 	}
 
 	current_angles = angles;
+
+	// while (true) {
+	// 	auto size = util::serial::read_bytes_from_port(serial_data, MAX_DATA_LENGTH);
+
+	// 	if (size) {
+	// 		if (serial_data[0] == 'M') {
+	// 			self->servo_is_at_pos = (
+	// 				(*(float*)(&serial_data[1]) == float(self->servo_angle[0])) &&
+	// 					(*(float*)(&serial_data[5]) == float(self->servo_angle[1])) &&
+	// 					(*(float*)(&serial_data[9]) == float(self->servo_angle[2])) &&
+	// 					(*(float*)(&serial_data[13]) == float(self->servo_angle[3])) &&
+	// 					(*(float*)(&serial_data[17]) == float(self->servo_angle[4])) &&
+	// 						(*(float*)(&serial_data[21]) == float(self->servo_angle[5])));
+	// 			// std::cout.write(serial_data, size);
+	// 		}
+	// 	} else {
+	// 		break;
+	// 	}
+	// }
 
 	util::serial::write_bytes_to_port(data, sizeof(data));
 }

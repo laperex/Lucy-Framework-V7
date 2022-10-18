@@ -16,4 +16,3 @@ namespace lra {
 		const glm::ivec3& GetArmRestPos();
 	};
 }
-

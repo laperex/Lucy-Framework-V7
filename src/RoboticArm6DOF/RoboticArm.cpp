@@ -80,8 +80,6 @@ void lra::RuntimeUpdateArm() {
 
 		controller.fk_result = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 
-		EaseMovement();
-
 		{
 			static int idx = 0;
 			static float progress = 0;
@@ -180,6 +178,8 @@ void lra::RuntimeUpdateArm() {
 			}
 		}
 
+		EaseMovement();
+
 		RenderAxisLine(true, false, true);
 		RenderGrid();
 		RenderLRA(controller.render_angles);
@@ -194,7 +194,7 @@ void lra::RuntimeUpdateArm() {
 		{
 			auto& serial_comm = registry.store<SerialCommunication>();
 
-			serial_comm.TransmitServoAngles(controller.target_joint_angles);
+			serial_comm.TransmitServoAngles(controller.render_angles);
 		}
 	}
 }

@@ -5,6 +5,7 @@
 #include <Lucy/imgui_lucy_impl.h>
 #include <glm/glm.hpp>
 #include <Lucy/Lucy.h>
+#include <iostream>
 
 static auto& registry = Registry::Instance();
 
@@ -36,7 +37,7 @@ void lra::panel::CanvasPanel() {
 		if (ImGui::BeginChild("#6783")) {
 			if (ImGui::TreeNodeEx("Properties", ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_DefaultOpen)) {
 				static glm::ivec3 position = { 150, 150, 150 }, scale = { 100, 100, 100 };
-				static LUCY_UUID test_id = LUCY_NULL_UUID, last_selected_animation = LUCY_NULL_UUID;
+				static LUCY_UUID test_id = LUCY_NULL_UUID, last_selected_animation = LUCY_NULL_UUID, canvas_id = LUCY_NULL_UUID;
 				static bool is_gen = false;
 
 				ImGui::DragInt3("Position", &canvas.position[0], 1);
@@ -66,6 +67,41 @@ void lra::panel::CanvasPanel() {
 				} else {
 					position = canvas.position;
 					scale = canvas.scale;
+				}
+
+				if (ImGui::Button("Draw")) {
+					if (canvas_id == LUCY_NULL_UUID) {
+						AnimationProperty animation;
+						animation.loop = false;
+						canvas_id = animator.NewAnimation("__##Canvas_Draw", animation);
+					}
+
+					auto& animation = animator.animation_registry[canvas_id].animation;
+
+					last_selected_animation = animator.selected_animation;
+
+					animator.selected_animation = canvas_id;
+					animator.animationstate = PLAY;
+
+					animation.step_array.clear();
+
+					animation.step_array.push_back(canvas.GetArmRestPos());
+
+					auto pos = canvas.position;
+					for (auto& vertices: canvas_shapes) {
+						glm::vec3 position;
+
+						for (auto& p: vertices) {
+							auto p0 = canvas.GetOriginPos();
+							auto sz = canvas.GetCanvasSize();
+
+							animation.step_array.push_back({ glm::vec3(p0.x, pos.y, p0.y) + glm::vec3(p.y * sz.x, 0, (1 - p.x) * sz.y) });
+						}
+
+						animation.step_array.push_back({{ pos.x, canvas.GetArmRestPos().y, pos.z }});
+					}
+
+					animation.Generate();
 				}
 
 				if (ImGui::Button((canvas.visible) ? "Hide": "Show")) {
@@ -105,7 +141,7 @@ void lra::panel::CanvasPanel() {
 					animation.Generate();
 				}
 
-				// if (animator.selected_animation == test_id && animator.animationstate == PAUSE) {
+				// if ((animator.selected_animation == test_id || animator.selected_animation == canvas_id) && animator.animationstate == PAUSE) {
 				// 	animator.animationstate = STOP;
 				// 	animator.selected_animation = last_selected_animation;
 				// }
@@ -142,7 +178,6 @@ void lra::panel::CanvasPanel() {
 
 		if (ImGui::BeginChild("#0283")) {
 			static ImVec2 point0 = { 0, 0 };
-			static std::vector<std::vector<ImVec2>> drawn_shapes;
 			static bool draw_begin = false;
 			static bool toggle = false;
 
@@ -180,9 +215,9 @@ void lra::panel::CanvasPanel() {
 				if (mouse_pos_in_canvas.x > 0 && mouse_pos_in_canvas.y > 0) {
 					ImVec2 point1 = { mouse_pos_in_canvas.x, mouse_pos_in_canvas.y };
 					if (!lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT)) {
-						ImVec2 n0 = { point0.x / canvas_sz.x, point0.y / canvas_sz.y };
-						ImVec2 n1 = { point1.x / canvas_sz.x, point1.y / canvas_sz.y };
-						drawn_shapes.push_back({ n0, n1 });
+						glm::vec2 n0 = { point0.x / canvas_sz.x, point0.y / canvas_sz.y };
+						glm::vec2 n1 = { point1.x / canvas_sz.x, point1.y / canvas_sz.y };
+						canvas_shapes.push_back({ n0, n1 });
 						draw_begin = false;
 					} else {
 						ImVec2 p0 = { point0.x + origin.x, point0.y + origin.y };
@@ -192,7 +227,7 @@ void lra::panel::CanvasPanel() {
 				}
 			}
 
-			for (auto& array: drawn_shapes) {
+			for (auto& array: canvas_shapes) {
 				for (int i = 1; i < array.size(); i++) {
 					ImVec2 p0 = { array[i - 1].x * canvas_sz.x + origin.x, array[i - 1].y * canvas_sz.y + origin.y };
 					ImVec2 p1 = { array[i].x * canvas_sz.x + origin.x, array[i].y * canvas_sz.y + origin.y };

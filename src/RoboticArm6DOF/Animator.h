@@ -18,6 +18,8 @@ namespace lra {
 		JointAngles target_angles;
 		glm::ivec3 target_position;
 
+		bool is_ik_picking = true;
+
 		float phi;
 		bool enable_ik_trajectory = true;
 

@@ -14,18 +14,20 @@ void lra::panel::RoboticArmPanel() {
 	auto& controller = registry.store<lra::Controller>();
 
 	if (ImGui::Begin("RoboticArm", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
-		// if (ImGui::TreeNodeEx("Properties", treenode_flags)) {
-		// 	ImGui::EnumComboLogic("Select Mode", { "WRITING", "PICKING" }, controller.mode);
+		if (ImGui::TreeNodeEx("Properties", treenode_flags)) {
+			if (ImGui::Button((controller.enable_smoothing) ? "Disable Smoothing": "Enable Smooting")) {
+				controller.enable_smoothing = !controller.enable_smoothing;
+			}
 
-		// 	ImGui::TreePop();
-		// }
+			ImGui::TreePop();
+		}
 		if (ImGui::TreeNodeEx("Joint Angles", treenode_flags)) {
 			static bool is_slider = true;
 
 			ImGui::SliderDragFloat("Base", &controller.target_joint_angles.base, 0.1, 0, 180, is_slider);
 			ImGui::SliderDragFloat("Arm", &controller.target_joint_angles.arm, 0.1, 0, 180, is_slider);
 			ImGui::SliderDragFloat("Elbow", &controller.target_joint_angles.elbow, 0.1, 0, 180, is_slider);
-			ImGui::SliderDragFloat("Wrist", &controller.target_joint_angles.wrist, 0.1, 0, 180, is_slider);
+			ImGui::SliderDragFloat("Wrist", &controller.target_joint_angles.wrist, 0.1, 0, 270, is_slider);
 
 			ImGui::SliderDragFloat("Gripper Rotation", &controller.target_joint_angles.gripper_rotate, 0.1, 0, 180, is_slider);
 			ImGui::SliderDragFloat("Gripper Control", &controller.target_joint_angles.gripper_control, 0.1, 0, 180, is_slider);

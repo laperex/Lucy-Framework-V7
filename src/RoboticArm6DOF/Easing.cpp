@@ -16,6 +16,7 @@ void lra::EaseMovement() {
 
 	if (!controller.enable_smoothing) {
 		first = false;
+		controller.render_angles = controller.target_joint_angles;
 		return;
 	}
 
