@@ -93,6 +93,8 @@ void lra::RenderLRA(JointAngles joint_angles) {
 	joint_angles.elbow = 180 - joint_angles.elbow;
 	joint_angles.wrist = 180 - joint_angles.wrist;
 
+	joint_angles.gripper_control = 180 - ((joint_angles.gripper_control / 180) * 45 + (180 - 45));
+
 	DYNAMIC_BASE.transform.rotation = { 0, joint_angles.base - 90, 0 };
 	DYNAMIC_ARM.transform.rotation = { joint_angles.arm - 90, 0, 0 };
 	DYNAMIC_ELBOW.transform.rotation = { joint_angles.elbow + joint_angles.arm + 90 + 180, 0, 0 };

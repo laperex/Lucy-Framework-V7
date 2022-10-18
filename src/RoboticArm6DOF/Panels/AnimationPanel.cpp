@@ -133,7 +133,7 @@ void lra::panel::AnimationPanel() {
 					animator.trace_path = !animator.trace_path;
 				}
 
-				if (ImGui::BeginTable("View##0203", 1 + 6 + 3 + 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
+				if (ImGui::BeginTable("View##0203", 1 + 6 + 3 + 1 + 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0 + 1);
@@ -190,7 +190,11 @@ void lra::panel::AnimationPanel() {
 						}
 
 						ImGui::TableSetColumnIndex(10);
-						if (ImGui::Button(("RESET##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(10), 0 })) {
+						ImGui::SetNextItemWidth(ImGui::GetColumnWidth(10));
+						ImGui::DragFloat(("##" + std::to_string(idx)).c_str(), &step.progress_len, 1, 0);
+
+						ImGui::TableSetColumnIndex(11);
+						if (ImGui::Button(("RESET##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(11), 0 })) {
 							auto pos = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 							bool is_valid;
 							auto angles = (controller.is_ik_picking) ? Kinematics::GetInverseKinematics(is_valid, pos): Kinematics::GetInverseKinematics(is_valid, pos, controller.ik_phi);
@@ -204,7 +208,7 @@ void lra::panel::AnimationPanel() {
 							regenrate = true;
 						}
 
-						ImGui::TableSetColumnIndex(11);
+						ImGui::TableSetColumnIndex(12);
 
 						static JointAngles last_angles;
 						static glm::ivec3 last_pos;
@@ -213,7 +217,7 @@ void lra::panel::AnimationPanel() {
 						static bool first = false;
 						static AnimtationState state;
 
-						ImGui::Button(("VIEW##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(11), 0 });
+						ImGui::Button(("VIEW##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(12), 0 });
 
 						bool is_hovering = ImGui::IsItemHovered();
 						bool is_clicked = is_hovering && lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT);

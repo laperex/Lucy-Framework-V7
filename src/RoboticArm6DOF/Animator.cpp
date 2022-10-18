@@ -37,33 +37,34 @@ LUCY_UUID lra::Animator::NewAnimation(std::string name, AnimationProperty animat
 }
 
 void lra::AnimationProperty::Generate() {
-	generated_positions.clear();
-	if (step_array.size() == 0) return;
+	// generated_positions.clear();
+	// if (step_array.size() == 0) return;
 
-	generated_positions.push_back(step_array[0]);
+	// generated_positions.push_back(step_array[0]);
 
-	for (int i = 1; i < step_array.size(); i++) {
-		auto& step = step_array[i];
+	// for (int i = 1; i < step_array.size(); i++) {
+	// 	auto& step = step_array[i];
 
-		lucy::RayCastPoint(generated_positions.back().position, step.target_position, [&](int x, int y, int z) -> bool {
-			bool is_valid;
-			if (is_ik_picking) {
-				Kinematics::GetInverseKinematics(is_valid, { x, y, z });
-			} else {
-				Kinematics::GetInverseKinematics(is_valid, { x, y, z }, step.phi);
-			}
+	// 	lucy::RayCastPoint(generated_positions.back().position, step.target_position, [&](int x, int y, int z) -> bool {
+	// 		bool is_valid;
+	// 		if (is_ik_picking) {
+	// 			Kinematics::GetInverseKinematics(is_valid, { x, y, z });
+	// 		} else {
+	// 			Kinematics::GetInverseKinematics(is_valid, { x, y, z }, step.phi);
+	// 		}
 
-			if (is_valid) {
-				generated_positions.push_back({{ x, y, z }, step.target_angles.gripper_rotate, step.target_angles.gripper_control });
-			}
-			return false;
-		});
-	}
+	// 		if (is_valid) {
+	// 			generated_positions.push_back({{ x, y, z }, step.target_angles.gripper_rotate, step.target_angles.gripper_control });
+	// 		}
+	// 		return false;
+	// 	});
+	// }
 }
 
 const std::vector<lra::Position>& lra::AnimationProperty::GetGenerated() {
-	if (generated_positions.size() == 0)
+	if (generated_positions.size() == 0) {
 		Generate();
+	}
 	return generated_positions;
 }
 
