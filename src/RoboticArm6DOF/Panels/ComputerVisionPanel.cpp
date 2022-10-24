@@ -10,8 +10,55 @@
 #include <glm/glm.hpp>
 #include <map>
 #include <unordered_map>
+#include <LucyUtil/FileIO.h>
 
 static auto& registry = Registry::Instance();
+
+std::pair<bool, glm::vec2> DetectPosition(const cv::Mat& frame) {
+	cv::Mat hsv, mask;
+	static int hmin = 0, smin = 132, vmin = 156;
+	static int hmax = 11, smax = 255, vmax = 199;
+	static std::vector<std::vector<cv::Point>> contours;
+	static std::vector<cv::Point> approx;
+
+	cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+	cv::inRange(hsv, cv::Scalar(hmin, smin, vmin), cv::Scalar(hmax, smax, vmax), mask);
+	cv::findContours(mask, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+
+	// static cv::Mat contourImage(frame.size(), CV_8UC3, cv::Scalar(0,0,0));
+
+	if (contours.size()) {
+		int max_contour_idx = -1;
+		for (size_t idx = 0; idx < contours.size(); idx++) {
+			// cv::drawContours(contourImage, contours, idx, cv::Scalar(0, 0, 255));
+			auto area = cv::contourArea(contours[idx]);
+			if (area > 100) {
+				if (max_contour_idx < 0) {
+					max_contour_idx = idx;
+				} else if (area >= cv::contourArea(contours[max_contour_idx])) {
+					max_contour_idx = idx;
+				}
+			}
+		}
+
+		if (max_contour_idx >= 0) {
+			// std::cout << cv::contourArea(contours[max_contour_idx]) << '\n';
+
+			cv::approxPolyDP(contours[max_contour_idx], approx, 0.01 * cv::arcLength(contours[max_contour_idx], true), true);
+			auto rect = cv::boundingRect(approx);
+			return { true, { rect.x + rect.width, rect.y + rect.height }};
+			// cv::rectangle(frame, rect, (0, 255, 0), 4);
+			// auto M = cv::moments(contours[max_contour_idx]);
+			// if (M.m00 != 0) {
+			// 	auto cx = int(M.m10 / M.m00);
+			// 	auto cy = int(M.m01 / M.m00);
+			// 	// cv::circle(frame, { cx, cy }, 3, (255, 0, 0), -1);
+			// }
+		}
+	}
+
+	return { false, { 0, 0 }};
+}
 
 void MatToTexture(lgl::Texture* texture, cv::Mat& frame) {
 	assert(texture != nullptr);
@@ -41,16 +88,16 @@ void lra::panel::ComputerVisionPanel() {
 	auto& controller = registry.store<Controller>();
 
 	static cv::Mat frame;
-	static bool live_feed = true;
+	static bool live_feed = false;
 
 	static std::vector<cv::Point2f> p_array = {
-		{ 0.196, 0.311 },
+		{ 0.122, 0.390 },
 		// cv::Point2f(0, 0.5),
-		{ 0.212, 0.646 },
+		{ 0.170, 0.765 },
 		// cv::Point2f(0.5, 1),
-		{ 0.680, 0.273 },
+		{ 0.731, 0.314 },
 		// cv::Point2f(1, 0.5),
-		{ 0.680, 0.638 },
+		{ 0.745, 0.769 },
 	};
 	static std::vector<cv::Point2f> dest_array = {
 		{ 0, 0 },
@@ -61,18 +108,44 @@ void lra::panel::ComputerVisionPanel() {
 		// { 800, 400 / 2 },
 		{ 800, 400 },
 	};
+
+	static bool initialize = true;
+	if (initialize) {
+		{
+			auto [data, size] = util::read_bytes_from_file("p_array.bin");
+			if (size) {
+				p_array = std::vector<cv::Point2f>((cv::Point2f*)data, (cv::Point2f*)data + (size / sizeof(((cv::Point2f*)data)[0])));
+			}
+		}
+		{
+			auto [data, size] = util::read_bytes_from_file("dest_array.bin");
+			if (size) {
+				dest_array = std::vector<cv::Point2f>((cv::Point2f*)data, (cv::Point2f*)data + (size / sizeof(((cv::Point2f*)data)[0])));
+			}
+		}
+
+		initialize = false;
+	}
+
+	if (lucy::Events::IsQuittable()) {
+		util::write_bytes_to_file("p_array.bin", (uint8_t*)p_array.data(), p_array.size() * sizeof(p_array[0]));
+		util::write_bytes_to_file("dest_array.bin", (uint8_t*)dest_array.data(), dest_array.size() * sizeof(dest_array[0]));
+	}
+
 	static glm::ivec2 wrap_size = { 640, 480 };
 	static glm::vec2 norm_wrap_sel_pos = { 0, 0 };
 	static bool is_wrap_select_pos = false;
+	static glm::ivec3 target = { 0, 100, 0};
 
 	static int selected_pos = 0;
 
+	live_feed = false;
+
 	if (ImGui::Begin("CV_Calc"/* , nullptr, ImGuiWindowFlags_NoTitleBar */)) {
-		ImGui::Checkbox("Live Feed", &live_feed);
+		// ImGui::Checkbox("Live Feed", &live_feed);
 
 		ImGui::NewLine();
 
-		static glm::ivec3 target = { 0, 40, 0};
 		target.z = norm_wrap_sel_pos.x * 400 - 200;
 		target.x = (1 - norm_wrap_sel_pos.y) * 200;
 
@@ -80,7 +153,7 @@ void lra::panel::ComputerVisionPanel() {
 			is_wrap_select_pos = true;
 		}
 
-		ImGui::DragInt3("Targt", &target[0]);
+		ImGui::DragInt3("Target", &target[0]);
 
 		static bool toggle_move = false;
 		if (ImGui::Button("Move")) {
@@ -89,6 +162,12 @@ void lra::panel::ComputerVisionPanel() {
 
 		if (toggle_move) {
 			controller.ik_target = target;
+		}
+
+		ImGui::NewLine();
+
+		if (ImGui::Button("Detect")) {
+			live_feed = true;
 		}
 
 		ImGui::NewLine();
@@ -150,7 +229,13 @@ void lra::panel::ComputerVisionPanel() {
 
 	static cv::Mat wrap_frame;
 
-	if (ImGui::Begin("CV_Disp"/* , nullptr, ImGuiWindowFlags_NoTitleBar */)) {
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });
+
+	ImGui::Begin("CV_Disp"/* , nullptr, ImGuiWindowFlags_NoTitleBar */);
+
+	{
+		ImGui::PopStyleVar();
+
 		auto [x, y] = ImGui::GetWindowPos();
 		auto [w, h] = ImGui::GetWindowSize();
 
@@ -179,16 +264,25 @@ void lra::panel::ComputerVisionPanel() {
 
 					auto M = cv::getPerspectiveTransform(temp.data(), dest_array.data());
 					cv::warpPerspective(frame, wrap_frame, M, cv::Size(wrap_size.x, wrap_size.y));
+					auto [is_frame, point] = DetectPosition(wrap_frame);
+					if (is_frame) {
+						cv::circle(wrap_frame, *(cv::Point2f*)&point, 5, cv::Scalar(0, 255, 255), 3);
+
+						norm_wrap_sel_pos.x = (point.x / (float)wrap_frame.cols);
+						norm_wrap_sel_pos.y = (point.y / (float)wrap_frame.rows);
+						target.y = 100;
+					}
+
 					cv::cvtColor(wrap_frame, wrap_frame, cv::COLOR_BGR2RGBA);
 					MatToTexture(wrap_texture, wrap_frame);
 				}
 
-				for (auto& p: p_array) {
-					cv::Point point;
-					point.x = (float)frame.cols * p.x;
-					point.y = (float)frame.rows * p.y;
-					cv::circle(frame, point, 3, cv::Scalar(0, 0, 255));
-				}
+				// for (auto& p: p_array) {
+				// 	cv::Point point;
+				// 	point.x = (float)frame.cols * p.x;
+				// 	point.y = (float)frame.rows * p.y;
+				// 	cv::circle(frame, point, 3, cv::Scalar(0, 0, 255));
+				// }
 
 				cv::cvtColor(frame, frame, cv::COLOR_BGR2RGBA);
 				MatToTexture(frame_texture, frame);
@@ -211,11 +305,23 @@ void lra::panel::ComputerVisionPanel() {
 			}
 		}
 
+		for (auto& p: p_array) {
+			cv::Point point;
+			point.x = (float)frame.cols * p.x;
+			point.y = (float)frame.rows * p.y;
+			cv::circle(frame, point, 3, cv::Scalar(0, 0, 255));
+		}
+
 		drawlist->AddImage((void*)frame_texture->id, ImVec2(x, y), ImVec2(x + w, y + h), ImVec2(0, 0), ImVec2(1, 1));
 	}
 	ImGui::End();
 
-	if (ImGui::Begin("CV_Disp_Wrap"/* , nullptr, ImGuiWindowFlags_NoTitleBar */)) {
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });
+
+	ImGui::Begin("CV_Disp_Wrap"/* , nullptr, ImGuiWindowFlags_NoTitleBar */);
+	{
+		ImGui::PopStyleVar();
+
 		auto [x, y] = ImGui::GetWindowPos();
 		auto [w, h] = ImGui::GetWindowSize();
 
