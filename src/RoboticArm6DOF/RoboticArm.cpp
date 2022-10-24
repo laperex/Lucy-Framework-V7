@@ -230,7 +230,7 @@ void lra::RuntimeUpdateArm() {
 		RenderGrid();
 		RenderLRA(controller.render_angles);
 		canvas.Render();
-		vision.Update();
+		// vision.Update();
 
 		if (lucy::Events::IsKeyChord({ SDL_SCANCODE_LCTRL, SDL_SCANCODE_S })) {
 			SerializeAnimator("animator.yaml");
@@ -243,6 +243,10 @@ void lra::RuntimeUpdateArm() {
 
 			serial_comm.TransmitServoAngles(controller.render_angles);
 		}
+	}
+
+	if (lucy::Events::IsQuittable()) {
+		SerializeAnimator("animator.yaml");
 	}
 }
 

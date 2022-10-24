@@ -13,7 +13,7 @@ static auto treenode_flags = ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_Open
 void lra::panel::RoboticArmPanel() {
 	auto& controller = registry.store<lra::Controller>();
 
-	if (ImGui::Begin("RoboticArm", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize)) {
+	if (ImGui::Begin("RoboticArm", nullptr, ImGuiWindowFlags_NoTitleBar/* | ImGuiWindowFlags_AlwaysAutoResize */)) {
 		if (ImGui::TreeNodeEx("Properties", treenode_flags)) {
 			if (ImGui::Button((controller.enable_smoothing) ? "Disable Smoothing": "Enable Smooting")) {
 				controller.enable_smoothing = !controller.enable_smoothing;
@@ -42,10 +42,11 @@ void lra::panel::RoboticArmPanel() {
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("Kinematics", treenode_flags)) {
-			if (controller.ik_enable)
+			if (controller.ik_enable) {
 				ImGui::PushStyleColor(ImGuiCol_Button, { 1, 0, 0, 0.7 });
-			else
+			} else {
 				ImGui::PushStyleColor(ImGuiCol_Button, { 0, 1, 0, 0.7 });
+			}
 
 			if (ImGui::Button((controller.ik_enable) ? "Disable" : " Enable"))
 				controller.ik_enable = !controller.ik_enable;
@@ -56,6 +57,8 @@ void lra::panel::RoboticArmPanel() {
 
 			static glm::vec3 temp;
 			ImGui::DragInt3("IK", &controller.ik_target[0], 1);
+
+			ImGui::SliderDragFloat("phi", &controller.ik_phi, 0.1, -90, 90);
 
 			bool is_valid;
 			Kinematics::GetInverseKinematics(is_valid, controller.ik_target, controller.lra_dimension);

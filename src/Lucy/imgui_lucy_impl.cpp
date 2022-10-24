@@ -84,21 +84,62 @@ bool ImGui::in_expections(std::string value, const std::vector<std::string>& exc
 	return false;
 }
 
-bool ImGui::SliderDragFloat(const char* label, float* v, float speed, float min, float max, bool& is_slider) {
+enum SliderDragFlag {
+	Float_1,
+	Float_2,
+	Float_3,
+
+	Int_1,
+	Int_2,
+	Int_3,
+};
+
+template <typename T>
+bool SliderDragType(const char* label, T* v, float speed, T min, T max, bool& is_slider, SliderDragFlag flag) {
 	auto id = "##" + std::string(label);
 
-	ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5);
-
 	bool val;
-	if (is_slider)
-		val = ImGui::SliderFloat(id.c_str(), v, min, max);
-	else
-		val = ImGui::DragFloat(id.c_str(), v, speed, min, max);
+	switch (flag) {
+		case Float_1:
+			ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5);
+
+			val = (is_slider) ? ImGui::SliderFloat(id.c_str(), (float*)v, *(float*)&min, *(float*)&max): ImGui::DragFloat(id.c_str(), (float*)v, speed, *(float*)&min, *(float*)&max);
+			break;
+		
+		case Float_2:
+			ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.67);
+
+			val = (is_slider) ? ImGui::SliderFloat2(id.c_str(), (float*)v, *(float*)&min, *(float*)&max): ImGui::DragFloat2(id.c_str(), (float*)v, speed, *(float*)&min, *(float*)&max);
+			break;
+		
+		case Float_3:
+			ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.75);
+
+			val = (is_slider) ? ImGui::SliderFloat3(id.c_str(), (float*)v, *(float*)&min, *(float*)&max): ImGui::DragFloat3(id.c_str(), (float*)v, speed, *(float*)&min, *(float*)&max);
+			break;
+
+		case Int_1:
+			ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5);
+
+			val = (is_slider) ? ImGui::SliderInt(id.c_str(), (int*)v, *(int*)&min, *(int*)&max): ImGui::DragInt(id.c_str(), (int*)v, speed, *(int*)&min, *(int*)&max);
+			break;
+		
+		case Int_2:
+			ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.67);
+
+			val = (is_slider) ? ImGui::SliderInt2(id.c_str(), (int*)v, *(int*)&min, *(int*)&max): ImGui::DragInt2(id.c_str(), (int*)v, speed, *(int*)&min, *(int*)&max);
+			break;
+		
+		case Int_3:
+			ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.75);
+
+			val = (is_slider) ? ImGui::SliderInt3(id.c_str(), (int*)v, *(int*)&min, *(int*)&max): ImGui::DragInt3(id.c_str(), (int*)v, speed, *(int*)&min, *(int*)&max);
+			break;
+	}
 
 	ImGui::SameLine();
 
-	if (ImGui::Button((" " + id).c_str()))
-		is_slider = !is_slider;
+	is_slider = (ImGui::Button((" " + id).c_str())) ? !is_slider: is_slider;
 
 	ImGui::SameLine();
 
@@ -107,14 +148,59 @@ bool ImGui::SliderDragFloat(const char* label, float* v, float speed, float min,
 	return val;
 }
 
-bool ImGui::SliderDragFloat(const char* label, float* v, float speed, float min, float max) {
+template <typename T>
+static inline bool SliderDragType(const char* label, T* v, float speed, T min, T max, SliderDragFlag flag) {
 	static std::map<const char*, bool> slider_state_map;
 
 	if (slider_state_map.find(label) == slider_state_map.end()) {
 		slider_state_map[label] = false;
 	}
 
-	return SliderDragFloat(label, v, speed, min, max, slider_state_map[label]);
+	return SliderDragType<T>(label, v, speed, min, max, slider_state_map[label], flag);
+}
+
+bool ImGui::SliderDragFloat(const char* label, float* v, float speed, float min, float max) {
+	return SliderDragType<float>(label, v, speed, min, max, Float_1);
+}
+
+bool ImGui::SliderDragFloat2(const char* label, float* v, float speed, float min, float max) {
+	return SliderDragType<float>(label, v, speed, min, max, Float_2);
+}
+
+bool ImGui::SliderDragFloat3(const char* label, float* v, float speed, float min, float max) {
+	return SliderDragType<float>(label, v, speed, min, max, Float_3);
+}
+
+bool ImGui::SliderDragFloat(const char* label, float* v, float speed, float min, float max, bool& is_slider) {
+	return SliderDragType<float>(label, v, speed, min, max, is_slider, Float_1);
+}
+bool ImGui::SliderDragFloat2(const char* label, float* v, float speed, float min, float max, bool& is_slider) {
+	return SliderDragType<float>(label, v, speed, min, max, is_slider, Float_2);
+}
+bool ImGui::SliderDragFloat3(const char* label, float* v, float speed, float min, float max, bool& is_slider) {
+	return SliderDragType<float>(label, v, speed, min, max, is_slider, Float_3);
+}
+
+bool ImGui::SliderDragInt(const char* label, int* v, int speed, int min, int max) {
+	return SliderDragType<int>(label, v, speed, min, max, Int_1);
+}
+
+bool ImGui::SliderDragInt2(const char* label, int* v, int speed, int min, int max) {
+	return SliderDragType<int>(label, v, speed, min, max, Int_2);
+}
+
+bool ImGui::SliderDragInt3(const char* label, int* v, int speed, int min, int max) {
+	return SliderDragType<int>(label, v, speed, min, max, Int_3);
+}
+
+bool ImGui::SliderDragInt(const char* label, int* v, int speed, int min, int max, bool& is_slider) {
+	return SliderDragType<int>(label, v, speed, min, max, is_slider, Int_1);
+}
+bool ImGui::SliderDragInt2(const char* label, int* v, int speed, int min, int max, bool& is_slider) {
+	return SliderDragType<int>(label, v, speed, min, max, is_slider, Int_2);
+}
+bool ImGui::SliderDragInt3(const char* label, int* v, int speed, int min, int max, bool& is_slider) {
+	return SliderDragType<int>(label, v, speed, min, max, is_slider, Int_3);
 }
 
 void ImGui::Theme::EmbraceTheDarkness() {

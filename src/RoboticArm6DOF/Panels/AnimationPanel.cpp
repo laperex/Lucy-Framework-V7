@@ -157,10 +157,14 @@ void lra::panel::AnimationPanel() {
 					ImGui::Text("X.z");
 
 					int f = 0, idx = 0;
+					static int selected_step = 0;
 					for (auto& step: animation.step_array) {
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
-						ImGui::Text(std::to_string(idx).c_str());
+						if (ImGui::Selectable(std::to_string(idx).c_str())) {
+							ImGui::OpenPopup("SH - Step");
+							selected_step = idx;
+						}
 
 						for (int i = 0; i < 6; i++) {
 							ImGui::TableSetColumnIndex(i + 1);
@@ -173,7 +177,7 @@ void lra::panel::AnimationPanel() {
 							ImGui::SetNextItemWidth(ImGui::GetColumnWidth(i + 7));
 
 							float temp = step.target_position[i];
-							if (ImGui::DragInt(("##" + std::to_string(f++)).c_str(), &step.target_position[i], 1)) {
+							if (ImGui::DragInt(("##43254" + std::to_string(f++)).c_str(), &step.target_position[i], 1)) {
 								bool is_valid;
 								auto angles = (animation.is_ik_picking) ? Kinematics::GetInverseKinematics(is_valid, step.target_position): Kinematics::GetInverseKinematics(is_valid, step.target_position, step.phi);
 								if (is_valid) {
@@ -191,7 +195,7 @@ void lra::panel::AnimationPanel() {
 
 						ImGui::TableSetColumnIndex(10);
 						ImGui::SetNextItemWidth(ImGui::GetColumnWidth(10));
-						ImGui::DragFloat(("##" + std::to_string(idx)).c_str(), &step.progress_len, 1, 0);
+						ImGui::DragFloat(("##tsd" + std::to_string(idx)).c_str(), &step.progress_len, 1, 0);
 
 						ImGui::TableSetColumnIndex(11);
 						if (ImGui::Button(("RESET##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(11), 0 })) {
@@ -262,6 +266,14 @@ void lra::panel::AnimationPanel() {
 						// }
 
 						idx++;
+					}
+
+					if (ImGui::BeginPopup("SH - Step")) {
+						if (ImGui::Button("Delete")) {
+							animation.step_array.erase(animation.step_array.begin() + selected_step);
+						}
+
+						ImGui::EndPopup();
 					}
 
 					if (regenrate) {

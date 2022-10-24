@@ -21,7 +21,7 @@ namespace lra {
 		float phi = 0;
 		bool enable_ik_trajectory = false;
 
-		float progress_len = 1000;	// Steps taken to reach this angles
+		float progress_len = 200;	// Steps taken to reach this angles
 		float pow_t = 1.9;	// Step Gradient
 
 		AnimationStep() {}

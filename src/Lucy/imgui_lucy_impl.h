@@ -7,6 +7,8 @@
 #include <imgui_stdlib.h>
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
+#include <map>
+#include <functional>
 
 namespace ImGui {
 	void SanitisedInputText(const char* label, std::string& text);
@@ -26,10 +28,18 @@ namespace ImGui {
 		}
 	}
 
-	bool SliderDragFloat(const char* label, float* v, float speed, float min, float max, bool& is_slider);
 	bool SliderDragFloat(const char* label, float* v, float speed, float min, float max);
+	bool SliderDragFloat2(const char* label, float* v, float speed, float min, float max);
+	bool SliderDragFloat3(const char* label, float* v, float speed, float min, float max);
+	bool SliderDragFloat(const char* label, float* v, float speed, float min, float max, bool& is_slider);
 	bool SliderDragFloat2(const char* label, float* v, float speed, float min, float max, bool& is_slider);
 	bool SliderDragFloat3(const char* label, float* v, float speed, float min, float max, bool& is_slider);
+	bool SliderDragInt(const char* label, int* v, int speed, int min, int max);
+	bool SliderDragInt2(const char* label, int* v, int speed, int min, int max);
+	bool SliderDragInt3(const char* label, int* v, int speed, int min, int max);
+	bool SliderDragInt(const char* label, int* v, int speed, int min, int max, bool& is_slider);
+	bool SliderDragInt2(const char* label, int* v, int speed, int min, int max, bool& is_slider);
+	bool SliderDragInt3(const char* label, int* v, int speed, int min, int max, bool& is_slider);
 }
 
 namespace ImGui::Theme {

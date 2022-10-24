@@ -20,7 +20,7 @@ enum DrawMode {
 };
 
 void lra::panel::CanvasPanel() {
-	if (ImGui::Begin("Canvas")) {
+	if (ImGui::Begin("Canvas") && false) {
 		auto& canvas = registry.store<Canvas>();
 		auto& animator = registry.store<Animator>();
 
