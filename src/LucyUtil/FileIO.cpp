@@ -18,7 +18,7 @@ bool util::write_string_to_file(const char* filename, const char* data) {
 }
 
 std::pair<uint8_t*, std::size_t> util::read_bytes_from_file(const char* filename) {
-	std::size_t size;
+	std::size_t size = 0;
 	uint8_t* read_buffer = read_bytes_from_file(filename, size);
 	return { read_buffer, size };
 }
@@ -26,7 +26,7 @@ std::pair<uint8_t*, std::size_t> util::read_bytes_from_file(const char* filename
 uint8_t* util::read_bytes_from_file(const char* filename, std::size_t& size) {
 	struct stat stat_buf;
     int rc = stat(filename, &stat_buf);
-    size = (rc == 0) ? stat_buf.st_size : -1;
+    size = (rc == 0) ? stat_buf.st_size : 0;
 	uint8_t* read_buffer = nullptr;
 
 	if (size) {

@@ -193,7 +193,7 @@ void lra::panel::ComputerVisionPanel() {
 				if (ImGui::Button(("Reset##" + std::to_string(idx)).c_str())) {
 					selected_pos = idx + 1;
 				}
-				ImGui::DragFloat2(("##1212##" + std::to_string(idx)).c_str(), &p_array[i].x, 0, 0);
+				ImGui::DragFloat2(("##1212##" + std::to_string(idx)).c_str(), &p_array[i].x, 0.001, 0);
 
 				ImGui::TableSetColumnIndex(2);
 				ImGui::DragFloat2(("##4364##" + std::to_string(idx)).c_str(), &dest_array[i].x, 0, 0);
@@ -305,14 +305,12 @@ void lra::panel::ComputerVisionPanel() {
 			}
 		}
 
-		for (auto& p: p_array) {
-			cv::Point point;
-			point.x = (float)frame.cols * p.x;
-			point.y = (float)frame.rows * p.y;
-			cv::circle(frame, point, 3, cv::Scalar(0, 0, 255));
-		}
-
 		drawlist->AddImage((void*)frame_texture->id, ImVec2(x, y), ImVec2(x + w, y + h), ImVec2(0, 0), ImVec2(1, 1));
+
+		for (int i = 0; i < p_array.size(); i++) {
+			drawlist->AddCircle({ x + w * p_array[i].x, y + h * p_array[i].y }, 4, IM_COL32(255 * ((i + 1) % 2), 255 * (i % 2), 255, 255));
+		}
+		// drawlist->AddCircle({ 100, 100 }, 4, IM_COL32(255, 0, 255, 255));
 	}
 	ImGui::End();
 
