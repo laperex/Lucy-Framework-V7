@@ -300,7 +300,7 @@ void lra::panel::ComputerVisionPanel() {
 				// 	cv::putText(copy, "P10", p_array[0b10], cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 255));
 
 				// 	cv::circle(copy, p_array[0b11], 3, cv::Scalar(255, 255, 255));
-				// 	cv::putText(copy, "P11", p_array[0b11], cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255));
+				// 	cv::putText(copy, "P11", p_array[0b11], cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255));/
 				// }
 			}
 		}
