@@ -13,6 +13,9 @@ namespace lra {
 		bool is_frame_avaliable = false;
 		bool enable_live_feed = false;
 
+		ComputerVision() {}
+		~ComputerVision() {}
+
 		void Initialize();
 		void Update();
 

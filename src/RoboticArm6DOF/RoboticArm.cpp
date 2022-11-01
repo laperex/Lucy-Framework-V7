@@ -21,7 +21,7 @@
 #include "Canvas.h"
 #include "ServoController.h"
 #include "Easing.h"
-#include "Vision.h"
+// #include "Vision.h"
 
 #define EASE_FUNC(x, t) (pow(x, t) / (pow(x, t) + pow(1 - x, t)))
 
@@ -37,7 +37,7 @@ static auto& registry = Registry::Instance();
 void lra::InitializeArm() {
 	auto& camera = registry.store<lucy::Camera>();
 	auto& controller = registry.store<Controller>();
-	auto& vision = registry.store<ComputerVision>();
+	// auto& vision = registry.store<ComputerVision>();
 	auto& materialregistry = registry.store<lucy::MaterialRegistry>();
 	auto& lightregistry = registry.store<lucy::LightRegistry>();
 
@@ -48,7 +48,7 @@ void lra::InitializeArm() {
 
 	IntializeRenderer();
 
-	vision.Initialize();
+	// vision.Initialize();
 
 	camera.position = { 0, 0, 1000 };
 }
@@ -59,7 +59,7 @@ void lra::RuntimeUpdateArm() {
 	auto& window = registry.store<lucy::Window>();
 	auto& controller = registry.store<Controller>();
 	auto& animator = registry.store<Animator>();
-	auto& vision = registry.store<ComputerVision>();
+	// auto& vision = registry.store<ComputerVision>();
 
 	if (camera.framebuffer != nullptr) {
 		camera.framebuffer->Bind();

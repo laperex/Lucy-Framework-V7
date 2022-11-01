@@ -203,6 +203,21 @@ bool ImGui::SliderDragInt3(const char* label, int* v, int speed, int min, int ma
 	return SliderDragType<int>(label, v, speed, min, max, is_slider, Int_3);
 }
 
+void ImGui::ColorEdit3(const char* label, float* v, ImVec2 size) {
+	ImGui::ColorConvertHSVtoRGB(v[0], v[1], v[2], v[0], v[1], v[2]);
+
+	auto color = *(ImVec4*)v;
+	color.w = 1;
+	if (ImGui::ColorButton(label, color, ImGuiColorEditFlags_DisplayRGB, size)) {
+		ImGui::OpenPopup((std::string(label) + "##hi-picker").c_str());
+	}
+	if (ImGui::BeginPopup((std::string(label) + "##hi-picker").c_str())) {
+		ImGui::ColorPicker3((std::string(label) + "##picker").c_str(), v, ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_DisplayRGB);
+		ImGui::EndPopup();
+	}
+	ImGui::ColorConvertRGBtoHSV(v[0], v[1], v[2], v[0], v[1], v[2]);
+}
+
 void ImGui::Theme::EmbraceTheDarkness() {
 	ImVec4* colors = ImGui::GetStyle().Colors;
 	colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);

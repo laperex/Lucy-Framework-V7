@@ -1,5 +1,5 @@
 #include "Panel.h"
-#include <opencv2/opencv.hpp>
+// #include <opencv2/opencv.hpp>
 #include <Lucy/imgui_lucy_impl.h>
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
@@ -14,7 +14,7 @@
 
 static auto& registry = Registry::Instance();
 
-std::pair<bool, glm::vec2> DetectPosition(const cv::Mat& frame) {
+static std::pair<bool, glm::vec2> DetectPosition(const cv::Mat& frame) {
 	cv::Mat hsv, mask;
 	static int hmin = 0, smin = 132, vmin = 156;
 	static int hmax = 11, smax = 255, vmax = 199;
@@ -60,7 +60,7 @@ std::pair<bool, glm::vec2> DetectPosition(const cv::Mat& frame) {
 	return { false, { 0, 0 }};
 }
 
-void MatToTexture(lgl::Texture* texture, cv::Mat& frame) {
+static void MatToTexture(lgl::Texture* texture, cv::Mat& frame) {
 	assert(texture != nullptr);
 
 	static std::unordered_map<lgl::Texture*, glm::vec2> last_size;
@@ -84,7 +84,13 @@ void MatToTexture(lgl::Texture* texture, cv::Mat& frame) {
 }
 
 void lra::panel::ComputerVisionPanel() {
-	auto& vision = registry.store<ComputerVision>();
+	static ComputerVision* vision = nullptr;
+
+	if (vision == nullptr) {
+		vision = new ComputerVision();
+		vision->Initialize();
+	}
+
 	auto& controller = registry.store<Controller>();
 
 	static cv::Mat frame;
@@ -114,13 +120,13 @@ void lra::panel::ComputerVisionPanel() {
 		{
 			auto [data, size] = util::read_bytes_from_file("p_array.bin");
 			if (size) {
-				p_array = std::vector<cv::Point2f>((cv::Point2f*)data, (cv::Point2f*)data + (size / sizeof(((cv::Point2f*)data)[0])));
+				p_array = decltype(p_array)((cv::Point2f*)data, (cv::Point2f*)data + (size / sizeof(((cv::Point2f*)data)[0])));
 			}
 		}
 		{
 			auto [data, size] = util::read_bytes_from_file("dest_array.bin");
 			if (size) {
-				dest_array = std::vector<cv::Point2f>((cv::Point2f*)data, (cv::Point2f*)data + (size / sizeof(((cv::Point2f*)data)[0])));
+				dest_array = decltype(dest_array)((cv::Point2f*)data, (cv::Point2f*)data + (size / sizeof(((cv::Point2f*)data)[0])));
 			}
 		}
 
@@ -251,7 +257,7 @@ void lra::panel::ComputerVisionPanel() {
 		}
 
 		if (live_feed) {
-			bool is_frame = vision.input_camera.read(frame);
+			bool is_frame = vision->input_camera.read(frame);
 
 			if (is_frame) {
 				if (dest_array.size() >= 4) {
@@ -337,8 +343,9 @@ void lra::panel::ComputerVisionPanel() {
 	}
 	ImGui::End();
 }
+
 // #include "Panel.h"
-// #include <opencv2/opencv.hpp>
+// // #include <opencv2/opencv.hpp>
 // #include <Lucy/imgui_lucy_impl.h>
 // #include <SDL2/SDL.h>
 // #include <glad/glad.h>

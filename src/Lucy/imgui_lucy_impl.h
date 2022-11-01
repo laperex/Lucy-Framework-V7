@@ -40,6 +40,8 @@ namespace ImGui {
 	bool SliderDragInt(const char* label, int* v, int speed, int min, int max, bool& is_slider);
 	bool SliderDragInt2(const char* label, int* v, int speed, int min, int max, bool& is_slider);
 	bool SliderDragInt3(const char* label, int* v, int speed, int min, int max, bool& is_slider);
+
+	void ColorEdit3(const char* label, float* v, ImVec2 size);
 }
 
 namespace ImGui::Theme {

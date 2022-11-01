@@ -12,14 +12,12 @@ include_directories("./dependencies/include/" src C:/Users/krishnadev/vcpkg/inst
 include_directories("C:/libs/Lucy Graphics Library/include")
 
 set(CMAKE_CXX_STANDARD 20)
+set(OpenCV_DIR "C:/Users/krishnadev/vcpkg/installed/x64-windows/share/opencv4")
 
 add_executable(main ${TARGET_SRC})
 
 find_package(SDL2 CONFIG REQUIRED)
 target_link_libraries(main PRIVATE SDL2::SDL2 SDL2::SDL2main)
-
-find_package(implot CONFIG REQUIRED)
-target_link_libraries(main PRIVATE implot::implot)
 
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(main PRIVATE imgui::imgui)
@@ -51,17 +49,9 @@ target_link_libraries(main PRIVATE glad::glad)
 find_package(stduuid CONFIG REQUIRED)
 target_link_libraries(main PRIVATE stduuid)
 
-find_package(box2d CONFIG REQUIRED)
-target_link_libraries(main PRIVATE box2d::box2d)
-
-find_package(plog CONFIG REQUIRED)
-target_link_libraries(main PRIVATE plog::plog)
-
 find_package(OpenCV CONFIG REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(main PRIVATE ${OpenCV_LIBS})
-
-target_link_libraries(main PRIVATE)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

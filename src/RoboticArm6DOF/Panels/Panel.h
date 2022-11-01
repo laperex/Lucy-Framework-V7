@@ -11,6 +11,7 @@ namespace lra::panel {
 	void SerialCommunicationPanel();
 	void CanvasPanel();
 	void ComputerVisionPanel();
+	void ColorDetectionPanel();
 
 	void PanelUpdate();
 }
