@@ -2,7 +2,7 @@
 
 lucy::Window::Window() {
 	this->pos = { 0, 0 };
-	this->size = { 1920, 1080 };
+	this->size = { 2560, 1440 };
 
 	this->size *= 0.7;
 

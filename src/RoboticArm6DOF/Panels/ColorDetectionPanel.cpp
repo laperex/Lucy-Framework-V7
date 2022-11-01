@@ -112,18 +112,18 @@ struct ColorDetectionData {
 		}
 	};
 
-	glm::vec2 wrap_points_normals[4] = {
-		{ 0.122, 0.390 },
-		{ 0.170, 0.765 },
-		{ 0.731, 0.314 },
-		{ 0.745, 0.769 },
+	std::array<glm::vec2, 4> wrap_points_normals = {
+		glm::vec2(0.122, 0.390),
+		glm::vec2(0.170, 0.765),
+		glm::vec2(0.731, 0.314),
+		glm::vec2(0.745, 0.769),
 	};
 
-	glm::vec2 wrap_points_ik_positions[4] = {
-		{ 0, 0 },
-		{ 0, 320 },
-		{ 640, 0 },
-		{ 640, 320 },
+	std::array<glm::vec2, 4> wrap_points_ik_positions = {
+		glm::vec2(0, 0),
+		glm::vec2(0, 320),
+		glm::vec2(640, 0),
+		glm::vec2(640, 320),
 	};
 
 	ViewMode view_mode = RawView;
@@ -278,26 +278,52 @@ void lra::panel::ColorDetectionPanel() {
 			color_detection_data.selected_mat = nullptr;
 			if (load_frame) {
 				if (color_detection_data.capture.read(frame)) {
-					auto* temp = (cv::Point2f*)color_detection_data.wrap_points_normals;
+					auto temp = color_detection_data.wrap_points_normals;
 
 					for (int i = 0; i < 4; i++) {
 						temp[i].x = (float)frame.cols * temp[i].x;
 						temp[i].y = (float)frame.rows * temp[i].y;
 					}
 
-					auto M = cv::getPerspectiveTransform(temp, (cv::Point2f*)color_detection_data.wrap_points_ik_positions);
+					auto M = cv::getPerspectiveTransform((cv::Point2f*)temp.data(), (cv::Point2f*)color_detection_data.wrap_points_ik_positions.data());
 					cv::warpPerspective(frame, wrap_frame, M, cv::Size(frame.cols, frame.rows));
-					auto [is_frame, point] = DetectPosition(wrap_frame);
-					if (is_frame) {
-						cv::circle(wrap_frame, *(cv::Point2f*)&point, 5, cv::Scalar(0, 255, 255), 3);
+					// auto [is_frame, point] = DetectPosition(wrap_frame);
+					// if (is_frame) {
+					// 	cv::circle(wrap_frame, *(cv::Point2f*)&point, 5, cv::Scalar(0, 255, 255), 3);
 
-						// norm_wrap_sel_pos.x = (point.x / (float)wrap_frame.cols);
-						// norm_wrap_sel_pos.y = (point.y / (float)wrap_frame.rows);
-						// target.y = 100;
+					// 	// norm_wrap_sel_pos.x = (point.x / (float)wrap_frame.cols);
+					// 	// norm_wrap_sel_pos.y = (point.y / (float)wrap_frame.rows);
+					// 	// target.y = 100;
+					// }
+
+					// static std::vector<std::vector<cv::Point>> contours;
+					// cv::Mat hsv, mask;
+					// for (auto& color_detect: color_detection_data.available_colors) {
+					// 	cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+
+					// cv::circle(wrap_frame, *(cv::Point2f*)&temp[0], 3, cv::Scalar(255, 0, 0), -1);
+
+					for (int i = 0; i < 4; i++) {
+						cv::circle(frame, *(cv::Point2f*)&temp[i], 3, cv::Scalar(255.0f * color_detection_data.wrap_points_ik_positions[i].x, 255.0f * color_detection_data.wrap_points_ik_positions[i].y, 255), -1);
+						// cv::line(frame, *(cv::Point2f*)&temp[i], *(cv::Point2f*)&temp[(i - 1 < 0) ? 0 : i - 1], cv::Scalar(255.0f * color_detection_data.wrap_points_ik_positions[i].x, 255.0f * color_detection_data.wrap_points_ik_positions[i].y, 255));
 					}
 
-					// cv::cvtColor(wrap_frame, wrap_frame, cv::COLOR_BGR2RGBA);
-					// MatToTexture(texture, wrap_frame);
+					// 	cv::inRange(hsv, cv::Scalar(color_detect.min.x, color_detect.min.y, color_detect.min.z), cv::Scalar(color_detect.max.x, color_detect.max.y, color_detect.max.z), mask);
+
+					// 	// cv::findContours(mask, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+						
+					// 	// cv::erode(mask, mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+					// 	// cv::dilate( mask, mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+
+					// 	// //morphological closing (fill small holes in the foreground)
+					// 	// cv::dilate(mask, mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5))); 
+					// 	// cv::erode(mask, mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+
+					// 	break;
+					// }
+
+					// cv::cvtColor(mask, wrap_frame, cv::COLOR_GRAY2BGR);
+
 					switch (color_detection_data.view_mode) {
 						case RawView:
 							color_detection_data.selected_mat = &frame;
