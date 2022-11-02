@@ -41,6 +41,8 @@ lra::SerialCommunication::SerialCommunication() {
 		{ 0, 150 },
 		{ 180, 310 },
 	};
+
+	port_name = "COM3";
 }
 
 static uint8_t data[] = { '&', 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 'M', 0 };

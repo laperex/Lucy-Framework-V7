@@ -204,18 +204,18 @@ bool ImGui::SliderDragInt3(const char* label, int* v, int speed, int min, int ma
 }
 
 void ImGui::ColorEdit3(const char* label, float* v, ImVec2 size) {
-	// ImGui::ColorConvertHSVtoRGB(v[0], v[1], v[2], v[0], v[1], v[2]);
-
+	ImGui::ColorConvertHSVtoRGB(v[0], v[1], v[2], v[0], v[1], v[2]);
 	auto color = *(ImVec4*)v;
 	color.w = 1;
 	if (ImGui::ColorButton(label, color, ImGuiColorEditFlags_DisplayHSV, size)) {
 		ImGui::OpenPopup((std::string(label) + "##hi-picker").c_str());
 	}
+	ImGui::ColorConvertRGBtoHSV(v[0], v[1], v[2], v[0], v[1], v[2]);
+
 	if (ImGui::BeginPopup((std::string(label) + "##hi-picker").c_str())) {
 		ImGui::ColorPicker3((std::string(label) + "##picker").c_str(), v, ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_InputHSV);
 		ImGui::EndPopup();
 	}
-	// ImGui::ColorConvertRGBtoHSV(v[0], v[1], v[2], v[0], v[1], v[2]);
 }
 
 void ImGui::Theme::EmbraceTheDarkness() {
