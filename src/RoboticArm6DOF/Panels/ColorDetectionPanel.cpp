@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <LucyUtil/FileIO.h>
 #include <glm/gtx/string_cast.hpp>
+#include "Sorting.h"
 
 #define ENABLE_LOADSAVE true
 
@@ -164,6 +165,8 @@ void lra::panel::ColorDetectionPanel() {
 	static ColorDetectionData color_detection_data;
 
 	auto& controller = Registry::Instance().store<Controller>();
+	auto& sorting = Registry::Instance().store<Sorting>();
+	auto& animator = Registry::Instance().store<Animator>();
 
 	if (ImGui::Begin("ColorDetectionPanel")) {
 		if (ENABLE_LOADSAVE) {
@@ -189,6 +192,8 @@ void lra::panel::ColorDetectionPanel() {
 
 		if (color_detection_data.initialize) {
 			color_detection_data.capture.open(1);
+
+			sorting.Initialize();
 		}
 
 		bool load_frame = false;
@@ -356,8 +361,23 @@ void lra::panel::ColorDetectionPanel() {
 			if (load_frame) {
 				is_frame_available = color_detection_data.capture.read(frame);
 			}
+			
 			cv::Mat selected;
-			if (is_frame_available) {
+			static std::vector<std::pair<std::string, glm::vec2>> selected_points;
+
+			if (ik_move) {
+				if (selected_points.size()) {
+					glm::ivec2 pos;
+					pos.x = (1 - (selected_points[0].second.y / (float)400)) * 300;
+					pos.y = (selected_points[0].second.x / (float)800) * 400 - 200;
+
+					sorting.SetParameters(SelectedBall::RED, pos);
+					animator.selected_animation = sorting.animations_ids[SelectedBall::RED];
+					animator.animationstate = PLAY;
+					// controller.ik_target.z = pos.y;
+					// controller.ik_target.x = pos.x;
+				}
+			} else if (is_frame_available && animator.animationstate != PLAY) {
 				cv::Mat wrap_frame;
 				auto temp = color_detection_data.wrap_points_normals;
 
@@ -376,33 +396,34 @@ void lra::panel::ColorDetectionPanel() {
 				auto M = cv::getPerspectiveTransform((cv::Point2f*)temp.data(), (cv::Point2f*)color_detection_data.wrap_points_ik_positions.data());
 				cv::warpPerspective(frame, wrap_frame, M, cv::Size(800, 400));
 
-				std::vector<std::pair<std::string, glm::vec2>> selected_points;
+				selected_points.clear();
 
+				cv::Mat mask;
 				for (auto& color: color_detection_data.available_colors) {
 					glm::ivec3 min = glm::ivec3(color.min * 255.0f);
 					glm::ivec3 max = glm::ivec3(color.max * 255.0f);
 
-					cv::Mat mask = GetMask(wrap_frame, min, max);
+					mask = GetMask(wrap_frame, min, max);
 					auto [is_frame, point, points_all] = DetectPosition(mask, color_detection_data.max_area);
 					if (is_frame) {
-						selected_points.push_back(std::make_pair(color.name, point));
-						cv::circle(wrap_frame, *(cv::Point2f*)&point, 5, cv::Scalar(0, 255, 255), 3);
-					}
+						bool is_valid;
 
-					// for (int i = 0; i < selected_points.size(); i++) {
-					// }
-					
-					if (color_detection_data.show_mask) {
-						cv::cvtColor(mask, wrap_frame, cv::COLOR_GRAY2BGR);
+						glm::ivec3 pos;
+						pos.x = (1 - (selected_points[0].second.y / (float)400)) * 300;
+						pos.y = 30;
+						pos.z = (selected_points[0].second.x / (float)800) * 400 - 200;
+
+						Kinematics::GetInverseKinematics(is_valid, pos);
+
+						if (is_valid) {
+							selected_points.push_back(std::make_pair(color.name, point));
+							cv::circle(wrap_frame, *(cv::Point2f*)&point, 5, cv::Scalar(0, 255, 255), 3);
+						}
 					}
 				}
 
-				if (ik_move) {
-					if (selected_points.size()) {
-						controller.ik_target.z = (selected_points[0].second.x / (float)wrap_frame.cols) * 400 - 200;
-						controller.ik_target.x = (1 - (selected_points[0].second.y / (float)wrap_frame.rows)) * 300;
-						std::cout << glm::to_string(selected_points[0].second) << '\n';
-					}
+				if (color_detection_data.show_mask) {
+					cv::cvtColor(mask, wrap_frame, cv::COLOR_GRAY2BGR);
 				}
 
 				for (int i = 0; i < 4; i++) {
