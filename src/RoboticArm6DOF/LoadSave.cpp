@@ -24,6 +24,8 @@ void lra::SerializeAnimator(const char* filename) {
 		const auto& name = pair.second.name;
 		auto& animation = pair.second.animation;
 
+		if (name.starts_with("__##")) continue;
+
 		out << YAML::BeginMap;
 		{
 			out << YAML::Key << "id";

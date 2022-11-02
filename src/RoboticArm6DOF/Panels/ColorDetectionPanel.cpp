@@ -177,8 +177,8 @@ void lra::panel::ColorDetectionPanel() {
 				data = util::read_bytes_from_file("color_detection_data.wrap_points_normals.bin", size);
 				if (size) color_detection_data.wrap_points_normals = decltype(color_detection_data.wrap_points_normals)((glm::vec2*)data, (glm::vec2*)data + (size / sizeof(((glm::vec2*)data)[0])));
 
-				data = util::read_bytes_from_file("color_detection_data.wrap_points_ik_positions.bin", size);
-				if (size) color_detection_data.wrap_points_ik_positions = decltype(color_detection_data.wrap_points_ik_positions)((glm::vec2*)data, (glm::vec2*)data + (size / sizeof(((glm::vec2*)data)[0])));
+				// data = util::read_bytes_from_file("color_detection_data.wrap_points_ik_positions.bin", size);
+				// if (size) color_detection_data.wrap_points_ik_positions = decltype(color_detection_data.wrap_points_ik_positions)((glm::vec2*)data, (glm::vec2*)data + (size / sizeof(((glm::vec2*)data)[0])));
 
 				data = util::read_bytes_from_file("color_detection_data.available_colors.bin", size);
 				if (size) color_detection_data.available_colors = decltype(color_detection_data.available_colors)((DetectColor*)data, (DetectColor*)data + (size / sizeof(((DetectColor*)data)[0])));
@@ -186,7 +186,7 @@ void lra::panel::ColorDetectionPanel() {
 			if (lucy::Events::IsQuittable()) {
 				util::write_bytes_to_file("color_detection_data.available_colors.bin", (uint8_t*)color_detection_data.available_colors.data(), color_detection_data.available_colors.size() * sizeof(color_detection_data.available_colors[0]));
 				util::write_bytes_to_file("color_detection_data.wrap_points_normals.bin", (uint8_t*)color_detection_data.wrap_points_normals.data(), color_detection_data.wrap_points_normals.size() * sizeof(color_detection_data.wrap_points_normals[0]));
-				util::write_bytes_to_file("color_detection_data.wrap_points_ik_positions.bin", (uint8_t*)color_detection_data.wrap_points_ik_positions.data(), color_detection_data.wrap_points_ik_positions.size() * sizeof(color_detection_data.wrap_points_ik_positions[0]));
+				// util::write_bytes_to_file("color_detection_data.wrap_points_ik_positions.bin", (uint8_t*)color_detection_data.wrap_points_ik_positions.data(), color_detection_data.wrap_points_ik_positions.size() * sizeof(color_detection_data.wrap_points_ik_positions[0]));
 			}
 		}
 
@@ -201,6 +201,7 @@ void lra::panel::ColorDetectionPanel() {
 		static float slider = 0.17;
 		ImGui::SliderFloat("Column Size", &slider, 0.1f, 1.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
 		float offset = ImGui::GetContentRegionAvail().x * slider;
+		static int show_mask_idx = 0;
 
 		{
 			ImGui::Columns(2, 0, false);
@@ -251,7 +252,7 @@ void lra::panel::ColorDetectionPanel() {
 				ImGui::SliderDragFloat("Max Area", &color_detection_data.max_area, 0.1, 0, 500);
 
 				if (ImGui::Begin("ColorMenu", &color_menu)) {
-					if (ImGui::BeginTable("##ColorMenuTable", 3, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable)) {
+					if (ImGui::BeginTable("##ColorMenuTable", 4, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable)) {
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
 						ImGui::Text("Name");
@@ -262,34 +263,26 @@ void lra::panel::ColorDetectionPanel() {
 						ImGui::TableSetColumnIndex(2);
 						ImGui::Text("Max");
 
+						ImGui::TableSetColumnIndex(3);
+						ImGui::Text("Mask");
+
 						int idx = 0;
 						for (int i = 0; i < color_detection_data.available_colors.size(); i++) {
 							ImGui::TableNextRow();
 							ImGui::TableSetColumnIndex(0);
 
-							static bool next_text_mode = false;
-							// if (next_text_mode) {
-								ImGui::SanitisedInputText(("##SelectedInputText" + std::to_string(idx)).c_str(), color_detection_data.available_colors[i].name);
-							// } else {
-							// 	ImGui::Selectable((color_detection_data.available_colors[i].name + "##" + std::to_string(idx)).c_str());
-							// }
-
-							// bool is_hovered = ImGui::IsItemHovered();
-
-							// if (is_hovered && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-							// 	next_text_mode = true;
-							// }
-							// if (!is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-							// 	next_text_mode = false;
-							// }
-
-							glm::vec3 temp;
+							ImGui::SanitisedInputText(("##SelectedInputText" + std::to_string(idx)).c_str(), color_detection_data.available_colors[i].name);
 
 							ImGui::TableSetColumnIndex(1);
 							ImGui::ColorEdit3(("##min" + std::to_string(idx)).c_str(), &color_detection_data.available_colors[i].min[0], { ImGui::GetColumnWidth(), 0 });
 
 							ImGui::TableSetColumnIndex(2);
 							ImGui::ColorEdit3(("##max" + std::to_string(idx)).c_str(), &color_detection_data.available_colors[i].max[0], { ImGui::GetColumnWidth(), 0 });
+
+							ImGui::TableSetColumnIndex(3);
+							if (ImGui::Button((show_mask_idx == idx) ? "Viewing" : "Show")) {
+								show_mask_idx = idx;
+							}
 
 							idx++;
 						}
@@ -361,7 +354,7 @@ void lra::panel::ColorDetectionPanel() {
 			if (load_frame) {
 				is_frame_available = color_detection_data.capture.read(frame);
 			}
-			
+
 			cv::Mat selected;
 			static std::vector<std::pair<std::string, glm::vec2>> selected_points;
 
@@ -371,11 +364,18 @@ void lra::panel::ColorDetectionPanel() {
 					pos.x = (1 - (selected_points[0].second.y / (float)400)) * 300;
 					pos.y = (selected_points[0].second.x / (float)800) * 400 - 200;
 
-					sorting.SetParameters(SelectedBall::RED, pos);
-					animator.selected_animation = sorting.animations_ids[SelectedBall::RED];
+					if (selected_points[0].first == "Red")
+						sorting.SetParameters(SelectedBall::RED, pos);
+						
+					if (selected_points[0].first == "Blue")
+						sorting.SetParameters(SelectedBall::BLUE, pos);
+
+					animator.selected_animation = sorting.animations_id;
 					animator.animationstate = PLAY;
 					// controller.ik_target.z = pos.y;
 					// controller.ik_target.x = pos.x;
+
+					std::cout << glm::to_string(pos) << '\n';
 				}
 			} else if (is_frame_available && animator.animationstate != PLAY) {
 				cv::Mat wrap_frame;
@@ -399,6 +399,7 @@ void lra::panel::ColorDetectionPanel() {
 				selected_points.clear();
 
 				cv::Mat mask;
+				int idx = 0;
 				for (auto& color: color_detection_data.available_colors) {
 					glm::ivec3 min = glm::ivec3(color.min * 255.0f);
 					glm::ivec3 max = glm::ivec3(color.max * 255.0f);
@@ -409,9 +410,9 @@ void lra::panel::ColorDetectionPanel() {
 						bool is_valid;
 
 						glm::ivec3 pos;
-						pos.x = (1 - (selected_points[0].second.y / (float)400)) * 300;
+						pos.x = (1 - (point.y / (float)400)) * 300;
 						pos.y = 30;
-						pos.z = (selected_points[0].second.x / (float)800) * 400 - 200;
+						pos.z = (point.x / (float)800) * 400 - 200;
 
 						Kinematics::GetInverseKinematics(is_valid, pos);
 
@@ -420,10 +421,12 @@ void lra::panel::ColorDetectionPanel() {
 							cv::circle(wrap_frame, *(cv::Point2f*)&point, 5, cv::Scalar(0, 255, 255), 3);
 						}
 					}
-				}
 
-				if (color_detection_data.show_mask) {
-					cv::cvtColor(mask, wrap_frame, cv::COLOR_GRAY2BGR);
+					if (color_detection_data.show_mask && show_mask_idx == idx) {
+						cv::cvtColor(mask, selected, cv::COLOR_GRAY2BGR);
+					}
+
+					idx++;
 				}
 
 				for (int i = 0; i < 4; i++) {
@@ -438,7 +441,8 @@ void lra::panel::ColorDetectionPanel() {
 						break;
 					
 					case WrappedView:
-						selected = wrap_frame;
+						if (!color_detection_data.show_mask)
+							selected = wrap_frame;
 						break;
 					
 					default:

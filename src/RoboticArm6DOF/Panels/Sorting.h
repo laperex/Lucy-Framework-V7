@@ -10,12 +10,13 @@ namespace lra {
 		NONE = -1,
 		RED,
 		GREEN,
+		BLUE,
 
 		SelectedBall_COUNT
 	};
 
 	struct Sorting {
-		std::array<LUCY_UUID, SelectedBall_COUNT> animations_ids;
+		LUCY_UUID animations_id = LUCY_NULL_UUID;
 
 		glm::ivec3 RED_PlacePosition = { 0, 100, 200 };
 		glm::ivec3 GREEN_PlacePosition = { 0, 100, -200 };
