@@ -332,7 +332,7 @@ void lra::panel::ColorDetectionPanel() {
 							// 	// selected_pos = idx + 1;
 							// }
 							ImGui::SetNextItemWidth(ImGui::GetColumnWidth(1));
-							ImGui::DragFloat2(("##1212##" + std::to_string(idx)).c_str(), &color_detection_data.wrap_points_normals[i][0], 0.001, 0);
+							ImGui::DragFloat2(("##1212##" + std::to_string(idx)).c_str(), &color_detection_data.wrap_points_normals[i][0], 0.001, 0);	
 
 							ImGui::TableSetColumnIndex(2);
 							ImGui::SetNextItemWidth(ImGui::GetColumnWidth(2));
