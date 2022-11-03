@@ -61,13 +61,13 @@ void lra::Sorting::SetParameters(SelectedBall ball, glm::ivec2 pos) {
 
 	auto& animation = registry.store<Animator>().animation_registry[animations_id].animation;
 
-	glm::ivec3 destination = { 0, 150, -180 };
+	glm::ivec3 destination;
 
 	if (ball == RED) {
-		destination = { 0, 150, -180 };
+		destination = { 0, 150, -250 };
 	}
 	if (ball == BLUE) {
-		destination = { 0, 150, 180 };
+		destination = { 0, 150, 250 };
 	}
 
 	animation.step_array[S1_PICK_UPPER_GO].target_position = { pos.x, REST_POS_Y, pos.y };

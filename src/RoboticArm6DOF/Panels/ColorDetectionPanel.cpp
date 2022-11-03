@@ -198,6 +198,8 @@ void lra::panel::ColorDetectionPanel() {
 
 		bool load_frame = false;
 		bool ik_move = false;
+		static float enable_view = true;
+		static float enable_calc = true;
 		static float slider = 0.17;
 		ImGui::SliderFloat("Column Size", &slider, 0.1f, 1.0f, "%.2f", ImGuiSliderFlags_Logarithmic);
 		float offset = ImGui::GetContentRegionAvail().x * slider;
@@ -236,17 +238,25 @@ void lra::panel::ColorDetectionPanel() {
 				}
 
 				static bool color_menu = false;
-				if (ImGui::Button("Show Color Menu")) {
+				if (ImGui::Button("Show Color Menu", { ImGui::GetColumnWidth(), 0 })) {
 					color_menu = !color_menu;
 				}
 
 				static bool wrap_points_menu = false;
-				if (ImGui::Button("Show Wrap Points")) {
+				if (ImGui::Button("Show Wrap Points", { ImGui::GetColumnWidth(), 0 })) {
 					wrap_points_menu = !wrap_points_menu;
 				}
 
-				if (ImGui::Button("Move")) {
+				if (ImGui::Button("Move", { ImGui::GetColumnWidth(), 0 })) {
 					ik_move = true;
+				}
+
+				if (ImGui::Button((enable_view) ? "Disable View": "Enable View", { ImGui::GetColumnWidth(), 0 })) {
+					enable_view = !enable_view;
+				}
+
+				if (ImGui::Button((enable_calc) ? "Disable Calculations": "Enable Calculations", { ImGui::GetColumnWidth(), 0 })) {
+					enable_calc = !enable_calc;
 				}
 
 				ImGui::SliderDragFloat("Max Area", &color_detection_data.max_area, 0.1, 0, 500);
@@ -317,10 +327,10 @@ void lra::panel::ColorDetectionPanel() {
 							ImGui::Text(std::to_string(idx).c_str());
 
 							ImGui::TableSetColumnIndex(1);
-							ImGui::SetNextItemWidth(ImGui::GetColumnWidth(1));
-							if (ImGui::Button(("Reset##" + std::to_string(idx)).c_str())) {
-								// selected_pos = idx + 1;
-							}
+							// ImGui::SetNextItemWidth(ImGui::GetColumnWidth(1));
+							// if (ImGui::Button(("Reset##" + std::to_string(idx)).c_str())) {
+							// 	// selected_pos = idx + 1;
+							// }
 							ImGui::SetNextItemWidth(ImGui::GetColumnWidth(1));
 							ImGui::DragFloat2(("##1212##" + std::to_string(idx)).c_str(), &color_detection_data.wrap_points_normals[i][0], 0.001, 0);
 
@@ -377,7 +387,7 @@ void lra::panel::ColorDetectionPanel() {
 
 					std::cout << glm::to_string(pos) << '\n';
 				}
-			} else if (is_frame_available && animator.animationstate != PLAY) {
+			} else if (is_frame_available && animator.animationstate != PLAY && enable_calc) {
 				cv::Mat wrap_frame;
 				auto temp = color_detection_data.wrap_points_normals;
 
@@ -439,12 +449,12 @@ void lra::panel::ColorDetectionPanel() {
 					case RawView:
 						selected = frame;
 						break;
-					
+
 					case WrappedView:
 						if (!color_detection_data.show_mask)
 							selected = wrap_frame;
 						break;
-					
+
 					default:
 						color_detection_data.selected_mat = nullptr;
 				};
@@ -452,41 +462,45 @@ void lra::panel::ColorDetectionPanel() {
 
 			ImGui::NextColumn();
 
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });
+			if (enable_view) {
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });
+			}
 			if (ImGui::BeginChild("##View") || true) {
-				ImGui::PopStyleVar();
+				if (enable_view) {
+					ImGui::PopStyleVar();
 
-				static lgl::Texture* texture = nullptr;
+					static lgl::Texture* texture = nullptr;
 
-				auto pos = ImGui::GetWindowPos();
-				auto size = ImGui::GetWindowSize();
-				auto cursor_pos =  ImGui::GetMouseCursor();
+					auto pos = ImGui::GetWindowPos();
+					auto size = ImGui::GetWindowSize();
+					auto cursor_pos =  ImGui::GetMouseCursor();
 
-				ImGui::InvisibleButton("##view_window_invisible_button", size);
+					ImGui::InvisibleButton("##view_window_invisible_button", size);
 
-				color_detection_data.view_window_pos = *(glm::ivec2*)&pos;
-				color_detection_data.view_window_size = *(glm::ivec2*)&size;
+					color_detection_data.view_window_pos = *(glm::ivec2*)&pos;
+					color_detection_data.view_window_size = *(glm::ivec2*)&size;
 
-				color_detection_data.is_view_window_hovered = ImGui::IsItemHovered();
-				color_detection_data.is_view_window_clicked = ImGui::IsItemClicked();
-				color_detection_data.is_view_window_clicked_left = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && color_detection_data.is_view_window_hovered;
-				color_detection_data.is_view_window_clicked_right = ImGui::IsMouseClicked(ImGuiMouseButton_Right) && color_detection_data.is_view_window_hovered;
+					color_detection_data.is_view_window_hovered = ImGui::IsItemHovered();
+					color_detection_data.is_view_window_clicked = ImGui::IsItemClicked();
+					color_detection_data.is_view_window_clicked_left = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && color_detection_data.is_view_window_hovered;
+					color_detection_data.is_view_window_clicked_right = ImGui::IsMouseClicked(ImGuiMouseButton_Right) && color_detection_data.is_view_window_hovered;
 
-				if (color_detection_data.is_view_window_clicked) {
-					color_detection_data.view_window_mouse_pos_normalized.x = (ImGui::GetMousePos().x - pos.x) / size.x;
-					color_detection_data.view_window_mouse_pos_normalized.y = (ImGui::GetMousePos().y - pos.y) / size.y;
+					if (color_detection_data.is_view_window_clicked) {
+						color_detection_data.view_window_mouse_pos_normalized.x = (ImGui::GetMousePos().x - pos.x) / size.x;
+						color_detection_data.view_window_mouse_pos_normalized.y = (ImGui::GetMousePos().y - pos.y) / size.y;
+					}
+
+					if (texture == nullptr) {
+						texture = new lgl::Texture;
+						texture->mode = lgl::TEXTURE_2D;
+					}
+
+					if (color_detection_data.selected_mat != nullptr) {
+						MatToTexture(texture, *color_detection_data.selected_mat);
+					}
+
+					ImGui::GetWindowDrawList()->AddImage((void*)texture->id, ImVec2(pos.x, pos.y), ImVec2(pos.x + size.x, pos.y + size.y), ImVec2(0, 0), ImVec2(1, 1));
 				}
-
-				if (texture == nullptr) {
-					texture = new lgl::Texture;
-					texture->mode = lgl::TEXTURE_2D;
-				}
-
-				if (color_detection_data.selected_mat != nullptr) {
-					MatToTexture(texture, *color_detection_data.selected_mat);
-				}
-
-				ImGui::GetWindowDrawList()->AddImage((void*)texture->id, ImVec2(pos.x, pos.y), ImVec2(pos.x + size.x, pos.y + size.y), ImVec2(0, 0), ImVec2(1, 1));
 			}
 			ImGui::EndChild();
 		}
