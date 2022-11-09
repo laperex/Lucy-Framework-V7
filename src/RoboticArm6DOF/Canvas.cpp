@@ -1,7 +1,7 @@
 #include "Canvas.h"
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/gtx/quaternion.hpp>
+#include <Lucy/Math.h>//#include <glm/gtc/matrix_transform.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 #include <glad/glad.h>
 
 void lra::Canvas::Render(const glm::vec4& color) {

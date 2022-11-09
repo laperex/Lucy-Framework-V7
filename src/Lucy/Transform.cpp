@@ -1,8 +1,7 @@
 #include "Transform.h"
-#define GLM_ENABLE_EXPERIMENTAL
 #include <iostream>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/string_cast.hpp>
+#include <Lucy/Math.h>//#include <glm/gtx/quaternion.hpp>
+// #include <Lucy/Math.h>//#include <glm/gtx/string_cast.hpp>
 
 glm::mat4 lucy::Transform::GetTranslationMatrix() {
 	// return -glm::translate(glm::mat4(1.0f), glm::normalize(parent_entity->GetRotationQuat() * glm::normalize(translation - parent_entity->translation)) * glm::length(translation - parent_entity->translation));

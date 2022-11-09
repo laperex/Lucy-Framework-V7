@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 #include <LucyGL/LucyGL.h>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 
 namespace lre {
 	struct Renderer {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <LucyRE/LucyRE.h>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 
 namespace lra {
 	struct Canvas {

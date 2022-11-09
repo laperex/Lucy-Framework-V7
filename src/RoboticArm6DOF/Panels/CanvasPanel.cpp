@@ -3,7 +3,7 @@
 #include <RoboticArm6DOF/Kinematics.h>
 #include <RoboticArm6DOF/Animator.h>
 #include <Lucy/imgui_lucy_impl.h>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 #include <Lucy/Lucy.h>
 #include <iostream>
 

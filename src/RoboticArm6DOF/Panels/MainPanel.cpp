@@ -1,8 +1,8 @@
 #include "Panel.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <iostream>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/string_cast.hpp>
+#include <Lucy/Math.h>//#include <glm/gtx/quaternion.hpp>
+#include <Lucy/Math.h>//#include <glm/gtx/string_cast.hpp>
 
 #include <RoboticArm6DOF/Controller.h>
 #include <RoboticArm6DOF/Canvas.h>
@@ -12,7 +12,7 @@
 #include <Lucy/Lucy.h>
 #include <Lucy/Window.h>
 #include <Lucy/Editor.h>
-#include <glm/gtc/matrix_transform.hpp>
+#include <Lucy/Math.h>//#include <glm/gtc/matrix_transform.hpp>
 #include <RoboticArm6DOF/Renderer.h>
 #include <RoboticArm6DOF/RoboticArm.h>
 

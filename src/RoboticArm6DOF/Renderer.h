@@ -1,7 +1,7 @@
 #pragma once
 
 #include "JointAngles.h"
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 #include <LucyGL/LucyGL.h>
 
 namespace lra {

@@ -25,9 +25,6 @@ target_link_libraries(main PRIVATE imgui::imgui)
 find_package(imguizmo CONFIG REQUIRED)
 target_link_libraries(main PRIVATE imguizmo::imguizmo)
 
-find_package(nlohmann_json CONFIG REQUIRED)
-target_link_libraries(main PRIVATE nlohmann_json nlohmann_json::nlohmann_json)
-
 find_package(assimp CONFIG REQUIRED)
 target_link_libraries(main PRIVATE assimp::assimp)
 

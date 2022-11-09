@@ -3,8 +3,8 @@
 #include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_events.h>
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+#include <Lucy/Math.h>//#include <glm/vec2.hpp>
+#include <Lucy/Math.h>//#include <glm/vec3.hpp>
 
 #include <string>
 #include <set>

@@ -2,7 +2,7 @@
 
 #include <LucyGL/LucyGL.h>
 #include <array>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 #include "Block.h"
 
 #define CHUNK_SIZE (16)

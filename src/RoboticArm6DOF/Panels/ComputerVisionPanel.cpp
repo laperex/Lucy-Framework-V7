@@ -7,7 +7,7 @@
 #include <RoboticArm6DOF/Vision.h>
 #include <RoboticArm6DOF/Controller.h>
 #include <Lucy/ECS.h>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 #include <map>
 #include <unordered_map>
 #include <LucyUtil/FileIO.h>
@@ -353,7 +353,7 @@ void lra::panel::ComputerVisionPanel() {
 // #include <RoboticArm6DOF/Vision.h>
 // #include <RoboticArm6DOF/Controller.h>
 // #include <Lucy/ECS.h>
-// #include <glm/glm.hpp>
+// #include <Lucy/Math.h>//#include <glm/glm.hpp>
 
 // static auto& registry = Registry::Instance();
 

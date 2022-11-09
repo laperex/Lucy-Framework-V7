@@ -1,7 +1,7 @@
 #pragma once
 
 #include <LucyGL/LucyGL.h>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 
 struct Material {
 	glm::vec3 ambient = { 0.06, 0.50, 1.00 };

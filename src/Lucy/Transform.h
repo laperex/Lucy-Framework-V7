@@ -1,8 +1,8 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/gtc/matrix_transform.hpp>
+#include <Lucy/Math.h>//#include <glm/gtc/quaternion.hpp>
 
 namespace lucy {
 	struct Transform {

@@ -6,11 +6,11 @@
 #include <RoboticArm6DOF/Vision.h>
 #include <RoboticArm6DOF/Controller.h>
 #include <Lucy/ECS.h>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 #include <map>
 #include <unordered_map>
 #include <LucyUtil/FileIO.h>
-#include <glm/gtx/string_cast.hpp>
+#include <Lucy/Math.h>//#include <glm/gtx/string_cast.hpp>
 #include "Sorting.h"
 
 #define ENABLE_LOADSAVE true

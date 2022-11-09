@@ -8,7 +8,7 @@
 #include <Lucy/Light.h>
 #include <Lucy/Material.h>
 #include <Lucy/imgui_lucy_impl.h>
-#include <glm/gtx/string_cast.hpp>
+#include <Lucy/Math.h>//#include <glm/gtx/string_cast.hpp>
 #include <glad/glad.h>
 #include "RoboticArm.h"
 #include "Tracing.h"

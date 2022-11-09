@@ -2,7 +2,7 @@
 
 #include <LucyGL/LucyGL.h>
 #include <unordered_map>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 
 namespace lre {
 	enum RenderTargetFlags_ {

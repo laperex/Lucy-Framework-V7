@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 #include <yaml-cpp/yaml.h>
 #include <yaml-cpp/emitter.h>
 

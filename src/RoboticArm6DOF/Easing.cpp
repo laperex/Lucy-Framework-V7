@@ -3,7 +3,7 @@
 #include "Controller.h"
 #include "Kinematics.h"
 #include <Lucy/Lucy.h>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 
 #define EASE_FUNC(x, t) (pow(x, t) / (pow(x, t) + pow(1 - x, t)))
 

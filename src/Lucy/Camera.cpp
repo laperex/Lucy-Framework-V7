@@ -2,8 +2,8 @@
 #include "Events.h"
 #include "ECS.h"
 #include <Lucy/imgui_lucy_impl.h>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <Lucy/Math.h>//#include <glm/gtx/quaternion.hpp>
+#include <Lucy/Math.h>//#include <glm/gtc/matrix_transform.hpp>
 
 static auto& registry = Registry::Instance();
 

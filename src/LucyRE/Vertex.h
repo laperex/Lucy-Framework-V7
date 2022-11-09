@@ -4,7 +4,7 @@
 #include <memory>
 #include <stddef.h>
 #include <unordered_map>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 #include <array>
 
 namespace lre::Vertex {

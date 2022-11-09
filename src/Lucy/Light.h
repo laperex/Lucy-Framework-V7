@@ -1,7 +1,7 @@
 #pragma once
 
 #include <LucyGL/LucyGL.h>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 
 struct Light {
 	float ambient = 0.2f;

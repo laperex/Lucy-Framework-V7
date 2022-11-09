@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/vec2.hpp>
+#include <Lucy/Math.h>//#include <glm/vec2.hpp>
 #include <LucyGL/LucyGL.h>
 #include <string>
 #include <SDL2/SDL.h>

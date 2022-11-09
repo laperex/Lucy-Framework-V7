@@ -1,6 +1,6 @@
 #include "Sorting.h"
 #include <Lucy/Lucy.h>
-#include <glm/gtx/string_cast.hpp>
+#include <Lucy/Math.h>//#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 
 // Rest = { 180, 300, 0 }

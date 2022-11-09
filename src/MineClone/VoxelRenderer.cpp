@@ -36,7 +36,7 @@ void lpv::VoxelVertexTest() {
 		texture = new lgl::Texture(lgl::TEXTURE_2D);
 
 		texture->Bind();
-		texture->LoadSpriteSheet("D:\\C++\\Lucy Framework V7\\assets\\Spritesheet.png", 3, 3, 80, 80);
+		texture->LoadSpriteSheet("D:\\C++\\Lucy-Framework-V7\\assets\\Spritesheet.png", 3, 3, 80, 80);
 		texture->SetFilteringMode(lgl::FilterMode_NEAREST, lgl::FilterMode_NEAREST);
 		texture->SetWrapMode(lgl::WrapMode_REPEAT, lgl::WrapMode_REPEAT, lgl::WrapMode_REPEAT);
 		texture->UnBind();
@@ -44,8 +44,8 @@ void lpv::VoxelVertexTest() {
 
 	if (shader == nullptr) {
 		shader = new lgl::Shader();
-		shader->VertexShader("D:\\C++\\Lucy Framework V7\\src\\LucyRE\\Shaders\\voxel.vert");
-		shader->FragmentShader("D:\\C++\\Lucy Framework V7\\src\\LucyRE\\Shaders\\uvw.fs");
+		shader->VertexShader("D:\\C++\\Lucy-Framework-V7\\src\\LucyRE\\Shaders\\voxel.vert");
+		shader->FragmentShader("D:\\C++\\Lucy-Framework-V7\\src\\LucyRE\\Shaders\\uvw.fs");
 		shader->Link();
 		lre::InsertShader("voxel-uv", shader);
 	}

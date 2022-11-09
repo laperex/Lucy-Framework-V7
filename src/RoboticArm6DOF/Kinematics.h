@@ -2,7 +2,7 @@
 
 #include "JointAngles.h"
 #include "JointLength.h"
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>
 
 namespace lra {
 	class Kinematics {

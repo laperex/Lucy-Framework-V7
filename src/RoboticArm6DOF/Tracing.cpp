@@ -1,7 +1,7 @@
 #include "Tracing.h"
 #include <iostream>
 #include <LucyRE/LucyRE.h>
-#include <glm/glm.hpp>
+#include <Lucy/Math.h>//#include <glm/glm.hpp>
 
 void lra::TraceAnimationPoints(int start_idx, int idx, AnimationProperty* animation, const glm::vec4& color) {
 	assert(animation != nullptr);
