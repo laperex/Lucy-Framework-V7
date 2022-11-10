@@ -17,6 +17,7 @@ namespace lra {
 	struct AnimationStep {
 		JointAngles target_angles;
 		glm::ivec3 target_position;
+		bool is_ik_picking = true;
 
 		float phi = 0;
 		bool enable_ik_trajectory = false;
@@ -63,6 +64,9 @@ namespace lra {
 		LUCY_UUID selected_animation = LUCY_NULL_UUID;
 		bool render_path = false;
 		bool trace_path = false;
+
+		int curr_idx;
+		bool temp_change = false;
 
 		void Step();
 		bool IsNamePresent(std::string name);

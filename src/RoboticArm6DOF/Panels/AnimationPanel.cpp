@@ -26,8 +26,6 @@ void lra::panel::AnimationPanel() {
 
 		{
 			ImGui::BeginChild("#0");
-			// ImGui::Columns(2, 0, false);
-			// ImGui::SetColumnOffset(1, ImGui::GetContentRegionAvail().x / 2);
 
 			float x_padding = (ImGui::GetWindowContentRegionMax().x - ImGui::GetContentRegionMax().x) / 2;
 
@@ -133,7 +131,7 @@ void lra::panel::AnimationPanel() {
 					animator.trace_path = !animator.trace_path;
 				}
 
-				if (ImGui::BeginTable("View##0203", 1 + 6 + 3 + 1 + 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
+				if (ImGui::BeginTable("View##0203", 1 + 6 + 3 + 2 + 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders)) {
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0 + 1);
@@ -156,20 +154,33 @@ void lra::panel::AnimationPanel() {
 					ImGui::TableSetColumnIndex(2 + 7);
 					ImGui::Text("X.z");
 
-					int f = 0, idx = 0;
+					ImGui::TableSetColumnIndex(10);
+					ImGui::Text("Steps");
+
+					ImGui::TableSetColumnIndex(11);
+					ImGui::Text("IK");
+
+					int idx = 0;
 					static int selected_step = 0;
 					for (auto& step: animation.step_array) {
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
-						if (ImGui::Selectable(std::to_string(idx).c_str())) {
+
+						if (ImGui::Button(std::to_string(idx).c_str())) {
 							ImGui::OpenPopup("SH - Step");
 							selected_step = idx;
 						}
 
+						bool change = false;
 						for (int i = 0; i < 6; i++) {
 							ImGui::TableSetColumnIndex(i + 1);
 							ImGui::SetNextItemWidth(ImGui::GetColumnWidth(i + 1));
-							ImGui::DragFloat(("##" + std::to_string(f++)).c_str(), &step.target_angles[i], 0);
+							change |= ImGui::DragFloat(("##" + std::to_string(idx)).c_str(), &step.target_angles[i], 0.1);
+						}
+
+						if (change) {
+							step.target_position = Kinematics::GetForwardKinematics(step.target_angles);
+							animator.temp_change = true;
 						}
 
 						for (int i = 0; i < 3; i++) {
@@ -177,7 +188,7 @@ void lra::panel::AnimationPanel() {
 							ImGui::SetNextItemWidth(ImGui::GetColumnWidth(i + 7));
 
 							float temp = step.target_position[i];
-							if (ImGui::DragInt(("##43254" + std::to_string(f++)).c_str(), &step.target_position[i], 1)) {
+							if (ImGui::DragInt(("##43254" + std::to_string(idx)).c_str(), &step.target_position[i], 1)) {
 								bool is_valid;
 								auto angles = (animation.is_ik_picking) ? Kinematics::GetInverseKinematics(is_valid, step.target_position): Kinematics::GetInverseKinematics(is_valid, step.target_position, step.phi);
 								if (is_valid) {
@@ -198,7 +209,10 @@ void lra::panel::AnimationPanel() {
 						ImGui::DragFloat(("##tsd" + std::to_string(idx)).c_str(), &step.progress_len, 1, 0);
 
 						ImGui::TableSetColumnIndex(11);
-						if (ImGui::Button(("RESET##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(11), 0 })) {
+						ImGui::Checkbox(("##_jsia" + std::to_string(idx)).c_str(), &step.enable_ik_trajectory);
+
+						ImGui::TableSetColumnIndex(12);
+						if (ImGui::Button(("RESET##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(12), 0 })) {
 							auto pos = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 							bool is_valid;
 							auto angles = (controller.is_ik_picking) ? Kinematics::GetInverseKinematics(is_valid, pos): Kinematics::GetInverseKinematics(is_valid, pos, controller.ik_phi);
@@ -210,9 +224,10 @@ void lra::panel::AnimationPanel() {
 							}
 
 							regenrate = true;
+							animator.temp_change = true;
 						}
 
-						ImGui::TableSetColumnIndex(12);
+						ImGui::TableSetColumnIndex(13);
 
 						static JointAngles last_angles;
 						static glm::ivec3 last_pos;
@@ -221,7 +236,7 @@ void lra::panel::AnimationPanel() {
 						static bool first = false;
 						static AnimtationState state;
 
-						ImGui::Button(("VIEW##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(12), 0 });
+						ImGui::Button(("VIEW##" + std::to_string(idx)).c_str(), { ImGui::GetColumnWidth(13), 0 });
 
 						bool is_hovering = ImGui::IsItemHovered();
 						bool is_clicked = is_hovering && lucy::Events::IsButtonPressed(SDL_BUTTON_LEFT);
@@ -246,7 +261,7 @@ void lra::panel::AnimationPanel() {
 								last_angles = controller.target_joint_angles;
 								controller.target_joint_angles = step.target_angles;
 							}
-							
+
 							state = animator.animationstate;
 							animator.animationstate = PAUSE;
 						}
@@ -297,6 +312,8 @@ void lra::panel::AnimationPanel() {
 							if (animation.step_array.size() == 0)
 								animation.is_ik_picking = controller.is_ik_picking;
 							step.phi = controller.ik_phi;
+							if (idx != 0)
+								step.enable_ik_trajectory = animation.step_array[idx - 1].enable_ik_trajectory;
 						}
 
 						animation.step_array.push_back(step);

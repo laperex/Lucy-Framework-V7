@@ -55,6 +55,8 @@ void lra::SerializeAnimator(const char* filename) {
 						out << YAML::EndSeq;
 
 						out << step.progress_len;
+
+						out << step.enable_ik_trajectory;
 					}
 					out << YAML::EndSeq;
 				}
@@ -97,6 +99,7 @@ void lra::DeSerializeAnimator(const char* filename) {
 				step.target_angles[v] = scene[i]["steps"][j][1][v].as<float>();
 			}
 			step.progress_len = scene[i]["steps"][j][2].as<float>();
+			step.enable_ik_trajectory = scene[i]["steps"][j][3].as<bool>();
 
 			animation.step_array.push_back(step);
 		}

@@ -86,7 +86,6 @@ void lra::RuntimeUpdateArm() {
 		controller.fk_result = Kinematics::GetForwardKinematics(controller.target_joint_angles, controller.lra_dimension);
 
 		{
-			static int idx = 0;
 			static float progress = 0;
 
 			if (animator.selected_animation != LUCY_NULL_UUID) {
@@ -95,28 +94,29 @@ void lra::RuntimeUpdateArm() {
 				static LUCY_UUID last_animation = LUCY_NULL_UUID;
 
 				if (animator.selected_animation != last_animation) {
-					idx = 0;
+					animator.curr_idx = 0;
 					progress = 0;
 					last_animation = animator.selected_animation;
 				}
 
 				if (animator.render_path) {
-					TraceAnimationPoints(idx * animator.trace_path, generated.size() - 1, &animation, { 0.2, 1, 1, 1 });
+					// TraceAnimationPoints(animator.curr_idx * animator.trace_path, generated.size() - 1, &animation, { 0.2, 1, 1, 1 });
+					Trace(&animation, animator.curr_idx, progress, false);
 				}
 
-				if (animator.trace_path) {
-					if (idx < generated.size())
-						TraceAnimationPoints(0, idx, &animation);
-					else
-						TraceAnimationPoints(0, generated.size() - 1, &animation);
-				}
+				// if (animator.trace_path) {
+				// 	if (animator.curr_idx < generated.size())
+				// 		TraceAnimationPoints(0, animator.curr_idx, &animation);
+				// 	else
+				// 		TraceAnimationPoints(0, generated.size() - 1, &animation);
+				// }
 
 				static bool first = true;
 				if (animator.animationstate == PLAY) {
 					static JointAngles last_angles;
 
-					if (idx >= animation.step_array.size()) {
-						idx = 0;
+					if (animator.curr_idx >= animation.step_array.size()) {
+						animator.curr_idx = 0;
 					}
 
 					if (first) {
@@ -126,22 +126,35 @@ void lra::RuntimeUpdateArm() {
 					}
 
 					if (progress >= 1) {
-						idx++;
+						animator.curr_idx++;
 						progress = 0;
 						first = true;
 					} else {
-						if (!animation.step_array[idx].enable_ik_trajectory) {
+						if (!animation.step_array[animator.curr_idx].enable_ik_trajectory) {
 							for (int i = 0; i < 6; i++)
-								controller.target_joint_angles[i] = last_angles[i] + (animation.step_array[idx].target_angles[i] - last_angles[i]) * EASE_FUNC(progress, 2.5);
-							progress += 1.0f / animation.step_array[idx].progress_len;
+								controller.target_joint_angles[i] = last_angles[i] + (animation.step_array[animator.curr_idx].target_angles[i] - last_angles[i]) * EASE_FUNC(progress, 2.5);
 						} else {
+							auto curr_pos = Kinematics::GetForwardKinematics(last_angles);
 
+							glm::vec3 difference = animation.step_array[animator.curr_idx].target_position - curr_pos;
+							glm::vec3 dir = glm::normalize(difference);
+							float dist = glm::length(difference) * progress;
+							glm::vec3 target = glm::vec3(curr_pos) + dir * dist;
+
+							bool is_vaild = false;
+							JointAngles angles = Kinematics::GetInverseKinematics(is_vaild, target);
+							if (is_vaild) controller.target_joint_angles = angles;
+
+							for (int i = 4; i < 6; i++)
+								controller.target_joint_angles[i] = last_angles[i] + (animation.step_array[animator.curr_idx].target_angles[i] - last_angles[i]) * EASE_FUNC(progress, 2.5);
 						}
+
+						progress += 1.0f / animation.step_array[animator.curr_idx].progress_len;
 					}
 
-					if (idx >= animation.step_array.size()) {
+					if (animator.curr_idx >= animation.step_array.size()) {
 						if (animation.loop) {
-							idx = 0;
+							animator.curr_idx = 0;
 						} else {
 							animator.animationstate = STOP;
 						}
@@ -151,76 +164,9 @@ void lra::RuntimeUpdateArm() {
 				} else {
 					first = true;
 				}
-
-				if (/* animator.animationstate == PLAY &&  */false) {
-					if (idx >= generated.size()) {
-						idx = 0;
-					}
-
-					if (idx == 0 && generated.size()) {
-						static JointAngles last_angles, next_angles;
-						static float len = 0;
-
-						if (progress == 0) {
-							last_angles = controller.target_joint_angles;
-							bool is_valid;
-							next_angles = Kinematics::GetInverseKinematics(is_valid, generated[idx].position);
-							next_angles.gripper_control = generated[idx].gripper_ctrl;
-							next_angles.gripper_rotate = generated[idx].gripper_rot;
-							len = glm::length(glm::vec3(Kinematics::GetForwardKinematics(next_angles)) - glm::vec3(Kinematics::GetForwardKinematics(last_angles)));
-						}
-
-						if (progress >= 1 || len == 0) {
-							progress = 0;
-							idx++;
-						} else {
-							for (int i = 0; i < 6; i++)
-								controller.target_joint_angles[i] = last_angles[i] + (next_angles[i] - last_angles[i]) * EASE_FUNC(progress, 2.5);
-
-							controller.ik_target = animation.generated_positions[idx].position;
-							progress += 1.0f / len;
-						}
-					} else if (idx < generated.size()) {
-						static auto last_time = std::clock();
-						auto current_time = std::clock();
-						static JointAngles last_angles, next_angles;
-						static int last_idx = 0;
-
-						if (last_idx != idx) {
-							bool is_valid;
-							last_angles = Kinematics::GetInverseKinematics(is_valid, generated[idx - 1].position);
-							last_angles.gripper_control = generated[idx - 1].gripper_ctrl;
-							last_angles.gripper_rotate = generated[idx - 1].gripper_rot;
-
-							next_angles = Kinematics::GetInverseKinematics(is_valid, generated[idx].position);
-							next_angles.gripper_control = generated[idx].gripper_ctrl;
-							next_angles.gripper_rotate = generated[idx].gripper_rot;
-
-							last_idx = idx;
-						}
-
-						float p = (current_time - last_time) / controller.speed;
-						if (p >= 1) p = 1;
-						for (int i = 0; i < 6; i++)
-							controller.target_joint_angles[i] = last_angles[i] + (next_angles[i] - last_angles[i]) * EASE_FUNC(p, 2.5);
-						controller.ik_target = animation.generated_positions[idx].position;
-
-						if (current_time - last_time >= controller.speed) {
-							last_time = current_time;
-							idx++;
-						}
-
-						if (idx >= generated.size()) {
-							if (animation.loop)
-								idx = 0;
-							else
-								animator.animationstate = PAUSE;
-						}
-					}
-				}
 			}
 			if (animator.animationstate == STOP) {
-				idx = 0;
+				animator.curr_idx = 0;
 			}
 		}
 
