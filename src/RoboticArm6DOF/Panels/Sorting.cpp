@@ -52,6 +52,7 @@ void lra::Sorting::Initialize() {
 	animation.step_array[S7_PLACE_LOWER_GO].target_angles.gripper_control = 0;
 	animation.step_array[S8_PLACE_UPPER_GO].target_angles.gripper_control = 0;
 	animation.step_array[S9_REST_POS].target_angles.gripper_control = 0;
+	animation.step_array[S9_REST_POS].target_angles.gripper_rotate = 0;
 
 	animations_id = registry.store<Animator>().NewAnimation("__##Sorting_", animation);
 }

@@ -160,7 +160,7 @@ void lra::panel::AnimationPanel() {
 					ImGui::TableSetColumnIndex(11);
 					ImGui::Text("IK");
 
-					int idx = 0;
+					int idx = 0, f = 0;
 					static int selected_step = 0;
 					for (auto& step: animation.step_array) {
 						ImGui::TableNextRow();
@@ -175,7 +175,11 @@ void lra::panel::AnimationPanel() {
 						for (int i = 0; i < 6; i++) {
 							ImGui::TableSetColumnIndex(i + 1);
 							ImGui::SetNextItemWidth(ImGui::GetColumnWidth(i + 1));
-							change |= ImGui::DragFloat(("##" + std::to_string(idx)).c_str(), &step.target_angles[i], 0.1);
+							if (i < 4) {
+								change |= ImGui::DragFloat(("##" + std::to_string(idx) + std::to_string(f++)).c_str(), &step.target_angles[i], 0.1);
+							} else {
+								ImGui::DragFloat(("##" + std::to_string(idx) + std::to_string(f++)).c_str(), &step.target_angles[i], 0.1);
+							}
 						}
 
 						if (change) {
@@ -188,7 +192,7 @@ void lra::panel::AnimationPanel() {
 							ImGui::SetNextItemWidth(ImGui::GetColumnWidth(i + 7));
 
 							float temp = step.target_position[i];
-							if (ImGui::DragInt(("##43254" + std::to_string(idx)).c_str(), &step.target_position[i], 1)) {
+							if (ImGui::DragInt(("##43254" + std::to_string(idx) + std::to_string(f++)).c_str(), &step.target_position[i], 1)) {
 								bool is_valid;
 								auto angles = (animation.is_ik_picking) ? Kinematics::GetInverseKinematics(is_valid, step.target_position): Kinematics::GetInverseKinematics(is_valid, step.target_position, step.phi);
 								if (is_valid) {
