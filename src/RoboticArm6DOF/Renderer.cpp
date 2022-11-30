@@ -59,7 +59,7 @@ static struct {
 void lra::IntializeRenderer() {
 	for (int i = 0; i < MESH_PARTS_COUNT; i++) {
 		if (ROBOTIC_ARM_PARTS[i].mesh_id == LUCY_NULL_UUID) {
-			ROBOTIC_ARM_PARTS[i].mesh_id = lre::InsertMesh("i", util::LoadMeshToGPU("C:\\C++\\Lucy-Framework-V7\\assets\\" + ROBOTIC_ARM_PARTS[i].name + ".stl", "", -ROBOTIC_ARM_PARTS[i].position));
+			ROBOTIC_ARM_PARTS[i].mesh_id = lre::InsertMesh("i", util::LoadMeshToGPU("C:\\Programming\\C++\\Lucy-Framework-V7\\assets\\" + ROBOTIC_ARM_PARTS[i].name + ".stl", "", -ROBOTIC_ARM_PARTS[i].position));
 			ROBOTIC_ARM_PARTS[i].transform.translation = ROBOTIC_ARM_PARTS[i].position - STATIC_BASE.position;
 		}
 	}
