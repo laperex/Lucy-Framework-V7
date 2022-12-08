@@ -1,6 +1,7 @@
 #version 450 core
 
 in vec3 normal;
+layout (location = 0) out vec4 FragColor_0;
 
 void main() {
 	vec3 result = normal;
@@ -12,5 +13,5 @@ void main() {
 	if (normal.z < 0)
 		result.z = -normal.z;
 
-	gl_FragData[0] = vec4(1);
+	FragColor_0 = vec4(1);
 }

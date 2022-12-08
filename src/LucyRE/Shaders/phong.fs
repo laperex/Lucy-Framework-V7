@@ -4,6 +4,9 @@ in vec3 normal;
 in vec3 frag_pos;
 in vec3 view_pos;
 
+layout (location = 0) out vec4 FragColor_0;
+layout (location = 1) out vec4 FragColor_1;
+
 struct Material {
 	vec3 ambient;
 	vec3 diffuse;
@@ -28,7 +31,7 @@ flat in int instanceid;
 uniform int data;
 
 void main() {
-	gl_FragData[1] = vec4(1.0f, float(data), float(instanceid), float(vertexid));
+	FragColor_1 = vec4(1.0f, float(data), float(instanceid), float(vertexid));
 
 	vec3 light_dir;
 	if (light.pos.w == 0.0)
@@ -48,5 +51,5 @@ void main() {
 		result += pow(max(dot(normal, halfway), 0.0), material.shininess) * material.specular * light.specular;
 	}
 
-	gl_FragData[0] = light.color * vec4(result, 1);
+	FragColor_0 = light.color * vec4(result, 1);
 }

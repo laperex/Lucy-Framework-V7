@@ -34,7 +34,7 @@ void lra::panel::SerialCommunicationPanel() {
 		// 			ImGui::TableSetColumnIndex(1);
 		// 			int temp = pair.first;
 		// 			ImGui::SetNextItemWidth(ImGui::GetColumnWidth());
-		// 			ImGui::DragInt(("##0" + std::to_string(i) + "" + std::to_string(f++)).c_str(), &temp, 0);
+		// 			ImGui::DragInt(("##0" + std::to_string(i) + "" + std::to_sdtring(f++)).c_str(), &temp, 0);
 		// 		}
 
 		// 		for (auto& pair: servo_controller.mapped_pulse[i]) {

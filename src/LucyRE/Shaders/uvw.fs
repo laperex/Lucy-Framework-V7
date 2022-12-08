@@ -3,7 +3,8 @@
 in vec3 uvw;
 
 uniform sampler2DArray u_texture;
+layout (location = 0) out vec4 FragColor_0;
 
 void main() {
-	gl_FragData[0] = texture(u_texture, uvw);
+	FragColor_0 = texture(u_texture, uvw);
 }

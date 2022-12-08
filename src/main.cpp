@@ -18,7 +18,7 @@ int main(int argcount, char** args) {
 	// lucy::AddSystem(lucy::EDITOR_RUNTIME, ImGui::ShowDemoWindow);
 
 	// lucy::AddSystem(lucy::INTITIALIZATION, lpv::InitializeGame);
-	// lucy::AddSystem(lucy::RUNTIME, lpv::RuntimeGame);
+	// lucy::AddSystem(lucy::RUNTIME, lpv::RuntimeGame);q
 
 	// lucy::AddSystem(lucy::INTITIALIZATION, lve::InitializeGame);
 	// lucy::AddSystem(lucy::RUNTIME, lve::RuntimeGame);
@@ -35,7 +35,7 @@ int main(int argcount, char** args) {
 	lucy::AddSystem(lucy::RUNTIME, lra::RuntimeUpdateArm);
 
 	// lucy::Initialize();
-	lucy::Initialize("Lucy Framework V7", 0, 0, 2560, 1440, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_BORDERLESS);
+	lucy::Initialize("Lucy Framework V7", 0, 0, 2560, 1600, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_BORDERLESS);
 	lucy::Mainloop();
 
 	return 0;

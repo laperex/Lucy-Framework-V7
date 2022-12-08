@@ -6,8 +6,10 @@ flat in int vertexid;
 flat in int instanceid;
 uniform int data;
 
-void main() {
-	gl_FragData[1] = vec4(1, float(data), float(vertexid), float(instanceid));
+layout (location = 0) out vec4 FragColor_0;
+layout (location = 1) out vec4 FragColor_1;
 
-	gl_FragData[0] = u_color;
+void main() {
+	FragColor_1 = vec4(1, float(data), float(vertexid), float(instanceid));
+	FragColor_0 = u_color;
 }

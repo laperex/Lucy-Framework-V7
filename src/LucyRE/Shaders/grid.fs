@@ -2,6 +2,8 @@
 
 uniform vec2 u_resolution;
 
+layout (location = 0) out vec4 FragColor_0;
+
 float plot(vec2 st) {
     return smoothstep(0.02, 0.0, abs(st.y - st.x));
 }
@@ -18,5 +20,5 @@ void main() {
     vec2 grid_st = st * 300;
     vec4 color = vec4(1, 0, 1, 0.5) * grid(grid_st, 0.01);
 
-    gl_FragColor = color;
+    FragColor_0 = color;
 }
