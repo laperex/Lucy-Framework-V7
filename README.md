@@ -1,3 +1,3 @@
 # Lucy Framework V7
 
-Experimental Library Framework.
+Experimental Software Development Framework.
