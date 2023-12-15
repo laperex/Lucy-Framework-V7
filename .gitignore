@@ -2,5 +2,6 @@
 /.vs
 /build
 /out
+/.cache
 temp
 imgui.ini
