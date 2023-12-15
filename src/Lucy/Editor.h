@@ -6,7 +6,6 @@
 
 class Editor {
 	lgl::FrameBuffer* framebuffer = nullptr;
-	#define self Instance()
 	static Editor* Instance() {
 		static Editor instance;
 		return &instance;

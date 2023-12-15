@@ -87,6 +87,8 @@ void lra::RuntimeUpdateArm() {
 
 		{
 			static float progress = 0;
+			static uint32_t progress_step = 0;
+			static bool first = true;
 
 			if (animator.selected_animation != LUCY_NULL_UUID) {
 				auto& animation = animator.animation_registry[animator.selected_animation].animation;
@@ -96,22 +98,23 @@ void lra::RuntimeUpdateArm() {
 				if (animator.selected_animation != last_animation) {
 					animator.curr_idx = 0;
 					progress = 0;
+					progress_step = 0;
 					last_animation = animator.selected_animation;
 				}
 
 				if (animator.render_path) {
-					// TraceAnimationPoints(animator.curr_idx * animator.trace_path, generated.size() - 1, &animation, { 0.2, 1, 1, 1 });
-					Trace(&animation, animator.curr_idx, progress, false);
+					TraceAnimationPoints(0, generated.size() - 1, &animation, { 0, 1, 0, 1 });
+					// Trace(&animation, animator.curr_idx, progress, false);
 				}
 
-				// if (animator.trace_path) {
-				// 	if (animator.curr_idx < generated.size())
-				// 		TraceAnimationPoints(0, animator.curr_idx, &animation);
-				// 	else
-				// 		TraceAnimationPoints(0, generated.size() - 1, &animation);
-				// }
+				if (animator.trace_path) {
+					std::cout << animation.step_array[animator.curr_idx].progress_len * progress << ' ' << animator.curr_idx << ' ' << first << '\n';
+					if (animator.curr_idx < generated.size())
+						TraceAnimationPoints(progress_step, generated.size() - animator.curr_idx, &animation, { 1, 1, 0, 1 });
+					// else
+					// 	TraceAnimationPoints(0, generated.size() - 1, &animation, { 0, 1, 0, 1 });
+				}
 
-				static bool first = true;
 				if (animator.animationstate == PLAY) {
 					static JointAngles last_angles;
 
@@ -150,6 +153,7 @@ void lra::RuntimeUpdateArm() {
 						}
 
 						progress += 1.0f / animation.step_array[animator.curr_idx].progress_len;
+						// progress_step += (1 & (animator.curr_idx >= 1));
 					}
 
 					if (animator.curr_idx >= animation.step_array.size()) {
@@ -167,6 +171,7 @@ void lra::RuntimeUpdateArm() {
 			}
 			if (animator.animationstate == STOP) {
 				animator.curr_idx = 0;
+				progress_step = 0;
 			}
 		}
 
@@ -187,7 +192,7 @@ void lra::RuntimeUpdateArm() {
 		{
 			auto& serial_comm = registry.store<SerialCommunication>();
 
-			serial_comm.TransmitServoAngles(controller.render_angles);
+			// serial_comm.TransmitServoAngles(controller.render_angles);
 		}
 	}
 

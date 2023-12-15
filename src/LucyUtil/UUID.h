@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+
 #ifndef UUID_SYSTEM_GENERATOR
 	#define UUID_SYSTEM_GENERATOR
 #endif

@@ -6,13 +6,13 @@ enable_testing()
 
 file(GLOB_RECURSE TARGET_SRC "src/*.cpp" "src/*.c" "./dependencies/src/*.cpp" "./dependencies/src/*.c" "C:/libs/Lucy Graphics Library/src/*.cpp" "C:/libs/Lucy Graphics Library/src/*.c")
 
-include(C:/Users/krishnadev/vcpkg/scripts/buildsystems/vcpkg.cmake)
-include_directories("./dependencies/include/" src C:/Users/krishnadev/vcpkg/installed/x64-windows/include "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.32.31326/include/")
+include(/home/laperex/.local/share/vcpkg/scripts/buildsystems/vcpkg.cmake)
+# include_directories("./dependencies/include/" src C:/Users/krishnadev/vcpkg/installed/x64-windows/include "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.32.31326/include/")
+include_directories("./dependencies/include/" src /home/laperex/.local/share/vcpkg/installed/x64-linux/include "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.32.31326/include/")
 
 include_directories("C:/libs/Lucy Graphics Library/include")
 
 set(CMAKE_CXX_STANDARD 20)
-set(OpenCV_DIR "C:/Users/krishnadev/vcpkg/installed/x64-windows/share/opencv4")
 
 add_executable(main ${TARGET_SRC})
 
@@ -46,7 +46,9 @@ target_link_libraries(main PRIVATE glad::glad)
 find_package(stduuid CONFIG REQUIRED)
 target_link_libraries(main PRIVATE stduuid)
 
-find_package(OpenCV CONFIG REQUIRED)
+# find_package(OpenCV CONFIG REQUIRED)
+set(OpenCV_DIR "${VCPKG_INSTALLED_DIR}/x64-linux/share/opencv2")
+find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(main PRIVATE ${OpenCV_LIBS})
 

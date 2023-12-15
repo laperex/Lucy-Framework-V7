@@ -29,7 +29,7 @@ lra::JointAngles Clamp(lra::JointAngles position) {
 	return position;
 }
 
-const glm::ivec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_angles, const JointLength& lra_dimensions) {
+const glm::ivec3 lra::Kinematics::GetForwardKinematics(const JointAngles& joint_angles, const JointLength& lra_dimensions) {
 	float l1 = lra_dimensions.arm;
 	float l2 = lra_dimensions.elbow;
 	float l3 = lra_dimensions.wrist;
@@ -46,7 +46,7 @@ const glm::ivec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint
 	return { S.x * sin(joint_angles.base * TO_RADIAN), S.y, S.x * cos(joint_angles.base * TO_RADIAN)};
 }
 
-const glm::ivec3& lra::Kinematics::GetForwardKinematics(const JointAngles& joint_angles) {
+const glm::ivec3 lra::Kinematics::GetForwardKinematics(const JointAngles& joint_angles) {
 	return GetForwardKinematics(joint_angles, registry.store<Controller>().lra_dimension);
 }
 

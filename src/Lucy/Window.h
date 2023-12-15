@@ -10,7 +10,7 @@ namespace lucy {
 		glm::vec2 pos = { 50, 50 };
 		glm::vec2 size = { 1366, 768 };
 
-		uint32_t flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+		uint32_t flags = SDL_WINDOW_OPENGL;
 
 		std::string title = "Lucy Framework V5";
 		lgl::FrameBuffer* framebuffer = nullptr;

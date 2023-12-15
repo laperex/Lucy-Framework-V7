@@ -5,6 +5,8 @@
 
 typedef entt::entity Entity;
 
+struct A {};
+
 class Registry: public entt::registry {
 	std::unordered_map<size_t, Entity> singleton_instances;
 

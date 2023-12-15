@@ -5,7 +5,7 @@
 
 #define self lre::Renderer::Instance()
 
-#define SHADER_PATH(rel_filepath) "C:\\Programming\\C++\\Lucy-Framework-V7\\src\\LucyRE\\Shaders\\" + std::string(rel_filepath)
+#define SHADER_PATH(rel_filepath) "/home/laperex/Programming/C++/Lucy-Framework-V7-LRA/src/LucyRE/Shaders/" + std::string(rel_filepath)
 
 void lre::SetModel(const glm::mat4& model) {
 	if (self->model == model) return;

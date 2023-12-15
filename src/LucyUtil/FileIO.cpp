@@ -1,4 +1,8 @@
 #include "FileIO.h"
+#include <cstring>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 bool util::write_bytes_to_file(const char* filename, const uint8_t* data, std::size_t size) {
 	std::ofstream ofs{ filename };

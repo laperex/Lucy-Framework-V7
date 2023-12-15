@@ -89,6 +89,7 @@ void lra::panel::ComputerVisionPanel() {
 	if (vision == nullptr) {
 		vision = new ComputerVision();
 		vision->Initialize();
+		std::cout << "sjfsdf\n";
 	}
 
 	auto& controller = registry.store<Controller>();
@@ -258,6 +259,7 @@ void lra::panel::ComputerVisionPanel() {
 
 		if (live_feed) {
 			bool is_frame = vision->input_camera.read(frame);
+			std::cout << is_frame;
 
 			if (is_frame) {
 				if (dest_array.size() >= 4) {

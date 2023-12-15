@@ -1,16 +1,16 @@
 #include "SerialIO.h"
 
-#include <windows.h>
+// #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #define DEFAULT_WAIT_TIME 2000
 
 struct SerialIOContext {
-	HANDLE handler;
+	// HANDLE handler;
 	bool connected = false;
-	COMSTAT status;
-	DWORD errors;
+	// COMSTAT status;
+	// DWORD errors;
 
 	uint32_t wait_time = DEFAULT_WAIT_TIME;
 };
@@ -25,43 +25,43 @@ bool util::serial::connect_port(const char* port, uint32_t baudrate) {
 
 	self = new SerialIOContext{};
 
-	self->connected = false;
-	self->handler = CreateFileA(static_cast<LPCSTR>(port),
-		GENERIC_READ | GENERIC_WRITE,
-		0,
-		NULL,
-		OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL,
-		NULL
-	);
+	// self->connected = false;
+	// self->handler = CreateFileA(static_cast<LPCSTR>(port),
+	// 	GENERIC_READ | GENERIC_WRITE,
+	// 	0,
+	// 	NULL,
+	// 	OPEN_EXISTING,
+	// 	FILE_ATTRIBUTE_NORMAL,
+	// 	NULL
+	// );
 
-	if (self->handler == INVALID_HANDLE_VALUE) {
-		if (GetLastError() == ERROR_FILE_NOT_FOUND) {
-			printf("ERROR: Handle was not attached. Reason: %s not available\n", port);
-		} else {
-			printf("ERROR!!!");
-		}
-	} else {
-		DCB dcbSerialParameters = { 0 };
+	// if (self->handler == INVALID_HANDLE_VALUE) {
+	// 	if (GetLastError() == ERROR_FILE_NOT_FOUND) {
+	// 		printf("ERROR: Handle was not attached. Reason: %s not available\n", port);
+	// 	} else {
+	// 		printf("ERROR!!!");
+	// 	}
+	// } else {
+	// 	DCB dcbSerialParameters = { 0 };
 
-		if (!GetCommState(self->handler, &dcbSerialParameters)) {
-			printf("failed to get current serial parameters");
-		} else {
-			dcbSerialParameters.BaudRate = baudrate;
-			dcbSerialParameters.ByteSize = 8;
-			dcbSerialParameters.StopBits = ONESTOPBIT;
-			dcbSerialParameters.Parity = NOPARITY;
-			dcbSerialParameters.fDtrControl = DTR_CONTROL_ENABLE;
+	// 	if (!GetCommState(self->handler, &dcbSerialParameters)) {
+	// 		printf("failed to get current serial parameters");
+	// 	} else {
+	// 		dcbSerialParameters.BaudRate = baudrate;
+	// 		dcbSerialParameters.ByteSize = 8;
+	// 		dcbSerialParameters.StopBits = ONESTOPBIT;
+	// 		dcbSerialParameters.Parity = NOPARITY;
+	// 		dcbSerialParameters.fDtrControl = DTR_CONTROL_ENABLE;
 
-			if (!SetCommState(self->handler, &dcbSerialParameters)) {
-				printf("ALERT: could not set Serial port parameters\n");
-			} else {
-				self->connected = true;
-				PurgeComm(self->handler, PURGE_RXCLEAR | PURGE_TXCLEAR);
-				Sleep(self->wait_time);
-			}
-		}
-	}
+	// 		if (!SetCommState(self->handler, &dcbSerialParameters)) {
+	// 			printf("ALERT: could not set Serial port parameters\n");
+	// 		} else {
+	// 			self->connected = true;
+	// 			PurgeComm(self->handler, PURGE_RXCLEAR | PURGE_TXCLEAR);
+	// 			Sleep(self->wait_time);
+	// 		}
+	// 	}
+	// }
 
 	return self->connected;
 }
@@ -70,7 +70,7 @@ void util::serial::disconnect_port() {
 	if (self != nullptr) {
 		if (self->connected) {
 			self->connected = false;
-			CloseHandle(self->handler);
+			// CloseHandle(self->handler);
 		}
 
 		delete self;
@@ -91,31 +91,31 @@ void util::serial::set_wait_time(uint32_t time) {
 }
 
 int util::serial::read_bytes_from_port(uint8_t* data, uint32_t size) {
-	DWORD bytesRead;
-	unsigned int toRead = 0;
+	// DWORD bytesRead;
+	// unsigned int toRead = 0;
 
-	ClearCommError(self->handler, &self->errors, &self->status);
+	// ClearCommError(self->handler, &self->errors, &self->status);
 
-	if (self->status.cbInQue > 0) {
-		if (self->status.cbInQue > size) {
-			toRead = size;
-		} else {
-			toRead = self->status.cbInQue;
-		}
-	}
+	// if (self->status.cbInQue > 0) {
+	// 	if (self->status.cbInQue > size) {
+	// 		toRead = size;
+	// 	} else {
+	// 		toRead = self->status.cbInQue;
+	// 	}
+	// }
 
-	if (ReadFile(self->handler, data, toRead, &bytesRead, NULL))
-		return bytesRead;
+	// if (ReadFile(self->handler, data, toRead, &bytesRead, NULL))
+	// 	return bytesRead;
 
 	return 0;
 }
 
 bool util::serial::write_bytes_to_port(uint8_t* data, uint32_t size) {
-	DWORD bytesSend;
- 	if (!WriteFile(self->handler, (void*)data, size, &bytesSend, 0)) {
-        ClearCommError(self->handler, &self->errors, &self->status);
+	// DWORD bytesSend;
+ 	// if (!WriteFile(self->handler, (void*)data, size, &bytesSend, 0)) {
+    //     ClearCommError(self->handler, &self->errors, &self->status);
         return false;
-    } else {
-		return true;
-	}
+    // } else {
+	// 	return true;
+	// }
 }

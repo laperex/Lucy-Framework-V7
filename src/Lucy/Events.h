@@ -52,7 +52,6 @@ namespace lucy {
 	private:
 		static void Init();
 
-		#define self Instance()
 		static Events* Instance() {
 			static Events instance;
 			return &instance;
@@ -85,7 +84,7 @@ namespace lucy {
 		static bool IsMouseScrollingDown();
 
 		static const glm::vec3& GetCursorPos();
-		static const glm::vec3& GetCursorPosNormalized(float posx, float posy, float width, float height);
+		static glm::vec3 GetCursorPosNormalized(float posx, float posy, float width, float height);
 		static const glm::vec3& GetRelCursorPos();
 		static const glm::vec3& GetRelCursorPosNormalized(float posx, float posy, float width, float height);
 		static const glm::vec3& GetRelCursorOffset();

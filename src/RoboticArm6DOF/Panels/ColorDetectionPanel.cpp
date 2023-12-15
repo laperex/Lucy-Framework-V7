@@ -12,19 +12,21 @@
 #include <LucyUtil/FileIO.h>
 #include <Lucy/Math.h>//#include <glm/gtx/string_cast.hpp>
 #include "Sorting.h"
+#include "opencv2/core/core.hpp"
 
 #define ENABLE_LOADSAVE true
 
-cv::Mat GetMask(const cv::Mat& frame, glm::ivec3 min, glm::ivec3 max) {
-	cv::Mat hsv, mask;
-	cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
-	cv::inRange(hsv, cv::Scalar(min[0], min[1], min[2]), cv::Scalar(max[0], max[1], max[2]), mask);
-	cv::erode(mask, mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
-	cv::dilate(mask, mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
-	cv::dilate(mask, mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
-	cv::erode(mask, mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+static cv::Mat _hsv, _mask;
 
-	return mask;
+cv::Mat GetMask(const cv::Mat& frame, glm::ivec3 min, glm::ivec3 max) {
+	cv::cvtColor(frame, _hsv, cv::COLOR_BGR2HSV);
+	cv::inRange(_hsv, cv::Scalar(min[0], min[1], min[2]), cv::Scalar(max[0], max[1], max[2]), _mask);
+	cv::erode(_mask, _mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+	cv::dilate(_mask, _mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+	cv::dilate(_mask, _mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+	cv::erode(_mask, _mask, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)));
+
+	return _mask;
 }
 
 static std::tuple<bool, glm::vec2, std::vector<glm::vec2>> DetectPosition(const cv::Mat& mask, float max_area = 100) {
@@ -191,7 +193,7 @@ void lra::panel::ColorDetectionPanel() {
 		}
 
 		if (color_detection_data.initialize) {
-			color_detection_data.capture.open(1);
+			color_detection_data.capture.open(0);
 
 			sorting.Initialize();
 		}

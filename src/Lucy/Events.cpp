@@ -1,6 +1,8 @@
 #include "Events.h"
-#include <imgui_impl_sdl.h>
+#include <imgui_impl_sdl2.h>
 #include <iostream>
+
+#define self Instance()
 
 void lucy::Events::Init() {
 	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
@@ -217,7 +219,7 @@ const glm::vec3& lucy::Events::GetCursorPos() {
 	return self->mousepos;
 }
 
-const glm::vec3& lucy::Events::GetCursorPosNormalized(float posx, float posy, float width, float height) {
+glm::vec3 lucy::Events::GetCursorPosNormalized(float posx, float posy, float width, float height) {
 	return glm::vec3 {
 		((self->mousepos.x - posx) / (width * 0.5)) - 1.0,
 		1.0 - ((self->mousepos.y - posy) / (height * 0.5)),

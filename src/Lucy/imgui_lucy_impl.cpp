@@ -1,5 +1,6 @@
 #include "imgui_lucy_impl.h"
 #include <map>
+#include <stdint.h>
 
 void ImGui::SanitisedInputText(const char* label, std::string& text) {
 	std::string temp = text;

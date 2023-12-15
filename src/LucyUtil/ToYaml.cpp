@@ -1,4 +1,4 @@
-#include "ToYAML.h"
+#include <LucyUtil/ToYaml.h>
 
 YAML::Emitter& operator<<(YAML::Emitter& out, const glm::bvec2& v) {
 	out << YAML::Flow;

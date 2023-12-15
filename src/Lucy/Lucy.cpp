@@ -33,7 +33,7 @@ void lucy::Initialize() {
 
 	window.InitSDLWindow();
 
-	lgl::Initialize(SDL_GL_GetProcAddress);
+	lgl::Initialize((void*)SDL_GL_GetProcAddress);
 	lre::Initialize();
 }
 
