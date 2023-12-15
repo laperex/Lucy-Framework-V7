@@ -3,5 +3,6 @@
 /build
 /out
 /.cache
+/*.bak
 temp
 imgui.ini
