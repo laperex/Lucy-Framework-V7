@@ -1,3 +1,4 @@
-# Lucy Framework V7
+# 6 DOF Robotic Arm - [ V7 ]
 
-Experimental Software Development Framework.
+Control Interface for a 6 DOF Robotic Arm
+
