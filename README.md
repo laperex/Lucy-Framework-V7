@@ -16,9 +16,9 @@ Lucy Framework V7 is the seventh iteration of a custom C++ application framework
 
 The project targets **Linux** (the active `linux` branch) and is managed via **CMake** and **vcpkg**.
 
-<img width="2560" height="1600" alt="Screenshot_2026-03-02-02-02-17_2560x1600" src="https://github.com/user-attachments/assets/032b9927-a4af-4b65-ace2-e1d2c6188a65" />
 <img width="2560" height="1600" alt="Screenshot_2026-03-02-02-02-34_2560x1600" src="https://github.com/user-attachments/assets/6e349ea1-d748-4c3b-a971-e37382402a2b" />
 <img width="2560" height="1600" alt="Screenshot_2026-03-02-03-17-38_2560x1600" src="https://github.com/user-attachments/assets/eac0f9eb-24a5-4b61-b37f-7d4efb9268e9" />
+<img width="2560" height="1600" alt="Screenshot_2026-03-02-02-02-17_2560x1600" src="https://github.com/user-attachments/assets/032b9927-a4af-4b65-ace2-e1d2c6188a65" />
 
 ---
 
